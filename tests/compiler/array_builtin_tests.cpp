@@ -152,3 +152,30 @@ TEST_CASE("Object keys returns own enumerable string keys and excludes symbols")
         "let k=Object.keys(o); k.length===3 && k[0]==='1' && k[1]==='b' && k[2]==='a'");
     REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
 }
+
+
+TEST_CASE("Object prototype hasOwnProperty tests own properties only") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let proto={inherited:1}; let o={own:2}; "
+        "Object.setPrototypeOf ? 0 : 0; "
+        "o.hasOwnProperty('own') && !o.hasOwnProperty('missing') && "
+        "Array.prototype.hasOwnProperty.call([7], '0')");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("Object prototype hasOwnProperty accepts symbols and distinguishes inherited properties") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let s=Symbol('s'); let o={}; o[s]=3; "
+        "o.hasOwnProperty(s) && !o.hasOwnProperty('toString')");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("Object is implements SameValue semantics") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "Object.is(NaN,NaN) && !Object.is(0,-0) && Object.is(-0,-0) && "
+        "Object.is(3,3) && !Object.is(3,'3')");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}

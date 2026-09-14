@@ -142,6 +142,34 @@ ExecutionResult builtin_object_define_property(Context& c, Value, std::span<cons
     return Completion::normal(target);
 }
 
+ExecutionResult builtin_object_has_own_property(Context& c, Value t, std::span<const Value> a) {
+    const auto object_result = abstract_operations::to_object(c, t);
+    if (!object_result) return object_result.error();
+    if (!object_result.completion().is_normal()) return object_result.completion();
+    const Value target = object_result.completion().value();
+
+    const auto key_result = abstract_operations::to_property_key(c, argument_or_undefined(a, 0));
+    if (!key_result) return key_result.error();
+    if (!key_result.completion().is_normal()) return key_result.completion();
+    const Value key_value = key_result.completion().value();
+    const PropertyKey key = key_value.is_symbol()
+        ? PropertyKey::symbol(key_value.as_symbol_id())
+        : c.property_key(key_value.as_string());
+
+    const auto descriptor = c.get_own_property_descriptor(target, key);
+    if (!descriptor) return descriptor.error();
+    return Completion::normal(c.boolean(descriptor->has_value()));
+}
+
+ExecutionResult builtin_object_is(Context& c, Value, std::span<const Value> a) {
+    const auto equal = abstract_operations::same_value(
+        c,
+        argument_or_undefined(a, 0),
+        argument_or_undefined(a, 1));
+    if (!equal) return equal.error();
+    return Completion::normal(c.boolean(*equal));
+}
+
 ExecutionResult builtin_object_keys(Context& c, Value, std::span<const Value> a) {
     const auto object_result = abstract_operations::to_object(c, argument_or_undefined(a, 0));
     if (!object_result) return object_result.error();
@@ -913,6 +941,7 @@ void Context::ensure_builtins(Realm& realm) {
     realm.global_object_.as_heap_object()->prototype = realm.object_prototype_;
     (void)set_own_property(realm.object_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_object_value_of));
     (void)set_own_property(realm.object_prototype_, "toString", native_function_in_realm(realm, "toString", 0, builtin_object_to_string));
+    (void)set_own_property(realm.object_prototype_, "hasOwnProperty", native_function_in_realm(realm, "hasOwnProperty", 1, builtin_object_has_own_property));
     (void)set_own_property(realm.function_prototype_, "call", native_function_in_realm(realm, "call", 1, builtin_function_call));
     (void)set_own_property(realm.function_prototype_, "apply", native_function_in_realm(realm, "apply", 2, builtin_function_apply));
     (void)set_own_property(realm.function_prototype_, "bind", native_function_in_realm(realm, "bind", 1, builtin_function_bind));
@@ -931,6 +960,7 @@ void Context::ensure_builtins(Realm& realm) {
     Value object_ns=object_in_realm(realm); (void)set_own_property(object_ns,"getPrototypeOf",native_function_in_realm(realm,"getPrototypeOf",1,builtin_get_proto));
     (void)set_own_property(object_ns,"defineProperty",native_function_in_realm(realm,"defineProperty",3,builtin_object_define_property));
     (void)set_own_property(object_ns,"keys",native_function_in_realm(realm,"keys",1,builtin_object_keys));
+    (void)set_own_property(object_ns,"is",native_function_in_realm(realm,"is",2,builtin_object_is));
     (void)set_own_property(object_ns, "prototype", realm.object_prototype_);
     Value promise_ns=object_in_realm(realm); (void)set_own_property(promise_ns,"resolve",native_function_in_realm(realm,"resolve",1,builtin_promise_resolve)); (void)set_own_property(promise_ns,"reject",native_function_in_realm(realm,"reject",1,builtin_promise_reject));
     Value symbol_ns = native_function_in_realm(realm, "Symbol", 0, builtin_symbol);

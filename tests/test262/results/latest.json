@@ -9,8 +9,8 @@
   "diagnostics": {
     "by_diagnostic_class": {
       "FRONTEND_PARSE_FAILURE": 10,
-      "PASS_NORMAL": 66,
-      "RUNTIME_SEMANTIC_FAILURE": 28
+      "PASS_NORMAL": 74,
+      "RUNTIME_SEMANTIC_FAILURE": 20
     },
     "by_directory": {
       "language/expressions/array": 104
@@ -32,44 +32,43 @@
     },
     "failures_by_diagnostic_class": {
       "FRONTEND_PARSE_FAILURE": 10,
-      "RUNTIME_SEMANTIC_FAILURE": 28
+      "RUNTIME_SEMANTIC_FAILURE": 20
     },
     "failures_by_directory": {
-      "language/expressions/array": 38
+      "language/expressions/array": 30
     },
     "failures_by_feature": {
-      "<none>": 8,
-      "Symbol": 6,
+      "<none>": 4,
+      "Symbol": 4,
       "Symbol.iterator": 4,
-      "object-spread": 26
+      "object-spread": 22
     },
     "failures_by_phase": {
       "parse": 10,
-      "runtime": 28
+      "runtime": 20
     },
     "failures_by_signature": {
       "Unexpected token in input": 10,
       "reference_error: binding 'Function' is not defined": 6,
       "reference_error: binding 'ReferenceError' is not defined": 8,
       "reference_error: binding 'TypeError' is not defined": 4,
-      "type_error: call target is not a function": 8,
       "type_error: property access target is not an object": 2
     },
     "failures_by_variant": {
-      "sloppy": 19,
-      "strict": 19
+      "sloppy": 15,
+      "strict": 15
     }
   },
   "engine": "/home/rasyid/code/cp/js_engine/build/js",
-  "engine_revision": "c8fddd9f81a91a04799a302fac16f26920336f5e",
-  "generated_at_utc": "2026-09-14T15:35:32.223012+00:00",
+  "engine_revision": "4884cfd8ecd4e9ba04e06402eef9f39a59ac4f98",
+  "generated_at_utc": "2026-09-14T15:45:13.380027+00:00",
   "outcomes": {
     "test/language/expressions/array/11.1.4-0.js::sloppy": "PASS",
     "test/language/expressions/array/11.1.4-0.js::strict": "PASS",
-    "test/language/expressions/array/11.1.4_4-5-1.js::sloppy": "FAIL",
-    "test/language/expressions/array/11.1.4_4-5-1.js::strict": "FAIL",
-    "test/language/expressions/array/11.1.4_5-6-1.js::sloppy": "FAIL",
-    "test/language/expressions/array/11.1.4_5-6-1.js::strict": "FAIL",
+    "test/language/expressions/array/11.1.4_4-5-1.js::sloppy": "PASS",
+    "test/language/expressions/array/11.1.4_4-5-1.js::strict": "PASS",
+    "test/language/expressions/array/11.1.4_5-6-1.js::sloppy": "PASS",
+    "test/language/expressions/array/11.1.4_5-6-1.js::strict": "PASS",
     "test/language/expressions/array/S11.1.4_A1.1.js::sloppy": "PASS",
     "test/language/expressions/array/S11.1.4_A1.1.js::strict": "PASS",
     "test/language/expressions/array/S11.1.4_A1.2.js::sloppy": "PASS",
@@ -148,12 +147,12 @@
     "test/language/expressions/array/spread-obj-override-immutable.js::strict": "FAIL",
     "test/language/expressions/array/spread-obj-overrides-prev-properties.js::sloppy": "PASS",
     "test/language/expressions/array/spread-obj-overrides-prev-properties.js::strict": "PASS",
-    "test/language/expressions/array/spread-obj-skip-non-enumerable.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-obj-skip-non-enumerable.js::strict": "FAIL",
+    "test/language/expressions/array/spread-obj-skip-non-enumerable.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-obj-skip-non-enumerable.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-spread-order.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-spread-order.js::strict": "FAIL",
-    "test/language/expressions/array/spread-obj-symbol-property.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-obj-symbol-property.js::strict": "FAIL",
+    "test/language/expressions/array/spread-obj-symbol-property.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-obj-symbol-property.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-undefined.js::sloppy": "PASS",
     "test/language/expressions/array/spread-obj-undefined.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-with-overrides.js::sloppy": "FAIL",
@@ -172,7 +171,7 @@
   "results": [
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -186,7 +185,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 12,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -199,64 +198,64 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 18,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/11.1.4_4-5-1.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 21,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/11.1.4_4-5-1.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 19,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/11.1.4_5-6-1.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 18,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/11.1.4_5-6-1.js",
       "variant": "strict"
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 29,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -270,7 +269,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -284,7 +283,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -298,7 +297,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 3,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -312,7 +311,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -326,7 +325,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 20,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -340,7 +339,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -354,7 +353,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 23,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -368,7 +367,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 25,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -382,7 +381,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -396,7 +395,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -410,7 +409,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -424,7 +423,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 20,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -438,7 +437,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -452,7 +451,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -466,7 +465,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 24,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -480,7 +479,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 25,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -496,7 +495,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 23,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -512,7 +511,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -528,7 +527,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 12,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -544,7 +543,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -560,7 +559,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 20,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -576,7 +575,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 14,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -592,7 +591,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -608,7 +607,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -624,7 +623,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -640,7 +639,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -656,7 +655,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -672,7 +671,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -688,7 +687,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -704,7 +703,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 20,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -718,7 +717,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -732,7 +731,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -748,7 +747,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -764,7 +763,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -780,7 +779,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -796,7 +795,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -812,7 +811,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -828,7 +827,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 14,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -844,7 +843,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -860,7 +859,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -876,7 +875,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 24,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -892,7 +891,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -908,7 +907,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 20,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -924,7 +923,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 21,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -940,7 +939,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -956,7 +955,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -970,7 +969,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -984,7 +983,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -998,7 +997,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 20,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1012,7 +1011,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1026,7 +1025,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1040,7 +1039,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1056,7 +1055,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1072,7 +1071,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 24,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1086,7 +1085,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 24,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1100,7 +1099,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 27,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1116,7 +1115,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 9,
+      "duration_ms": 27,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1132,7 +1131,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1148,7 +1147,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1164,7 +1163,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1180,7 +1179,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1196,7 +1195,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1212,7 +1211,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1228,7 +1227,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 2,
+      "duration_ms": 11,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1244,7 +1243,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1260,7 +1259,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 14,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1276,7 +1275,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1292,7 +1291,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1308,7 +1307,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1324,7 +1323,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 23,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1340,7 +1339,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 14,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1356,7 +1355,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1372,7 +1371,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 23,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1388,7 +1387,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 9,
+      "duration_ms": 27,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1404,7 +1403,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 29,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1420,7 +1419,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 18,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1436,7 +1435,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 21,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1451,40 +1450,40 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 13,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-skip-non-enumerable.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "category": "normal",
+      "duration_ms": 19,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-skip-non-enumerable.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1501,7 +1500,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 12,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1517,42 +1516,42 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 18,
       "expected_error": null,
-      "failure_signature": "type_error: property access target is not an object",
+      "failure_signature": null,
       "features": [
         "Symbol",
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: property access target is not an object\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-symbol-property.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 21,
       "expected_error": null,
-      "failure_signature": "type_error: property access target is not an object",
+      "failure_signature": null,
       "features": [
         "Symbol",
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: property access target is not an object\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-symbol-property.js",
       "variant": "strict"
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1568,7 +1567,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 8,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1584,9 +1583,9 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 21,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": "type_error: property access target is not an object",
       "features": [
         "Symbol",
         "object-spread"
@@ -1594,16 +1593,16 @@
       "phase": "runtime",
       "returncode": 4,
       "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
+      "stderr": "type_error: property access target is not an object\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-obj-with-overrides.js",
       "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 19,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": "type_error: property access target is not an object",
       "features": [
         "Symbol",
         "object-spread"
@@ -1611,14 +1610,14 @@
       "phase": "runtime",
       "returncode": 4,
       "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
+      "stderr": "type_error: property access target is not an object\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-obj-with-overrides.js",
       "variant": "strict"
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 13,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1632,7 +1631,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 22,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1646,7 +1645,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1660,7 +1659,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 19,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1674,7 +1673,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 13,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1690,7 +1689,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1706,7 +1705,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 12,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1720,7 +1719,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 15,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1734,7 +1733,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 16,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1750,7 +1749,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 17,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1768,9 +1767,9 @@
   "schema_version": 3,
   "summary": {
     "CRASH": 0,
-    "FAIL": 38,
+    "FAIL": 30,
     "HARNESS_ERROR": 0,
-    "PASS": 66,
+    "PASS": 74,
     "SKIP_UNSUPPORTED": 0,
     "TIMEOUT": 0
   },
