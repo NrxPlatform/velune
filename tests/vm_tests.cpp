@@ -1,0 +1,110 @@
+#include "test.hpp"
+
+#include <js/js.hpp>
+
+namespace {
+
+js::bytecode::BytecodeChunk arithmetic_chunk(js::Context& context) {
+    js::bytecode::BytecodeBuilder builder;
+    const auto two = builder.add_constant(context.number(2));
+    const auto three = builder.add_constant(context.number(3));
+    const auto one = builder.add_constant(context.number(1));
+    if (!two || !three || !one) {
+        throw std::runtime_error("failed to add test constant");
+    }
+
+    builder.emit_constant(*two);
+    builder.emit_constant(*three);
+    builder.emit(js::bytecode::OpCode::multiply);
+    builder.emit_constant(*one);
+    builder.emit(js::bytecode::OpCode::add);
+    builder.emit(js::bytecode::OpCode::return_);
+    return std::move(builder).finish();
+}
+
+} // namespace
+
+TEST_CASE("vm executes 2 * 3 + 1") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::VM vm(context);
+
+    const auto chunk = arithmetic_chunk(context);
+    const auto result = vm.run(chunk);
+
+    REQUIRE(result);
+    REQUIRE(result->is_number());
+    REQUIRE(result->as_number() == 7.0);
+    REQUIRE(vm.stack_size() == 0U);
+}
+
+TEST_CASE("vm preserves operand order for subtraction") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::bytecode::BytecodeBuilder builder;
+    const auto ten = builder.add_constant(context.number(10));
+    const auto four = builder.add_constant(context.number(4));
+    REQUIRE(ten && four);
+    builder.emit_constant(*ten);
+    builder.emit_constant(*four);
+    builder.emit(js::bytecode::OpCode::subtract);
+    builder.emit(js::bytecode::OpCode::return_);
+
+    js::VM vm(context);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(result);
+    REQUIRE(result->as_number() == 6.0);
+}
+
+TEST_CASE("vm ADD uses primitive concatenation semantics") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::bytecode::BytecodeBuilder builder;
+    const auto text = builder.add_constant(context.string("not a number"));
+    const auto one = builder.add_constant(context.number(1));
+    REQUIRE(text && one);
+    builder.emit_constant(*text);
+    builder.emit_constant(*one);
+    builder.emit(js::bytecode::OpCode::add);
+    builder.emit(js::bytecode::OpCode::return_);
+
+    js::VM vm(context);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(result);
+    REQUIRE(result->is_string());
+    REQUIRE(result->as_string() == "not a number1");
+}
+
+TEST_CASE("vm rejects heap constants from another runtime") {
+    js::Runtime runtime_a;
+    js::Runtime runtime_b;
+    js::Context context_a(runtime_a);
+    js::Context context_b(runtime_b);
+
+    js::bytecode::BytecodeBuilder builder;
+    const auto text = builder.add_constant(context_a.string("owned by A"));
+    REQUIRE(text);
+    builder.emit_constant(*text);
+    builder.emit(js::bytecode::OpCode::return_);
+
+    js::VM vm(context_b);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(!result);
+    REQUIRE(result.error().code() == js::EngineFailureCode::HostContractViolation);
+}
+
+TEST_CASE("vm can return a same-runtime heap-backed constant") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::bytecode::BytecodeBuilder builder;
+    const auto text = builder.add_constant(context.string("hello bytecode"));
+    REQUIRE(text);
+    builder.emit_constant(*text);
+    builder.emit(js::bytecode::OpCode::return_);
+
+    js::VM vm(context);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(result);
+    REQUIRE(result->is_string());
+    REQUIRE(result->as_string() == "hello bytecode");
+}

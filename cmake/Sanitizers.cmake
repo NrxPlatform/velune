@@ -1,0 +1,8 @@
+function(jsengine_enable_sanitizers target)
+    if(MSVC)
+        message(WARNING "JSENGINE_ENABLE_SANITIZERS is not configured for MSVC in this milestone")
+        return()
+    endif()
+    target_compile_options(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+    target_link_options(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+endfunction()

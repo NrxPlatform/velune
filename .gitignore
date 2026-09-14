@@ -1,0 +1,64 @@
+# CMake build directories
+/build/
+/build-*/
+/cmake-build-*/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Makefile
+Testing/
+
+# Compiled binaries / objects
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Debug / profiling / coverage
+*.gcda
+*.gcno
+*.gcov
+*.profraw
+*.profdata
+core
+core.*
+
+# Sanitizer output
+asan.log*
+ubsan.log*
+lsan.log*
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Generated packages
+*.zip
+# External conformance suites
+/third_party/test262/
+/temp
+
+# Test262 generated/runtime data
+/tests/test262/cache/
+/tests/test262/tmp/
