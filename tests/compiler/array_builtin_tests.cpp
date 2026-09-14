@@ -125,3 +125,30 @@ TEST_CASE("array defineProperty defaults do not become dense writable properties
     REQUIRE(!(*own)->enumerable.value_or(true));
     REQUIRE(!(*own)->configurable.value_or(true));
 }
+
+TEST_CASE("Object defineProperty uses ECMAScript descriptor defaults") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let o={}; Object.defineProperty(o,'x',{value:7}); "
+        "o.x===7 && Object.keys(o).length===0");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("Object defineProperty supports enumerable data and accessor descriptors") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let o={}; "
+        "Object.defineProperty(o,'a',{value:3,writable:true,enumerable:true,configurable:true}); "
+        "Object.defineProperty(o,'b',{get:function(){return 9;},enumerable:true,configurable:true}); "
+        "Object.keys(o).length===2 && Object.keys(o)[0]==='a' && Object.keys(o)[1]==='b' && o.b===9");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("Object keys returns own enumerable string keys and excludes symbols") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let s=Symbol('s'); let o={}; o.b=2; o['1']=1; o.a=3; "
+        "Object.defineProperty(o,'hidden',{value:4,enumerable:false}); o[s]=5; "
+        "let k=Object.keys(o); k.length===3 && k[0]==='1' && k[1]==='b' && k[2]==='a'");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}

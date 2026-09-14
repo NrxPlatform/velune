@@ -54,6 +54,114 @@ ExecutionResult builtin_array_constructor(Context& c, Value, std::span<const Val
 }
 ExecutionResult builtin_is_finite(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isfinite(v.as_number()))); }
 ExecutionResult builtin_get_proto(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.get_prototype(argument_or_undefined(a, 0))); }
+
+ExecutionResult builtin_object_define_property(Context& c, Value, std::span<const Value> a) {
+    const Value target = argument_or_undefined(a, 0);
+    if (!target.is_object_like()) return Error{ErrorCode::type_error, "Object.defineProperty target is not an object"};
+
+    const auto key_result = abstract_operations::to_property_key(c, argument_or_undefined(a, 1));
+    if (!key_result) return key_result.error();
+    if (!key_result.completion().is_normal()) return key_result.completion();
+    const Value key_value = key_result.completion().value();
+    const PropertyKey key = key_value.is_symbol()
+        ? PropertyKey::symbol(key_value.as_symbol_id())
+        : c.property_key(key_value.as_string());
+
+    const Value attributes = argument_or_undefined(a, 2);
+    if (!attributes.is_object_like()) return Error{ErrorCode::type_error, "Object.defineProperty descriptor is not an object"};
+
+    PropertyDescriptor descriptor;
+    auto read_descriptor_field = [&](std::string_view name) -> ExecutionResult {
+        const PropertyKey field_key = c.property_key(name);
+        const auto present = c.has_property(attributes, field_key);
+        if (!present) return present.error();
+        if (!*present) return Completion::normal(Value::undefined());
+        return c.get_property_semantic(attributes, field_key);
+    };
+
+    const auto enumerable = read_descriptor_field("enumerable");
+    if (!enumerable) return enumerable.error();
+    if (!enumerable.completion().is_normal()) return enumerable.completion();
+    const auto has_enumerable = c.has_property(attributes, c.property_key("enumerable"));
+    if (!has_enumerable) return has_enumerable.error();
+    if (*has_enumerable)
+        descriptor.enumerable = abstract_operations::to_boolean(enumerable.completion().value());
+
+    const auto configurable = read_descriptor_field("configurable");
+    if (!configurable) return configurable.error();
+    if (!configurable.completion().is_normal()) return configurable.completion();
+    const auto has_configurable = c.has_property(attributes, c.property_key("configurable"));
+    if (!has_configurable) return has_configurable.error();
+    if (*has_configurable)
+        descriptor.configurable = abstract_operations::to_boolean(configurable.completion().value());
+
+    const auto value = read_descriptor_field("value");
+    if (!value) return value.error();
+    if (!value.completion().is_normal()) return value.completion();
+    const auto has_value = c.has_property(attributes, c.property_key("value"));
+    if (!has_value) return has_value.error();
+    if (*has_value) descriptor.value = value.completion().value();
+
+    const auto writable = read_descriptor_field("writable");
+    if (!writable) return writable.error();
+    if (!writable.completion().is_normal()) return writable.completion();
+    const auto has_writable = c.has_property(attributes, c.property_key("writable"));
+    if (!has_writable) return has_writable.error();
+    if (*has_writable) descriptor.writable = abstract_operations::to_boolean(writable.completion().value());
+
+    const auto getter = read_descriptor_field("get");
+    if (!getter) return getter.error();
+    if (!getter.completion().is_normal()) return getter.completion();
+    const auto has_getter = c.has_property(attributes, c.property_key("get"));
+    if (!has_getter) return has_getter.error();
+    if (*has_getter) {
+        const Value getter_value = getter.completion().value();
+        if (!getter_value.is_undefined() && !abstract_operations::is_callable(getter_value))
+            return Error{ErrorCode::type_error, "Object.defineProperty getter is not callable"};
+        descriptor.get = getter_value;
+    }
+
+    const auto setter = read_descriptor_field("set");
+    if (!setter) return setter.error();
+    if (!setter.completion().is_normal()) return setter.completion();
+    const auto has_setter = c.has_property(attributes, c.property_key("set"));
+    if (!has_setter) return has_setter.error();
+    if (*has_setter) {
+        const Value setter_value = setter.completion().value();
+        if (!setter_value.is_undefined() && !abstract_operations::is_callable(setter_value))
+            return Error{ErrorCode::type_error, "Object.defineProperty setter is not callable"};
+        descriptor.set = setter_value;
+    }
+
+    if (descriptor.is_accessor_descriptor() && descriptor.is_data_descriptor())
+        return Error{ErrorCode::type_error, "invalid property descriptor: cannot mix accessors with value/writable"};
+
+    const auto defined = c.define_own_property(target, key, descriptor);
+    if (!defined) return defined.error();
+    if (!*defined) return Error{ErrorCode::type_error, "Object.defineProperty rejected property definition"};
+    return Completion::normal(target);
+}
+
+ExecutionResult builtin_object_keys(Context& c, Value, std::span<const Value> a) {
+    const auto object_result = abstract_operations::to_object(c, argument_or_undefined(a, 0));
+    if (!object_result) return object_result.error();
+    if (!object_result.completion().is_normal()) return object_result.completion();
+    const Value target = object_result.completion().value();
+
+    const auto keys = c.own_property_keys(target);
+    if (!keys) return keys.error();
+
+    Value result = c.array();
+    for (const PropertyKey key : *keys) {
+        if (!key.is_atom()) continue;
+        const auto descriptor = c.get_own_property_descriptor(target, key);
+        if (!descriptor) return descriptor.error();
+        if (!descriptor->has_value() || !(**descriptor).enumerable.value_or(false)) continue;
+        const auto pushed = c.array_push(result, c.string(std::string(c.property_key_text(key))));
+        if (!pushed) return pushed.error();
+    }
+    return Completion::normal(result);
+}
 ExecutionResult builtin_is_nan(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isnan(v.as_number()))); }
 ExecutionResult builtin_promise_resolve(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.promise_resolve(argument_or_undefined(a, 0))); }
 ExecutionResult builtin_promise_reject(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.promise_reject(argument_or_undefined(a, 0))); }
@@ -604,8 +712,32 @@ Result<std::vector<PropertyKey>> Context::own_property_keys(const Value& object)
         }
         return keys;
     }
-    if (object.is_object()) return object.as_heap_object()->property_order;
-    return object.as_heap_function()->property_order;
+    const auto& order = object.is_object()
+        ? object.as_heap_object()->property_order
+        : object.as_heap_function()->property_order;
+    std::vector<std::pair<std::uint32_t, PropertyKey>> indexed;
+    std::vector<PropertyKey> strings;
+    std::vector<PropertyKey> symbols;
+    indexed.reserve(order.size());
+    strings.reserve(order.size());
+    symbols.reserve(order.size());
+    for (const PropertyKey candidate : order) {
+        if (candidate.is_symbol()) {
+            symbols.push_back(candidate);
+            continue;
+        }
+        if (const auto index = canonical_array_index(runtime_->atom_text(candidate.atom_id())))
+            indexed.emplace_back(*index, candidate);
+        else
+            strings.push_back(candidate);
+    }
+    std::sort(indexed.begin(), indexed.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+    std::vector<PropertyKey> keys;
+    keys.reserve(order.size());
+    for (const auto& [index, candidate] : indexed) { (void)index; keys.push_back(candidate); }
+    keys.insert(keys.end(), strings.begin(), strings.end());
+    keys.insert(keys.end(), symbols.begin(), symbols.end());
+    return keys;
 }
 
 Result<bool> Context::is_extensible(const Value& object) const {
@@ -797,6 +929,8 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(array_ns, "isArray", native_function_in_realm(realm, "isArray", 1, builtin_is_array));
     Value number_ns=object_in_realm(realm); (void)set_own_property(number_ns,"isFinite",native_function_in_realm(realm,"isFinite",1,builtin_is_finite));
     Value object_ns=object_in_realm(realm); (void)set_own_property(object_ns,"getPrototypeOf",native_function_in_realm(realm,"getPrototypeOf",1,builtin_get_proto));
+    (void)set_own_property(object_ns,"defineProperty",native_function_in_realm(realm,"defineProperty",3,builtin_object_define_property));
+    (void)set_own_property(object_ns,"keys",native_function_in_realm(realm,"keys",1,builtin_object_keys));
     (void)set_own_property(object_ns, "prototype", realm.object_prototype_);
     Value promise_ns=object_in_realm(realm); (void)set_own_property(promise_ns,"resolve",native_function_in_realm(realm,"resolve",1,builtin_promise_resolve)); (void)set_own_property(promise_ns,"reject",native_function_in_realm(realm,"reject",1,builtin_promise_reject));
     Value symbol_ns = native_function_in_realm(realm, "Symbol", 0, builtin_symbol);

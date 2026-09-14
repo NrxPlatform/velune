@@ -41,6 +41,7 @@ public:
     [[nodiscard]] std::optional<std::string_view> symbol_key_for(Value symbol) const noexcept { return runtime_->symbol_key_for(symbol); }
     [[nodiscard]] Value well_known_symbol(std::string_view name) { return runtime_->well_known_symbol(name); }
     [[nodiscard]] PropertyKey property_key(std::string_view key) const { return PropertyKey::atom(runtime_->intern_atom(key)); }
+    [[nodiscard]] std::string_view property_key_text(PropertyKey key) const noexcept { return key.is_atom() ? runtime_->atom_text(key.atom_id()) : std::string_view{}; }
     [[nodiscard]] Result<PropertyKey> property_key(Value key) const;
     [[nodiscard]] Value object();
     [[nodiscard]] Value box_primitive(Value primitive);

@@ -9,8 +9,8 @@
   "diagnostics": {
     "by_diagnostic_class": {
       "FRONTEND_PARSE_FAILURE": 10,
-      "PASS_NORMAL": 46,
-      "RUNTIME_SEMANTIC_FAILURE": 48
+      "PASS_NORMAL": 66,
+      "RUNTIME_SEMANTIC_FAILURE": 28
     },
     "by_directory": {
       "language/expressions/array": 104
@@ -32,37 +32,37 @@
     },
     "failures_by_diagnostic_class": {
       "FRONTEND_PARSE_FAILURE": 10,
-      "RUNTIME_SEMANTIC_FAILURE": 48
+      "RUNTIME_SEMANTIC_FAILURE": 28
     },
     "failures_by_directory": {
-      "language/expressions/array": 58
+      "language/expressions/array": 38
     },
     "failures_by_feature": {
       "<none>": 8,
       "Symbol": 6,
-      "Symbol.iterator": 12,
-      "object-spread": 38
+      "Symbol.iterator": 4,
+      "object-spread": 26
     },
     "failures_by_phase": {
       "parse": 10,
-      "runtime": 48
+      "runtime": 28
     },
     "failures_by_signature": {
       "Unexpected token in input": 10,
       "reference_error: binding 'Function' is not defined": 6,
       "reference_error: binding 'ReferenceError' is not defined": 8,
-      "reference_error: binding 'TypeError' is not defined": 2,
-      "type_error: call target is not a function": 30,
+      "reference_error: binding 'TypeError' is not defined": 4,
+      "type_error: call target is not a function": 8,
       "type_error: property access target is not an object": 2
     },
     "failures_by_variant": {
-      "sloppy": 29,
-      "strict": 29
+      "sloppy": 19,
+      "strict": 19
     }
   },
   "engine": "/home/rasyid/code/cp/js_engine/build/js",
-  "engine_revision": "5aab6602c4e6397b5e46c6d99a70b954a7527492",
-  "generated_at_utc": "2026-09-14T15:20:24.996402+00:00",
+  "engine_revision": "c8fddd9f81a91a04799a302fac16f26920336f5e",
+  "generated_at_utc": "2026-09-14T15:35:32.223012+00:00",
   "outcomes": {
     "test/language/expressions/array/11.1.4-0.js::sloppy": "PASS",
     "test/language/expressions/array/11.1.4-0.js::strict": "PASS",
@@ -92,12 +92,12 @@
     "test/language/expressions/array/spread-err-mult-err-iter-get-value.js::strict": "FAIL",
     "test/language/expressions/array/spread-err-mult-err-itr-get-call.js::sloppy": "PASS",
     "test/language/expressions/array/spread-err-mult-err-itr-get-call.js::strict": "PASS",
-    "test/language/expressions/array/spread-err-mult-err-itr-get-get.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-err-mult-err-itr-get-get.js::strict": "FAIL",
+    "test/language/expressions/array/spread-err-mult-err-itr-get-get.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-err-mult-err-itr-get-get.js::strict": "PASS",
     "test/language/expressions/array/spread-err-mult-err-itr-step.js::sloppy": "PASS",
     "test/language/expressions/array/spread-err-mult-err-itr-step.js::strict": "PASS",
-    "test/language/expressions/array/spread-err-mult-err-itr-value.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-err-mult-err-itr-value.js::strict": "FAIL",
+    "test/language/expressions/array/spread-err-mult-err-itr-value.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-err-mult-err-itr-value.js::strict": "PASS",
     "test/language/expressions/array/spread-err-mult-err-obj-unresolvable.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-err-mult-err-obj-unresolvable.js::strict": "FAIL",
     "test/language/expressions/array/spread-err-mult-err-unresolvable.js::sloppy": "FAIL",
@@ -106,14 +106,14 @@
     "test/language/expressions/array/spread-err-sngl-err-expr-throws.js::strict": "PASS",
     "test/language/expressions/array/spread-err-sngl-err-itr-get-call.js::sloppy": "PASS",
     "test/language/expressions/array/spread-err-sngl-err-itr-get-call.js::strict": "PASS",
-    "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js::strict": "FAIL",
+    "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js::strict": "PASS",
     "test/language/expressions/array/spread-err-sngl-err-itr-get-value.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-err-sngl-err-itr-get-value.js::strict": "FAIL",
     "test/language/expressions/array/spread-err-sngl-err-itr-step.js::sloppy": "PASS",
     "test/language/expressions/array/spread-err-sngl-err-itr-step.js::strict": "PASS",
-    "test/language/expressions/array/spread-err-sngl-err-itr-value.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-err-sngl-err-itr-value.js::strict": "FAIL",
+    "test/language/expressions/array/spread-err-sngl-err-itr-value.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-err-sngl-err-itr-value.js::strict": "PASS",
     "test/language/expressions/array/spread-err-sngl-err-obj-unresolvable.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-err-sngl-err-obj-unresolvable.js::strict": "FAIL",
     "test/language/expressions/array/spread-err-sngl-err-unresolvable.js::sloppy": "FAIL",
@@ -128,10 +128,10 @@
     "test/language/expressions/array/spread-mult-literal.js::strict": "PASS",
     "test/language/expressions/array/spread-mult-obj-ident.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-mult-obj-ident.js::strict": "FAIL",
-    "test/language/expressions/array/spread-mult-obj-null.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-mult-obj-null.js::strict": "FAIL",
-    "test/language/expressions/array/spread-mult-obj-undefined.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-mult-obj-undefined.js::strict": "FAIL",
+    "test/language/expressions/array/spread-mult-obj-null.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-mult-obj-null.js::strict": "PASS",
+    "test/language/expressions/array/spread-mult-obj-undefined.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-mult-obj-undefined.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-getter-descriptor.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-getter-descriptor.js::strict": "FAIL",
     "test/language/expressions/array/spread-obj-getter-init.js::sloppy": "FAIL",
@@ -140,22 +140,22 @@
     "test/language/expressions/array/spread-obj-manipulate-outter-obj-in-getter.js::strict": "FAIL",
     "test/language/expressions/array/spread-obj-mult-spread-getter.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-mult-spread-getter.js::strict": "FAIL",
-    "test/language/expressions/array/spread-obj-mult-spread.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-obj-mult-spread.js::strict": "FAIL",
-    "test/language/expressions/array/spread-obj-null.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-obj-null.js::strict": "FAIL",
+    "test/language/expressions/array/spread-obj-mult-spread.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-obj-mult-spread.js::strict": "PASS",
+    "test/language/expressions/array/spread-obj-null.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-obj-null.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-override-immutable.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-override-immutable.js::strict": "FAIL",
-    "test/language/expressions/array/spread-obj-overrides-prev-properties.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-obj-overrides-prev-properties.js::strict": "FAIL",
+    "test/language/expressions/array/spread-obj-overrides-prev-properties.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-obj-overrides-prev-properties.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-skip-non-enumerable.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-skip-non-enumerable.js::strict": "FAIL",
     "test/language/expressions/array/spread-obj-spread-order.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-spread-order.js::strict": "FAIL",
     "test/language/expressions/array/spread-obj-symbol-property.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-symbol-property.js::strict": "FAIL",
-    "test/language/expressions/array/spread-obj-undefined.js::sloppy": "FAIL",
-    "test/language/expressions/array/spread-obj-undefined.js::strict": "FAIL",
+    "test/language/expressions/array/spread-obj-undefined.js::sloppy": "PASS",
+    "test/language/expressions/array/spread-obj-undefined.js::strict": "PASS",
     "test/language/expressions/array/spread-obj-with-overrides.js::sloppy": "FAIL",
     "test/language/expressions/array/spread-obj-with-overrides.js::strict": "FAIL",
     "test/language/expressions/array/spread-sngl-empty.js::sloppy": "PASS",
@@ -200,106 +200,106 @@
     },
     {
       "category": "unexpected_runtime_error",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/11.1.4_4-5-1.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/11.1.4_4-5-1.js",
+      "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/11.1.4_5-6-1.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/11.1.4_5-6-1.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.1.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.1.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.2.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
       "duration_ms": 3,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/11.1.4_4-5-1.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/11.1.4_4-5-1.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/11.1.4_5-6-1.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/11.1.4_5-6-1.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/S11.1.4_A1.1.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/S11.1.4_A1.1.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/S11.1.4_A1.2.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
       "failure_signature": null,
       "features": [],
       "phase": "runtime",
@@ -312,7 +312,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -326,7 +326,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -354,7 +354,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -368,7 +368,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -396,7 +396,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -410,7 +410,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -452,7 +452,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -496,7 +496,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -512,184 +512,184 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
         "Symbol.iterator"
       ],
       "phase": "runtime",
       "returncode": 4,
       "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
+      "stderr": "reference_error: binding 'TypeError' is not defined\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": "reference_error: binding 'TypeError' is not defined",
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "reference_error: binding 'TypeError' is not defined\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-step.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-step.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
+      "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "reference_error: binding 'ReferenceError' is not defined\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-err-mult-err-obj-unresolvable.js",
       "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
       "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 9,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-step.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-step.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 8,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "reference_error: binding 'ReferenceError' is not defined\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-obj-unresolvable.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
-      "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
         "object-spread"
@@ -704,7 +704,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -732,7 +732,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -780,7 +780,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -795,40 +795,40 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "Symbol.iterator"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "category": "normal",
+      "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "Symbol.iterator"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -860,7 +860,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -876,7 +876,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -891,41 +891,41 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "Symbol.iterator"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 7,
       "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
+      "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 5,
+      "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
         "object-spread"
@@ -940,7 +940,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -970,7 +970,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -984,7 +984,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1026,7 +1026,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1056,7 +1056,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1072,7 +1072,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1086,7 +1086,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 8,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1100,7 +1100,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 9,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1131,72 +1131,72 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "category": "normal",
+      "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-mult-obj-null.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "category": "normal",
+      "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-mult-obj-null.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 7,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-mult-obj-undefined.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-mult-obj-undefined.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1212,7 +1212,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 7,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1228,7 +1228,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 2,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1260,7 +1260,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1276,7 +1276,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1308,7 +1308,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1323,72 +1323,72 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-mult-spread.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-mult-spread.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-null.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-null.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 10,
+      "duration_ms": 9,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1404,7 +1404,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 8,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1419,34 +1419,34 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-overrides-prev-properties.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-overrides-prev-properties.js",
       "variant": "strict"
     },
@@ -1501,7 +1501,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 2,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1518,7 +1518,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "type_error: property access target is not an object",
       "features": [
@@ -1535,7 +1535,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "type_error: property access target is not an object",
       "features": [
@@ -1551,40 +1551,40 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-undefined.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 8,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": null,
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-obj-undefined.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1601,7 +1601,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1632,7 +1632,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1646,7 +1646,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1660,7 +1660,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1690,7 +1690,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1706,7 +1706,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1720,7 +1720,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 3,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1768,9 +1768,9 @@
   "schema_version": 3,
   "summary": {
     "CRASH": 0,
-    "FAIL": 58,
+    "FAIL": 38,
     "HARNESS_ERROR": 0,
-    "PASS": 46,
+    "PASS": 66,
     "SKIP_UNSUPPORTED": 0,
     "TIMEOUT": 0
   },
