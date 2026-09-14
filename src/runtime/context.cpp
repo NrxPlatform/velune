@@ -29,6 +29,29 @@ ExecutionResult builtin_pop(Context& c, Value t, std::span<const Value>) { retur
 ExecutionResult builtin_array_iterator(Context& c, Value t, std::span<const Value>) { return execution_from_result(c.array_iterator(t)); }
 ExecutionResult builtin_array_iterator_next(Context& c, Value t, std::span<const Value>) { return execution_from_result(c.array_iterator_next(t)); }
 ExecutionResult builtin_is_array(Context& c, Value, std::span<const Value> a) { return Completion::normal(c.boolean(c.is_array(argument_or_undefined(a, 0)))); }
+ExecutionResult builtin_array_constructor(Context& c, Value, std::span<const Value> arguments) {
+    Value array = c.array();
+    if (arguments.empty()) return Completion::normal(array);
+
+    if (arguments.size() == 1U && arguments[0].is_number()) {
+        const double length = arguments[0].as_number();
+        const double integral = std::floor(length);
+        if (!std::isfinite(length) || length < 0.0 || length > 4294967295.0 || integral != length)
+            return Error{ErrorCode::type_error, "invalid array length"};
+        PropertyDescriptor descriptor;
+        descriptor.value = Value::number(length);
+        const auto defined = c.define_own_property(array, c.property_key("length"), descriptor);
+        if (!defined) return defined.error();
+        if (!*defined) return Error{ErrorCode::type_error, "failed to define Array length"};
+        return Completion::normal(array);
+    }
+
+    for (Value value : arguments) {
+        const auto pushed = c.array_push(array, value);
+        if (!pushed) return pushed.error();
+    }
+    return Completion::normal(array);
+}
 ExecutionResult builtin_is_finite(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isfinite(v.as_number()))); }
 ExecutionResult builtin_get_proto(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.get_prototype(argument_or_undefined(a, 0))); }
 ExecutionResult builtin_is_nan(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isnan(v.as_number()))); }
@@ -277,8 +300,8 @@ Value Context::object_prototype() {
     return active_realm().object_prototype_;
 }
 
-Value Context::native_function(std::string_view name, std::uint32_t arity, NativeFunction function) {
-    return native_function_in_realm(active_realm(), name, arity, function);
+Value Context::native_function(std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind) {
+    return native_function_in_realm(active_realm(), name, arity, function, constructor_kind);
 }
 
 Result<Value> Context::bind_function(Value target, Value bound_this, std::span<const Value> bound_arguments) {
@@ -289,8 +312,8 @@ Result<Value> Context::bind_function(Value target, Value bound_this, std::span<c
     return runtime_->make_bound_function(*target.as_heap_function()->realm, target, bound_this, bound_arguments);
 }
 
-Value Context::native_function_in_realm(Realm& realm, std::string_view name, std::uint32_t arity, NativeFunction function) {
-    return runtime_->make_native_function(realm, std::string(name), arity, function);
+Value Context::native_function_in_realm(Realm& realm, std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind) {
+    return runtime_->make_native_function(realm, std::string(name), arity, function, constructor_kind);
 }
 
 Result<Value> Context::object(Value prototype) {
@@ -749,7 +772,7 @@ void Context::ensure_builtins(Realm& realm) {
     realm.object_prototype_ = runtime_->make_object(realm);
     realm.function_prototype_ = runtime_->make_object(realm);
     realm.function_prototype_.as_heap_object()->prototype = realm.object_prototype_;
-    realm.array_prototype_ = runtime_->make_object(realm);
+    realm.array_prototype_ = runtime_->make_array(realm);
     realm.promise_prototype_ = runtime_->make_object(realm);
     realm.regexp_prototype_ = runtime_->make_object(realm);
     realm.array_prototype_.as_heap_object()->prototype = realm.object_prototype_;
@@ -768,7 +791,10 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(realm.promise_prototype_, "catch", native_function_in_realm(realm, "catch", 1, builtin_promise_catch));
     (void)set_own_property(realm.regexp_prototype_, "test", native_function_in_realm(realm, "test", 1, builtin_regexp_test));
     (void)set_own_property(realm.regexp_prototype_, "exec", native_function_in_realm(realm, "exec", 1, builtin_regexp_exec));
-    Value array_ns=object_in_realm(realm); (void)set_own_property(array_ns,"isArray",native_function_in_realm(realm,"isArray",1,builtin_is_array));
+    Value array_ns = native_function_in_realm(realm, "Array", 1, builtin_array_constructor, ConstructorKind::Base);
+    (void)define_own_property(array_ns, "prototype", PropertyDescriptor::data(realm.array_prototype_, false, false, false));
+    (void)define_own_property(realm.array_prototype_, "constructor", PropertyDescriptor::data(array_ns, true, false, true));
+    (void)set_own_property(array_ns, "isArray", native_function_in_realm(realm, "isArray", 1, builtin_is_array));
     Value number_ns=object_in_realm(realm); (void)set_own_property(number_ns,"isFinite",native_function_in_realm(realm,"isFinite",1,builtin_is_finite));
     Value object_ns=object_in_realm(realm); (void)set_own_property(object_ns,"getPrototypeOf",native_function_in_realm(realm,"getPrototypeOf",1,builtin_get_proto));
     (void)set_own_property(object_ns, "prototype", realm.object_prototype_);

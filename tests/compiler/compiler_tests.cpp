@@ -666,3 +666,81 @@ TEST_CASE("P10.7 delete optional chain deletes property and short-circuits to tr
         "a*100 + b*10 + ('x' in o)");
     REQUIRE(result); REQUIRE(result->is_number()); REQUIRE(result->as_number() == 110.0);
 }
+
+
+TEST_CASE("Test262 closure ordinary functions remain callable constructable and usable by instanceof") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+
+    const auto callable = eval(context, "function F(){} typeof F");
+    REQUIRE(callable && callable->is_string() && callable->as_string() == "function");
+
+    const auto constructed = eval(context, "function F(){} var x = new F(); x instanceof F");
+    REQUIRE(constructed && constructed->is_boolean() && constructed->as_boolean());
+
+    const auto plain_object = eval(context, "function F(){} var x = {}; x instanceof F");
+    REQUIRE(plain_object && plain_object->is_boolean() && !plain_object->as_boolean());
+
+    const auto invalid_rhs = eval(context, "var x = {}; x instanceof 1");
+    REQUIRE(!invalid_rhs);
+    REQUIRE(invalid_rhs.error().code() == js::ErrorCode::uncaught_exception);
+    REQUIRE(invalid_rhs.error().message().find("TypeError") != std::string::npos);
+}
+
+TEST_CASE("Test262 closure ordinary constructor guard pattern is generic") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+
+    const auto result = eval(context,
+        "function E(message) {"
+        "  if (!(this instanceof E)) return new E(message);"
+        "  this.message = message || '';"
+        "}"
+        "var e = E('hello');"
+        "e instanceof E && e.message === 'hello'");
+    REQUIRE(result && result->is_boolean() && result->as_boolean());
+}
+
+TEST_CASE("Test262 closure Array is a callable constructable Realm intrinsic") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+
+    const auto type = eval(context, "typeof Array");
+    REQUIRE(type && type->is_string() && type->as_string() == "function");
+
+    const auto literal_instance = eval(context, "[] instanceof Array");
+    REQUIRE(literal_instance && literal_instance->is_boolean() && literal_instance->as_boolean());
+
+    const auto called_instance = eval(context, "Array(1, 2) instanceof Array");
+    REQUIRE(called_instance && called_instance->is_boolean() && called_instance->as_boolean());
+
+    const auto constructed_instance = eval(context, "new Array(1, 2) instanceof Array");
+    REQUIRE(constructed_instance && constructed_instance->is_boolean() && constructed_instance->as_boolean());
+
+    const auto prototype_constructor = eval(context, "Array.prototype.constructor === Array");
+    REQUIRE(prototype_constructor && prototype_constructor->is_boolean() && prototype_constructor->as_boolean());
+}
+
+TEST_CASE("native builtin methods are callable but not constructors by default") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+
+    const auto callable = eval(context, "typeof Array.prototype.push");
+    REQUIRE(callable && callable->is_string() && callable->as_string() == "function");
+
+    const auto construct = eval(context, "new Array.prototype.push()");
+    REQUIRE(!construct);
+    REQUIRE(construct.error().code() == js::ErrorCode::type_error);
+}
+
+
+TEST_CASE("ordinary functions inherit Function.prototype.apply") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+
+    const auto type = eval(context, "function f(x){ return x; } typeof f.apply");
+    REQUIRE(type && type->is_string() && type->as_string() == "function");
+
+    const auto result = eval(context, "function f(x){ return x; } f.apply(null, [42])");
+    REQUIRE(result && result->is_number() && result->as_number() == 42.0);
+}

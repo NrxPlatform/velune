@@ -23,12 +23,13 @@ TEST_CASE("Number isFinite builtin is installed modularly") {
     REQUIRE(v); 
     REQUIRE(v->as_boolean()); 
 }
-TEST_CASE("Object getPrototypeOf exposes array prototype") { 
+TEST_CASE("Object getPrototypeOf exposes the real Array prototype object") { 
     js::Runtime r; 
     js::Context c(r); 
-    auto v=eval10(c,"let a=[]; Object.getPrototypeOf(a).push(4)"); 
-    REQUIRE(!v); 
-    REQUIRE(v.error().code()==js::ErrorCode::type_error); 
+    auto v=eval10(c,"let a=[]; Object.getPrototypeOf(a) === Array.prototype && Array.isArray(Array.prototype)"); 
+    REQUIRE(v); 
+    REQUIRE(v->is_boolean());
+    REQUIRE(v->as_boolean()); 
 }
 
 TEST_CASE("string length basic works through property access") { 

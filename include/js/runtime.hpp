@@ -146,7 +146,8 @@ private:
                                       std::optional<std::uint32_t> parameter_count = std::nullopt,
                                       bool simple_parameter_list = true, bool strict = false,
                                       std::vector<std::string> parameter_names = {});
-    [[nodiscard]] Value make_native_function(Realm& realm, std::string name, std::uint32_t arity, NativeFunction function);
+    [[nodiscard]] Value make_native_function(Realm& realm, std::string name, std::uint32_t arity, NativeFunction function,
+                                             ConstructorKind constructor_kind = ConstructorKind::None);
     [[nodiscard]] Value make_bound_function(Realm& realm, Value target, Value bound_this, std::span<const Value> bound_arguments);
     [[nodiscard]] Value make_closure(const detail::HeapFunction& prototype, std::vector<detail::HeapUpvalue*> upvalues, detail::HeapModuleEnvironment* module_environment = nullptr);
     [[nodiscard]] detail::HeapModuleEnvironment* make_module_environment(std::size_t binding_count);

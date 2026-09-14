@@ -206,7 +206,7 @@ TEST_CASE("built-in globals and prototype graph are garbage collection roots") {
 
     const auto array_constructor_again = context.get_global("Array");
     REQUIRE(array_constructor_again);
-    REQUIRE(array_constructor_again->is_object());
+    REQUIRE(array_constructor_again->is_function());
 
     const auto array = context.array();
     REQUIRE(context.array_push(array, context.number(7.0)));

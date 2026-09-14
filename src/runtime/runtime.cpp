@@ -188,9 +188,9 @@ Value Runtime::make_function(Realm& realm, std::string name, std::uint32_t funct
     return Value(raw);
 }
 
-Value Runtime::make_native_function(Realm& realm, std::string name, std::uint32_t arity, NativeFunction function) {
+Value Runtime::make_native_function(Realm& realm, std::string name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind) {
     assert(function != nullptr);
-    auto code = std::make_shared<detail::FunctionCode>(std::move(name), arity, function);
+    auto code = std::make_shared<detail::FunctionCode>(std::move(name), arity, function, constructor_kind);
     assert(&realm.runtime() == this);
     auto cell = std::make_unique<detail::HeapFunction>(this, &realm, std::move(code));
     if (!realm.function_prototype_.is_undefined()) cell->prototype = realm.function_prototype_;

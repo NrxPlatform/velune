@@ -70,8 +70,9 @@ struct FunctionCode final {
           parameter_names(std::move(formal_parameter_names)), chunk(std::move(function_chunk)), constructor_kind(constructor), generator(is_generator), arguments_slot(function_arguments_slot),
           this_mode(this_binding_mode), strict(is_strict), method(is_method), simple_parameter_list(simple_parameters) {}
 
-    FunctionCode(std::string function_name, std::uint32_t function_arity, NativeFunction native_function)
-        : name(std::move(function_name)), arity(function_arity), native(native_function) {}
+    FunctionCode(std::string function_name, std::uint32_t function_arity, NativeFunction native_function,
+                 ConstructorKind constructor = ConstructorKind::None)
+        : name(std::move(function_name)), arity(function_arity), native(native_function), constructor_kind(constructor) {}
 
     FunctionCode(std::string function_name, std::uint32_t function_arity)
         : name(std::move(function_name)), arity(function_arity) {}

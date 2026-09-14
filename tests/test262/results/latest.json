@@ -9,8 +9,8 @@
   "diagnostics": {
     "by_diagnostic_class": {
       "FRONTEND_PARSE_FAILURE": 10,
-      "PASS_NORMAL": 30,
-      "RUNTIME_SEMANTIC_FAILURE": 64
+      "PASS_NORMAL": 46,
+      "RUNTIME_SEMANTIC_FAILURE": 48
     },
     "by_directory": {
       "language/expressions/array": 104
@@ -32,20 +32,20 @@
     },
     "failures_by_diagnostic_class": {
       "FRONTEND_PARSE_FAILURE": 10,
-      "RUNTIME_SEMANTIC_FAILURE": 64
+      "RUNTIME_SEMANTIC_FAILURE": 48
     },
     "failures_by_directory": {
-      "language/expressions/array": 74
+      "language/expressions/array": 58
     },
     "failures_by_feature": {
-      "<none>": 24,
+      "<none>": 8,
       "Symbol": 6,
       "Symbol.iterator": 12,
       "object-spread": 38
     },
     "failures_by_phase": {
       "parse": 10,
-      "runtime": 64
+      "runtime": 48
     },
     "failures_by_signature": {
       "Unexpected token in input": 10,
@@ -53,17 +53,16 @@
       "reference_error: binding 'ReferenceError' is not defined": 8,
       "reference_error: binding 'TypeError' is not defined": 2,
       "type_error: call target is not a function": 30,
-      "type_error: property access target is not an object": 2,
-      "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"": 16
+      "type_error: property access target is not an object": 2
     },
     "failures_by_variant": {
-      "sloppy": 37,
-      "strict": 37
+      "sloppy": 29,
+      "strict": 29
     }
   },
   "engine": "/home/rasyid/code/cp/js_engine/build/js",
-  "engine_revision": "d41ce71a9fee73c9ede13209dccbc941642b9469",
-  "generated_at_utc": "2026-09-14T13:47:54.036989+00:00",
+  "engine_revision": "5aab6602c4e6397b5e46c6d99a70b954a7527492",
+  "generated_at_utc": "2026-09-14T15:20:24.996402+00:00",
   "outcomes": {
     "test/language/expressions/array/11.1.4-0.js::sloppy": "PASS",
     "test/language/expressions/array/11.1.4-0.js::strict": "PASS",
@@ -71,22 +70,22 @@
     "test/language/expressions/array/11.1.4_4-5-1.js::strict": "FAIL",
     "test/language/expressions/array/11.1.4_5-6-1.js::sloppy": "FAIL",
     "test/language/expressions/array/11.1.4_5-6-1.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.1.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.1.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.2.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.2.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.3.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.3.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.4.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.4.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.5.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.5.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.6.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.6.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.7.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A1.7.js::strict": "FAIL",
-    "test/language/expressions/array/S11.1.4_A2.js::sloppy": "FAIL",
-    "test/language/expressions/array/S11.1.4_A2.js::strict": "FAIL",
+    "test/language/expressions/array/S11.1.4_A1.1.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.1.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.2.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.2.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.3.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.3.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.4.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.4.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.5.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.5.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.6.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.6.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.7.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A1.7.js::strict": "PASS",
+    "test/language/expressions/array/S11.1.4_A2.js::sloppy": "PASS",
+    "test/language/expressions/array/S11.1.4_A2.js::strict": "PASS",
     "test/language/expressions/array/spread-err-mult-err-expr-throws.js::sloppy": "PASS",
     "test/language/expressions/array/spread-err-mult-err-expr-throws.js::strict": "PASS",
     "test/language/expressions/array/spread-err-mult-err-iter-get-value.js::sloppy": "FAIL",
@@ -187,7 +186,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -201,7 +200,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [],
@@ -215,7 +214,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [],
@@ -256,329 +255,329 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.1.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.1.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.2.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 5,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.2.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.3.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
       "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.3.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.3.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
+      "failure_signature": null,
       "features": [],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.4.js",
       "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.4.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.5.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.5.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.6.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.6.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.7.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A1.7.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A2.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A2.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "generators"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-expr-throws.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "generators"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-expr-throws.js",
+      "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
       "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
+      "failure_signature": "type_error: call target is not a function",
+      "features": [
+        "Symbol.iterator"
+      ],
       "phase": "runtime",
       "returncode": 4,
       "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
+      "stderr": "type_error: call target is not a function\n",
       "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.4.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.5.js",
+      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
       "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
+      "failure_signature": "type_error: call target is not a function",
+      "features": [
+        "Symbol.iterator"
+      ],
       "phase": "runtime",
       "returncode": 4,
       "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
+      "stderr": "type_error: call target is not a function\n",
       "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.5.js",
+      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.6.js",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 9,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
       "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.6.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.7.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A1.7.js",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
       "duration_ms": 7,
       "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A2.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"",
-      "features": [],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: \"TypeError: right-hand side of instanceof is not callable\"\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/S11.1.4_A2.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "generators"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-expr-throws.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "generators"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-expr-throws.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
         "Symbol.iterator"
@@ -609,7 +608,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -625,7 +624,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -641,7 +640,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -653,44 +652,44 @@
       "stderr": "type_error: call target is not a function\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 8,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
+      "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "reference_error: binding 'ReferenceError' is not defined\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-err-mult-err-obj-unresolvable.js",
       "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
       "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "reference_error: binding 'ReferenceError' is not defined\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-err-mult-err-obj-unresolvable.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 4,
-      "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
         "object-spread"
@@ -705,7 +704,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -733,7 +732,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -765,7 +764,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -813,7 +812,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -829,7 +828,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -845,7 +844,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'TypeError' is not defined",
       "features": [
@@ -861,7 +860,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -877,7 +876,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -909,7 +908,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -925,7 +924,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -941,7 +940,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [
@@ -957,7 +956,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 3,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -971,7 +970,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'ReferenceError' is not defined",
       "features": [],
@@ -985,7 +984,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -999,7 +998,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1027,7 +1026,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1057,7 +1056,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1087,7 +1086,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1117,7 +1116,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 9,
       "expected_error": null,
       "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
@@ -1133,7 +1132,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1165,7 +1164,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1181,7 +1180,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1197,7 +1196,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1229,7 +1228,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1245,7 +1244,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 7,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1261,7 +1260,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1277,7 +1276,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 7,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1293,7 +1292,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1309,7 +1308,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1325,7 +1324,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1341,7 +1340,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1354,6 +1353,22 @@
       "stdout": "",
       "test": "test/language/expressions/array/spread-obj-mult-spread.js",
       "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-obj-null.js",
+      "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
@@ -1369,23 +1384,23 @@
       "stderr": "type_error: call target is not a function\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-obj-null.js",
-      "variant": "sloppy"
+      "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 10,
       "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
+      "failure_signature": "reference_error: binding 'Function' is not defined",
       "features": [
         "object-spread"
       ],
       "phase": "runtime",
       "returncode": 4,
       "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
+      "stderr": "reference_error: binding 'Function' is not defined\n",
       "stdout": "",
-      "test": "test/language/expressions/array/spread-obj-null.js",
-      "variant": "strict"
+      "test": "test/language/expressions/array/spread-obj-override-immutable.js",
+      "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
@@ -1401,39 +1416,7 @@
       "stderr": "reference_error: binding 'Function' is not defined\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-obj-override-immutable.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": "reference_error: binding 'Function' is not defined",
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "reference_error: binding 'Function' is not defined\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-obj-override-immutable.js",
       "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "type_error: call target is not a function",
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: call target is not a function\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-obj-overrides-prev-properties.js",
-      "variant": "sloppy"
     },
     {
       "category": "unexpected_runtime_error",
@@ -1449,11 +1432,27 @@
       "stderr": "type_error: call target is not a function\n",
       "stdout": "",
       "test": "test/language/expressions/array/spread-obj-overrides-prev-properties.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": "type_error: call target is not a function",
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: call target is not a function\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-obj-overrides-prev-properties.js",
       "variant": "strict"
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1485,7 +1484,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 6,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1502,7 +1501,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 6,
+      "duration_ms": 2,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1519,7 +1518,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: property access target is not an object",
       "features": [
@@ -1553,7 +1552,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1569,7 +1568,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1585,7 +1584,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 7,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1602,7 +1601,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "type_error: call target is not a function",
       "features": [
@@ -1647,7 +1646,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1661,7 +1660,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1691,7 +1690,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1769,9 +1768,9 @@
   "schema_version": 3,
   "summary": {
     "CRASH": 0,
-    "FAIL": 74,
+    "FAIL": 58,
     "HARNESS_ERROR": 0,
-    "PASS": 30,
+    "PASS": 46,
     "SKIP_UNSUPPORTED": 0,
     "TIMEOUT": 0
   },
