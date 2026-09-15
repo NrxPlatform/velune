@@ -1010,7 +1010,18 @@ ExecutionResult Context::set_property_semantic(const Value& object, PropertyKey 
     const auto object_validation = validate(object); if (!object_validation) return object_validation.error();
     const auto value_validation = validate(value); if (!value_validation) return value_validation.error();
     const auto receiver_validation = validate(receiver); if (!receiver_validation) return receiver_validation.error();
-    if (!object.is_object_like()) return Error{ErrorCode::type_error, "property write target is not an object"};
+    // PutValue for a property Reference reaches [[Set]] only after the RHS has
+    // been evaluated.  Preserve that boundary here: null/undefined are
+    // ECMAScript TypeErrors, while other primitive bases are boxed for the
+    // property lookup with the original primitive retained as the Receiver.
+    if (!object.is_object_like()) {
+        if (object.is_undefined() || object.is_null())
+            return Completion::throw_(type_error("cannot set property of null or undefined"));
+        const Value boxed = box_primitive(object);
+        if (boxed.is_undefined())
+            return EngineFailure{EngineFailureCode::InternalInvariant, "failed to box primitive for property write"};
+        return set_property_semantic(boxed, key, value, receiver);
+    }
 
     auto own = get_own_property_descriptor(object, key); if (!own) return own.error();
     if (!own->has_value()) {

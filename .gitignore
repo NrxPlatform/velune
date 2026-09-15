@@ -62,5 +62,5 @@ Thumbs.db
 # Test262 generated/runtime data
 /tests/test262/cache/
 /tests/test262/tmp/
-/tests/test262/results
+/tests/test262/results/
 
