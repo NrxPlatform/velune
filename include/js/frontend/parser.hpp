@@ -1525,7 +1525,17 @@ private:
         if (_peek().kind != TokenKind::QUESTION) return test;
 
         _tokenizer.advance();
-        auto consequent = _parse_assignment();
+        // ConditionalExpression[?In] always parses its first branch as
+        // AssignmentExpression[+In]. The alternate inherits the surrounding
+        // In grammar parameter. This matters in NoIn contexts such as the
+        // initializer of a classic for statement.
+        std::unique_ptr<ASTNode> consequent;
+        {
+            GrammarContext consequent_context = _grammar_context;
+            consequent_context.allow_in = true;
+            GrammarContextGuard guard(_grammar_context, consequent_context);
+            consequent = _parse_assignment();
+        }
         _consume(TokenKind::COLON);
         auto alternate = _parse_assignment();
         return std::make_unique<ConditionalExprNode>(

@@ -212,6 +212,12 @@ TEST_CASE("P10.1 parser prepares conditional and sequence expression AST nodes")
     REQUIRE(sequence->expressions.size() == 3);
 }
 
+TEST_CASE("P10.2 conditional consequent enables In while condition and alternate inherit NoIn") {
+    REQUIRE(parse_program("for (true ? '' in obj : 0; false; ) ;"));
+    REQUIRE(!parse_program("for ('' in obj ? 1 : 2; false; ) ;"));
+    REQUIRE(!parse_program("for (true ? 1 : '' in obj; false; ) ;"));
+}
+
 TEST_CASE("P10.1 parser recognizes relational keyword operators and unary keyword operators") {
     auto relational = parse_program("x instanceof C; key in object;");
     REQUIRE(relational);
