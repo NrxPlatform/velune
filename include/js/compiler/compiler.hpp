@@ -81,7 +81,7 @@ private:
     [[nodiscard]] Result<void> compile_variable_declaration(const frontend::VariableDeclarationNode& declaration);
     [[nodiscard]] Result<void> compile_function_declaration(const frontend::FunctionDeclarationNode& function);
     [[nodiscard]] Result<Value> compile_function_value(const frontend::FunctionDeclarationNode& function);
-    [[nodiscard]] Result<Value> compile_function_value(const frontend::FunctionExpressionNode& function);
+    [[nodiscard]] Result<Value> compile_function_value(const frontend::FunctionExpressionNode& function, bool constructable = true);
     [[nodiscard]] Result<void> compile_function_expression(const frontend::FunctionExpressionNode& function);
     [[nodiscard]] Result<void> compile_arrow(const frontend::ArrowFunctionExprNode& arrow);
     [[nodiscard]] Result<void> compile_parameter_initializers(const std::vector<std::unique_ptr<frontend::ASTNode>>& params, const std::vector<std::unique_ptr<frontend::ASTNode>>& defaults, std::optional<std::size_t> rest_parameter);

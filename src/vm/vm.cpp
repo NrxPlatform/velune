@@ -967,6 +967,32 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             const auto set = context_->set_own_property(object, context_->property_key(key.as_string()), value); if (!set) return set.error();
             break;
         }
+        case bytecode::OpCode::define_getter_element: {
+            if (stack_.size() < frame.stack_base + 3U) return Error{ErrorCode::vm_error, "DEFINE_GETTER_ELEMENT stack underflow"};
+            const Value getter = stack_.back(); stack_.pop_back();
+            const Value key_value = stack_.back(); stack_.pop_back();
+            const Value object = stack_.back();
+            const auto key = abstract_operations::to_property_key(*context_, key_value); if (!key) return key.error();
+            if (key.completion().is_throw()) { if (auto routed = propagate_completion(key.completion(), instruction_pc, boundary_depth)) return *routed; break; }
+            const auto pk = context_->property_key(key.completion().value()); if (!pk) return pk.error();
+            const auto defined = context_->define_own_property(object, *pk,
+                PropertyDescriptor::accessor(getter, context_->undefined(), true, true));
+            if (!defined) return defined.error();
+            if (!*defined) return Error{ErrorCode::type_error, "cannot define object literal getter"};
+            break;
+        }
+        case bytecode::OpCode::define_getter: {
+            const auto key_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            if (stack_.size() < frame.stack_base + 2U) return Error{ErrorCode::vm_error, "DEFINE_GETTER stack underflow"};
+            const Value getter = stack_.back(); stack_.pop_back();
+            const Value object = stack_.back();
+            const Value key = frame.chunk->constants()[key_index];
+            const auto defined = context_->define_own_property(object, context_->property_key(key.as_string()),
+                PropertyDescriptor::accessor(getter, context_->undefined(), true, true));
+            if (!defined) return defined.error();
+            if (!*defined) return Error{ErrorCode::type_error, "cannot define object literal getter"};
+            break;
+        }
         case bytecode::OpCode::get_property: {
             const auto key_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "GET_PROPERTY stack underflow"};

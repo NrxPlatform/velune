@@ -36,6 +36,8 @@ enum class OpCode : std::uint8_t {
     copy_data_properties,
     define_property,
     define_element,
+    define_getter,
+    define_getter_element,
     get_property,
     set_property,
     get_element,

@@ -1075,18 +1075,22 @@ struct ArrayExprNode : ASTNode {
 // Object property / object expression
 // ============================================================
 
+enum class PropertyKind { Data, Getter, Setter };
+
 struct PropertyNode : ASTNode {
     std::unique_ptr<ASTNode> key;
     std::unique_ptr<ASTNode> value;
 
     bool shorthand;
     bool computed;
+    PropertyKind kind;
 
     PropertyNode(
         std::unique_ptr<ASTNode> property_key,
         std::unique_ptr<ASTNode> property_value,
         bool is_shorthand = false,
-        bool is_computed = false
+        bool is_computed = false,
+        PropertyKind property_kind = PropertyKind::Data
     )
         : ASTNode(
             ASTNodeType::PROPERTY,
@@ -1096,7 +1100,8 @@ struct PropertyNode : ASTNode {
           key(std::move(property_key)),
           value(std::move(property_value)),
           shorthand(is_shorthand),
-          computed(is_computed)
+          computed(is_computed),
+          kind(property_kind)
     {}
 };
 

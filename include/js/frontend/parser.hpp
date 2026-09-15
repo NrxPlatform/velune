@@ -639,25 +639,63 @@ private:
             return std::make_unique<SpreadElementNode>(spread.start, _parse_assignment());
         }
 
-        bool computed = false;
-        std::unique_ptr<ASTNode> key;
-        if (_peek().kind == TokenKind::LEFT_BRACKET) {
-            computed = true;
-            _tokenizer.advance();
-            key = _parse_expression();
-            _consume(TokenKind::RIGHT_BRACKET);
-        } else if (_is_identifier_name_token(_peek().kind)) {
-            Token key_token = _peek();
-            _tokenizer.advance();
-            key = std::make_unique<IdentifierNode>(key_token);
-        } else if (_peek().kind == TokenKind::STRING) {
-            Token key_token = _peek(); _tokenizer.advance();
-            key = std::make_unique<StringLiteralNode>(key_token);
-        } else if (_peek().kind == TokenKind::NUMBER) {
-            Token key_token = _peek(); _tokenizer.advance();
-            key = std::make_unique<NumberLiteralNode>(key_token);
-        } else {
+        auto parse_property_name = [this](bool& computed) -> std::unique_ptr<ASTNode> {
+            computed = false;
+            if (_peek().kind == TokenKind::LEFT_BRACKET) {
+                computed = true;
+                _tokenizer.advance();
+                auto key = _parse_expression();
+                _consume(TokenKind::RIGHT_BRACKET);
+                return key;
+            }
+            if (_is_identifier_name_token(_peek().kind)) {
+                Token key_token = _peek();
+                _tokenizer.advance();
+                return std::make_unique<IdentifierNode>(key_token);
+            }
+            if (_peek().kind == TokenKind::STRING) {
+                Token key_token = _peek(); _tokenizer.advance();
+                return std::make_unique<StringLiteralNode>(key_token);
+            }
+            if (_peek().kind == TokenKind::NUMBER) {
+                Token key_token = _peek(); _tokenizer.advance();
+                return std::make_unique<NumberLiteralNode>(key_token);
+            }
             _fail("Expected object literal property name");
+        };
+
+        bool computed = false;
+        auto key = parse_property_name(computed);
+
+        // `get` is contextual in an object literal.  It remains an ordinary
+        // key in `{ get: v }` and `{ get }`, but introduces an accessor when a
+        // second PropertyName is followed by an empty parameter list.
+        if (!computed && key->type == ASTNodeType::IDENTIFIER &&
+            static_cast<const IdentifierNode&>(*key).name == "get" &&
+            _peek().kind != TokenKind::COLON && _peek().kind != TokenKind::COMMA &&
+            _peek().kind != TokenKind::RIGHT_BRACE && _peek().kind != TokenKind::LEFT_PAREN) {
+            Token get_token{};
+            get_token.kind = TokenKind::IDENTIFIER;
+            get_token.start = key->start; get_token.end = key->end;
+            get_token.lexeme = "get";
+            bool accessor_computed = false;
+            auto accessor_key = parse_property_name(accessor_computed);
+            _consume(TokenKind::LEFT_PAREN);
+            if (_peek().kind != TokenKind::RIGHT_PAREN) _fail("Getter must not have parameters");
+            _consume(TokenKind::RIGHT_PAREN);
+
+            FunctionContextGuard guard(_function_depth, _loop_depth, _breakable_depth, _async_function_depth,
+                _generator_function_depth, false, false);
+            GrammarContext function_context = _grammar_context;
+            function_context.allow_return = true;
+            function_context.allow_yield = false;
+            function_context.allow_await = false;
+            GrammarContextGuard grammar_guard(_grammar_context, function_context);
+            auto body = _parse_block_statement();
+            auto getter = std::make_unique<FunctionExpressionNode>(
+                get_token, nullptr, std::vector<std::unique_ptr<ASTNode>>{}, std::move(body), false, false);
+            return std::make_unique<PropertyNode>(std::move(accessor_key), std::move(getter), false,
+                accessor_computed, PropertyKind::Getter);
         }
 
         if (_peek().kind == TokenKind::COLON) {

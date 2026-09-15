@@ -699,10 +699,22 @@ Result<void> Compiler::compile_object(const frontend::ObjectExprNode& object) {
         }
         if (entry->type != frontend::ASTNodeType::PROPERTY) return error_at(*entry, "invalid object literal entry");
         const auto& property = static_cast<const frontend::PropertyNode&>(*entry);
+        const bool getter = property.kind == frontend::PropertyKind::Getter;
+        if (property.kind == frontend::PropertyKind::Setter)
+            return error_at(property, "object literal setters are not implemented");
         if (property.computed) {
             const auto key = compile_expression(*property.key); if (!key) return key.error();
-            const auto value = compile_expression(*property.value); if (!value) return value.error();
-            builder_.emit(bytecode::OpCode::define_element);
+            if (getter) {
+                if (property.value->type != frontend::ASTNodeType::FUNCTION_EXPR) return error_at(property, "getter value must be a function");
+                const auto& function = static_cast<const frontend::FunctionExpressionNode&>(*property.value);
+                const auto function_value = compile_function_value(function, false); if (!function_value) return function_value.error();
+                const auto constant = builder_.add_constant(*function_value); if (!constant) return constant.error();
+                builder_.emit_closure(*constant);
+                builder_.emit(bytecode::OpCode::define_getter_element);
+            } else {
+                const auto value = compile_expression(*property.value); if (!value) return value.error();
+                builder_.emit(bytecode::OpCode::define_element);
+            }
             continue;
         }
         std::string key_text;
@@ -712,9 +724,17 @@ Result<void> Compiler::compile_object(const frontend::ObjectExprNode& object) {
             key_text = raw.size() >= 2 ? std::string(raw.substr(1, raw.size() - 2)) : std::string(raw);
         } else if (property.key->type == frontend::ASTNodeType::NUMBER_LITERAL) key_text = std::string(static_cast<const frontend::NumberLiteralNode&>(*property.key).value);
         else return error_at(property, "unsupported object literal property key");
-        const auto value = compile_expression(*property.value); if (!value) return value.error();
+        if (getter) {
+            if (property.value->type != frontend::ASTNodeType::FUNCTION_EXPR) return error_at(property, "getter value must be a function");
+            const auto& function = static_cast<const frontend::FunctionExpressionNode&>(*property.value);
+            const auto function_value = compile_function_value(function, false); if (!function_value) return function_value.error();
+            const auto constant = builder_.add_constant(*function_value); if (!constant) return constant.error();
+            builder_.emit_closure(*constant);
+        } else {
+            const auto value = compile_expression(*property.value); if (!value) return value.error();
+        }
         const auto key = add_property_key(key_text); if (!key) return key.error();
-        builder_.emit_property(bytecode::OpCode::define_property, *key);
+        builder_.emit_property(getter ? bytecode::OpCode::define_getter : bytecode::OpCode::define_property, *key);
     }
     return {};
 }
@@ -1335,7 +1355,7 @@ Result<void> Compiler::compile_arrow(const frontend::ArrowFunctionExprNode& arro
     return {};
 }
 
-Result<Value> Compiler::compile_function_value(const frontend::FunctionExpressionNode& function) {
+Result<Value> Compiler::compile_function_value(const frontend::FunctionExpressionNode& function, bool constructable) {
     if (function.async) return error_at(function, "async functions are deferred until the async suspension stage");
     if (function.params.size() > static_cast<std::size_t>(std::numeric_limits<std::uint32_t>::max())) return error_at(function, "too many function parameters");
 
@@ -1364,7 +1384,7 @@ Result<Value> Compiler::compile_function_value(const frontend::FunctionExpressio
     auto chunk = std::move(nested.builder_).finish();
     const std::string name = function.id ? std::string(function.id->name) : std::string{};
     return context_->runtime().make_function(context_->realm(), name, function_length(function.param_defaults, function.rest_parameter, function.params.size()),
-        std::move(chunk), function.generator ? ConstructorKind::None : ConstructorKind::Base, function.generator, nested.scopes_->arguments_slot(),
+        std::move(chunk), (function.generator || !constructable) ? ConstructorKind::None : ConstructorKind::Base, function.generator, nested.scopes_->arguments_slot(),
         nested.strict_ ? ThisMode::Strict : ThisMode::Global, false, static_cast<std::uint32_t>(function.params.size()), simple, nested.strict_, parameter_names(function.params));
 }
 

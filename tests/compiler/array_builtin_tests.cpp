@@ -216,3 +216,28 @@ TEST_CASE("property helper primordial dependencies are callable") {
         "a[0]==='32' && has(o,'x') && enumerable(o,'x') && typeof Object.getOwnPropertyDescriptor==='function' && typeof Object.getOwnPropertyNames==='function'");
     REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
 }
+
+TEST_CASE("object literal getter is lazy and observes receiver access") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let calls=0; let o={get x(){calls=calls+1; return 41+1;}}; "
+        "calls===0 && o.x===42 && calls===1");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("object literal getter creates an enumerable configurable accessor descriptor") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let o={get x(){return 7;}}; let d=Object.getOwnPropertyDescriptor(o,'x'); "
+        "typeof d.get==='function' && d.set===undefined && d.enumerable===true && d.configurable===true");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("object spread evaluates source getter and creates a data property") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let calls=0; let src={get x(){calls=calls+1; return 9;}}; let dst={...src}; "
+        "let d=Object.getOwnPropertyDescriptor(dst,'x'); "
+        "calls===1 && dst.x===9 && d.value===9 && d.get===undefined && d.writable===true && d.enumerable===true && d.configurable===true");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}

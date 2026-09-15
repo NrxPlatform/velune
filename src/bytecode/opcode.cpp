@@ -34,6 +34,8 @@ std::string_view opcode_name(OpCode opcode) noexcept {
     case OpCode::copy_data_properties: return "COPY_DATA_PROPERTIES";
     case OpCode::define_property: return "DEFINE_PROPERTY";
     case OpCode::define_element: return "DEFINE_ELEMENT";
+    case OpCode::define_getter: return "DEFINE_GETTER";
+    case OpCode::define_getter_element: return "DEFINE_GETTER_ELEMENT";
     case OpCode::get_property: return "GET_PROPERTY";
     case OpCode::set_property: return "SET_PROPERTY";
     case OpCode::get_element: return "GET_ELEMENT";
