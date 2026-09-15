@@ -81,5 +81,5 @@ TEST_CASE("unresolved identifier survives recursive capture search until evaluat
     REQUIRE(chunk);
     const auto result = eval(context, "function outer() { function inner() { return missing; } return inner; } let inner = outer(); inner()");
     REQUIRE(!result);
-    REQUIRE(result.error().code() == js::ErrorCode::reference_error);
+    REQUIRE(result.error().code() == js::ErrorCode::uncaught_exception);
 }

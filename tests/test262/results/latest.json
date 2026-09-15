@@ -56,8 +56,8 @@
     }
   },
   "engine": "/home/rasyid/code/cp/js_engine/build/js",
-  "engine_revision": "283dfadb6d080fa2ddf863cf8dd9658602db80a5",
-  "generated_at_utc": "2026-09-15T07:50:15.074272+00:00",
+  "engine_revision": "8c95e5260cacdeb34e3e41fe060de51c643b24c0",
+  "generated_at_utc": "2026-09-15T08:22:54.802354+00:00",
   "outcomes": {
     "test/language/expressions/array/11.1.4-0.js::sloppy": "PASS",
     "test/language/expressions/array/11.1.4-0.js::strict": "PASS",
@@ -167,7 +167,7 @@
   "results": [
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -209,7 +209,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -237,7 +237,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -251,7 +251,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -265,7 +265,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -293,7 +293,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -335,7 +335,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -349,7 +349,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -377,7 +377,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -391,7 +391,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -405,7 +405,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -416,20 +416,6 @@
       "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.6.js",
       "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/S11.1.4_A1.7.js",
-      "variant": "sloppy"
     },
     {
       "category": "normal",
@@ -443,11 +429,11 @@
       "stderr": "",
       "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A1.7.js",
-      "variant": "strict"
+      "variant": "sloppy"
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -456,8 +442,8 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/array/S11.1.4_A2.js",
-      "variant": "sloppy"
+      "test": "test/language/expressions/array/S11.1.4_A1.7.js",
+      "variant": "strict"
     },
     {
       "category": "normal",
@@ -471,11 +457,25 @@
       "stderr": "",
       "stdout": "undefined\n",
       "test": "test/language/expressions/array/S11.1.4_A2.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 8,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/S11.1.4_A2.js",
       "variant": "strict"
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -491,7 +491,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -507,7 +507,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 9,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -519,70 +519,6 @@
       "stderr": "",
       "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 3,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
       "variant": "sloppy"
     },
     {
@@ -598,12 +534,76 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
+      "test": "test/language/expressions/array/spread-err-mult-err-iter-get-value.js",
       "variant": "strict"
     },
     {
       "category": "normal",
       "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-call.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-mult-err-itr-get-get.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -651,7 +651,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -667,7 +667,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -683,7 +683,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -699,7 +699,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -713,7 +713,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -723,314 +723,6 @@
       "stderr": "",
       "stdout": "undefined\n",
       "test": "test/language/expressions/array/spread-err-mult-err-unresolvable.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "generators"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-expr-throws.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "generators"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-expr-throws.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-call.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-call.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-value.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-step.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-step.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "Symbol.iterator"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-obj-unresolvable.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-obj-unresolvable.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-unresolvable.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-err-sngl-err-unresolvable.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-mult-empty.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-mult-empty.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-mult-expr.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-mult-expr.js",
       "variant": "strict"
     },
     {
@@ -1039,6 +731,38 @@
       "expected_error": null,
       "failure_signature": null,
       "features": [
+        "generators"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-expr-throws.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "generators"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-expr-throws.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
         "Symbol.iterator"
       ],
       "phase": "runtime",
@@ -1046,7 +770,7 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-mult-iter.js",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-call.js",
       "variant": "sloppy"
     },
     {
@@ -1062,12 +786,288 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-mult-iter.js",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-call.js",
       "variant": "strict"
     },
     {
       "category": "normal",
       "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-get.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-value.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 9,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-get-value.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-step.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-step.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-itr-value.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-obj-unresolvable.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-obj-unresolvable.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-unresolvable.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-err-sngl-err-unresolvable.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 8,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-mult-empty.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-mult-empty.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 11,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-mult-expr.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-mult-expr.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-mult-iter.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "Symbol.iterator"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-mult-iter.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1081,7 +1081,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1095,7 +1095,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 8,
+      "duration_ms": 10,
       "expected_error": null,
       "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=2>",
       "features": [
@@ -1111,7 +1111,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 10,
+      "duration_ms": 11,
       "expected_error": null,
       "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=2>",
       "features": [
@@ -1143,7 +1143,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1175,7 +1175,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 8,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1207,7 +1207,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1223,7 +1223,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 2,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1239,7 +1239,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1255,7 +1255,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 2,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1271,7 +1271,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1303,7 +1303,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1335,7 +1335,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1367,7 +1367,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1383,7 +1383,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 10,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=2>",
       "features": [
@@ -1415,7 +1415,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1431,7 +1431,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1447,7 +1447,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1496,7 +1496,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 1,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1530,7 +1530,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1547,130 +1547,130 @@
     },
     {
       "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-obj-undefined.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 10,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-obj-undefined.js",
+      "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 10,
+      "expected_error": null,
+      "failure_signature": "type_error: property access target is not an object",
+      "features": [
+        "Symbol",
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: property access target is not an object\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-obj-with-overrides.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 10,
+      "expected_error": null,
+      "failure_signature": "type_error: property access target is not an object",
+      "features": [
+        "Symbol",
+        "object-spread"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "type_error: property access target is not an object\n",
+      "stdout": "",
+      "test": "test/language/expressions/array/spread-obj-with-overrides.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 11,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-sngl-empty.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-sngl-empty.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 12,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/array/spread-sngl-expr.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
       "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
-      "features": [
-        "object-spread"
-      ],
+      "features": [],
       "phase": "runtime",
       "returncode": 0,
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-obj-undefined.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-obj-undefined.js",
+      "test": "test/language/expressions/array/spread-sngl-expr.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "type_error: property access target is not an object",
-      "features": [
-        "Symbol",
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: property access target is not an object\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-obj-with-overrides.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
+      "category": "normal",
       "duration_ms": 7,
       "expected_error": null,
-      "failure_signature": "type_error: property access target is not an object",
-      "features": [
-        "Symbol",
-        "object-spread"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "type_error: property access target is not an object\n",
-      "stdout": "",
-      "test": "test/language/expressions/array/spread-obj-with-overrides.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-sngl-empty.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-sngl-empty.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-sngl-expr.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/array/spread-sngl-expr.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 5,
-      "expected_error": null,
       "failure_signature": null,
       "features": [
         "Symbol.iterator"
@@ -1685,7 +1685,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1701,7 +1701,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [],
@@ -1729,7 +1729,7 @@
     },
     {
       "category": "unexpected_runtime_error",
-      "duration_ms": 6,
+      "duration_ms": 9,
       "expected_error": null,
       "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=2>",
       "features": [

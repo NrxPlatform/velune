@@ -46,6 +46,14 @@ ExecutionResult builtin_reference_error_constructor(Context& c, Value, std::span
     return Completion::normal(c.reference_error(message.is_undefined() ? std::string_view{} : message.to_debug_string()));
 }
 
+ExecutionResult builtin_function_prototype(Context&, Value, std::span<const Value>) {
+    return Completion::normal(Value::undefined());
+}
+
+ExecutionResult builtin_function_constructor(Context& c, Value, std::span<const Value>) {
+    return Completion::throw_(c.type_error("dynamic Function construction is not implemented"));
+}
+
 ExecutionResult builtin_push(Context& c, Value t, std::span<const Value> a) { return execution_from_result(c.array_push(t, argument_or_undefined(a, 0))); }
 ExecutionResult builtin_pop(Context& c, Value t, std::span<const Value>) { return execution_from_result(c.array_pop(t)); }
 ExecutionResult builtin_array_iterator(Context& c, Value t, std::span<const Value>) { return execution_from_result(c.array_iterator(t)); }
@@ -967,8 +975,12 @@ void Context::ensure_builtins(Realm& realm) {
     if (realm.builtins_initialized_) return;
     realm.builtins_initialized_ = true;
     realm.object_prototype_ = runtime_->make_object(realm);
-    realm.function_prototype_ = runtime_->make_object(realm);
-    realm.function_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    // %Function.prototype% is itself callable.  Create it before the rest of
+    // the native intrinsics, then explicitly attach %Object.prototype% as its
+    // [[Prototype]].
+    realm.function_prototype_ = runtime_->make_native_function(
+        realm, "", 0, builtin_function_prototype, ConstructorKind::None);
+    detail::ValueAccess::mutable_function(realm.function_prototype_)->prototype = realm.object_prototype_;
     realm.error_prototype_ = runtime_->make_object(realm);
     realm.error_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.type_error_prototype_ = runtime_->make_object(realm);
@@ -988,6 +1000,12 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(realm.function_prototype_, "call", native_function_in_realm(realm, "call", 1, builtin_function_call));
     (void)set_own_property(realm.function_prototype_, "apply", native_function_in_realm(realm, "apply", 2, builtin_function_apply));
     (void)set_own_property(realm.function_prototype_, "bind", native_function_in_realm(realm, "bind", 1, builtin_function_bind));
+    Value function_ns = native_function_in_realm(
+        realm, "Function", 1, builtin_function_constructor, ConstructorKind::Base);
+    (void)define_own_property(function_ns, "prototype",
+                              PropertyDescriptor::data(realm.function_prototype_, false, false, false));
+    (void)define_own_property(realm.function_prototype_, "constructor",
+                              PropertyDescriptor::data(function_ns, true, false, true));
     (void)set_own_property(realm.array_prototype_, "push", native_function_in_realm(realm, "push", 1, builtin_push));
     (void)set_own_property(realm.array_prototype_, "pop", native_function_in_realm(realm, "pop", 0, builtin_pop));
     (void)set_own_property(realm.array_prototype_, PropertyKey::symbol(runtime_->well_known_symbol("iterator").as_symbol_id()), native_function_in_realm(realm, "[Symbol.iterator]", 0, builtin_array_iterator));
@@ -1032,6 +1050,7 @@ void Context::ensure_builtins(Realm& realm) {
         (void)realm.global_environment_.create_global_constant_binding(name, value);
         (void)define_own_property(realm.global_object_, name, PropertyDescriptor::data(value, false, false, false));
     };
+    install_global("Function", function_ns);
     install_global("Error", error_ns);
     install_global("TypeError", type_error_ns);
     install_global("ReferenceError", reference_error_ns);

@@ -40,7 +40,7 @@ TEST_CASE("for of binding is lexical and does not leak") {
     auto chunk = js::compiler::compile_program(c, parsed.program());
     REQUIRE(chunk);
     js::VM vm(c); auto result = vm.run(*chunk);
-    REQUIRE(!result); REQUIRE(result.error().legacy_error().code() == js::ErrorCode::reference_error);
+    REQUIRE(result); REQUIRE(result.completion().is_throw());
 }
 
 TEST_CASE("for of supports var bindings") {

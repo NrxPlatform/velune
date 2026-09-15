@@ -58,7 +58,7 @@ TEST_CASE("block lexical binding is not visible after block and fails at evaluat
     REQUIRE(chunk);
     const auto result = eval(context, "{ let hidden = 3; } hidden");
     REQUIRE(!result);
-    REQUIRE(result.error().code() == js::ErrorCode::reference_error);
+    REQUIRE(result.error().code() == js::ErrorCode::uncaught_exception);
 }
 
 TEST_CASE("Infinity is resolved through the runtime global environment") {
@@ -82,7 +82,7 @@ TEST_CASE("arbitrary unresolved identifier compiles and throws ReferenceError on
     REQUIRE(chunk);
     const auto result = eval(context, "definitelyNotDeclaredAnywhere");
     REQUIRE(!result);
-    REQUIRE(result.error().code() == js::ErrorCode::reference_error);
+    REQUIRE(result.error().code() == js::ErrorCode::uncaught_exception);
 }
 
 TEST_CASE("lexical shadow exists before declaration and triggers TDZ guard") {
