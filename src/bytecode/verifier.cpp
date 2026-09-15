@@ -227,7 +227,11 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         case OpCode::append_spread: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
         case OpCode::append_hole: { const auto ok = require(1U); if (!ok) return ok.error(); break; }
         case OpCode::enumerate_keys:
+        case OpCode::iterator_complete:
+        case OpCode::iterator_value:
         case OpCode::to_object: { const auto ok = require(1U); if (!ok) return ok.error(); break; }
+        case OpCode::get_iterator: { const auto ok = require(1U); if (!ok) return ok.error(); ++depth; break; }
+        case OpCode::iterator_next: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
         case OpCode::copy_object_rest:
         case OpCode::copy_data_properties: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
         case OpCode::define_property:

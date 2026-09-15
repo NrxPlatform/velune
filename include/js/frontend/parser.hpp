@@ -1683,7 +1683,7 @@ private:
             _peek().kind != TokenKind::END_OF_FILE &&
             !_peek().line_break_before){
 
-            argument = _parse_assignment();
+            argument = _parse_expression();
         }else{
             argument = nullptr;
         }

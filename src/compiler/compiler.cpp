@@ -1671,11 +1671,12 @@ static bool is_lexical_iteration_declaration(const frontend::ASTNode& left) {
 
 Result<void> Compiler::compile_for_of(const frontend::ForOfStatementNode& statement, const std::vector<std::string>& labels) {
     const auto iterable = compile_expression(*statement.iterable); if (!iterable) return iterable.error();
-    const auto iterator_key = builder_.add_constant(context_->well_known_symbol("iterator")); if (!iterator_key) return iterator_key.error();
-    builder_.emit_constant(*iterator_key); builder_.emit_element_call(0);
+    builder_.emit(bytecode::OpCode::get_iterator);
     const auto iterator_slot = scopes_->allocate_temporary();
+    const auto next_method_slot = scopes_->allocate_temporary();
     const auto result_slot = scopes_->allocate_temporary();
     const auto value_slot = scopes_->allocate_temporary();
+    builder_.emit_local(bytecode::OpCode::set_local, next_method_slot); builder_.emit(bytecode::OpCode::pop);
     builder_.emit_local(bytecode::OpCode::set_local, iterator_slot); builder_.emit(bytecode::OpCode::pop);
 
     bool lexical_scope = false;
@@ -1684,17 +1685,16 @@ Result<void> Compiler::compile_for_of(const frontend::ForOfStatementNode& statem
         lexical_scope = true;
     }
     auto cleanup = [&] { if (lexical_scope) scopes_->end_block(); };
-    const auto next_key = add_property_key("next"); if (!next_key) { cleanup(); return next_key.error(); }
-    const auto done_key = add_property_key("done"); if (!done_key) { cleanup(); return done_key.error(); }
-    const auto value_key = add_property_key("value"); if (!value_key) { cleanup(); return value_key.error(); }
     const auto loop_start = static_cast<std::uint32_t>(builder_.offset());
-    builder_.emit_local(bytecode::OpCode::get_local, iterator_slot); builder_.emit_method_call(*next_key, 0);
+    builder_.emit_local(bytecode::OpCode::get_local, iterator_slot);
+    builder_.emit_local(bytecode::OpCode::get_local, next_method_slot);
+    builder_.emit(bytecode::OpCode::iterator_next);
     builder_.emit_local(bytecode::OpCode::set_local, result_slot); builder_.emit(bytecode::OpCode::pop);
-    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit_property(bytecode::OpCode::get_property, *done_key);
+    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit(bytecode::OpCode::iterator_complete);
     const auto body_jump = builder_.emit_jump(bytecode::OpCode::jump_if_false);
     const auto end_jump = builder_.emit_jump(bytecode::OpCode::jump);
     builder_.patch_jump(body_jump, static_cast<std::uint32_t>(builder_.offset()));
-    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit_property(bytecode::OpCode::get_property, *value_key);
+    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit(bytecode::OpCode::iterator_value);
     builder_.emit_local(bytecode::OpCode::set_local, value_slot); builder_.emit(bytecode::OpCode::pop);
     const auto assigned = compile_iteration_binding(*statement.left, value_slot); if (!assigned) { cleanup(); return assigned.error(); }
     controls_.push_back(ControlContext{protected_finally_depth_, true, labels, {}, {}});
@@ -1712,11 +1712,12 @@ Result<void> Compiler::compile_for_of(const frontend::ForOfStatementNode& statem
 Result<void> Compiler::compile_for_in(const frontend::ForInStatementNode& statement, const std::vector<std::string>& labels) {
     const auto object = compile_expression(*statement.object); if (!object) return object.error();
     builder_.emit(bytecode::OpCode::enumerate_keys);
-    const auto iterator_key = builder_.add_constant(context_->well_known_symbol("iterator")); if (!iterator_key) return iterator_key.error();
-    builder_.emit_constant(*iterator_key); builder_.emit_element_call(0);
+    builder_.emit(bytecode::OpCode::get_iterator);
     const auto iterator_slot = scopes_->allocate_temporary();
+    const auto next_method_slot = scopes_->allocate_temporary();
     const auto result_slot = scopes_->allocate_temporary();
     const auto value_slot = scopes_->allocate_temporary();
+    builder_.emit_local(bytecode::OpCode::set_local, next_method_slot); builder_.emit(bytecode::OpCode::pop);
     builder_.emit_local(bytecode::OpCode::set_local, iterator_slot); builder_.emit(bytecode::OpCode::pop);
     bool lexical_scope = false;
     if (is_lexical_iteration_declaration(*statement.left)) {
@@ -1724,17 +1725,16 @@ Result<void> Compiler::compile_for_in(const frontend::ForInStatementNode& statem
         lexical_scope = true;
     }
     auto cleanup = [&] { if (lexical_scope) scopes_->end_block(); };
-    const auto next_key = add_property_key("next"); if (!next_key) { cleanup(); return next_key.error(); }
-    const auto done_key = add_property_key("done"); if (!done_key) { cleanup(); return done_key.error(); }
-    const auto value_key = add_property_key("value"); if (!value_key) { cleanup(); return value_key.error(); }
     const auto loop_start = static_cast<std::uint32_t>(builder_.offset());
-    builder_.emit_local(bytecode::OpCode::get_local, iterator_slot); builder_.emit_method_call(*next_key, 0);
+    builder_.emit_local(bytecode::OpCode::get_local, iterator_slot);
+    builder_.emit_local(bytecode::OpCode::get_local, next_method_slot);
+    builder_.emit(bytecode::OpCode::iterator_next);
     builder_.emit_local(bytecode::OpCode::set_local, result_slot); builder_.emit(bytecode::OpCode::pop);
-    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit_property(bytecode::OpCode::get_property, *done_key);
+    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit(bytecode::OpCode::iterator_complete);
     const auto body_jump = builder_.emit_jump(bytecode::OpCode::jump_if_false);
     const auto end_jump = builder_.emit_jump(bytecode::OpCode::jump);
     builder_.patch_jump(body_jump, static_cast<std::uint32_t>(builder_.offset()));
-    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit_property(bytecode::OpCode::get_property, *value_key);
+    builder_.emit_local(bytecode::OpCode::get_local, result_slot); builder_.emit(bytecode::OpCode::iterator_value);
     builder_.emit_local(bytecode::OpCode::set_local, value_slot); builder_.emit(bytecode::OpCode::pop);
     const auto assigned = compile_iteration_binding(*statement.left, value_slot); if (!assigned) { cleanup(); return assigned.error(); }
     controls_.push_back(ControlContext{protected_finally_depth_, true, labels, {}, {}});

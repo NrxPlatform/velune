@@ -743,3 +743,11 @@ TEST_CASE("ordinary functions inherit Function.prototype.apply") {
     const auto result = eval(context, "function f(x){ return x; } f.apply(null, [42])");
     REQUIRE(result && result->is_number() && result->as_number() == 42.0);
 }
+
+TEST_CASE("return statement accepts a comma expression and returns its final value") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+
+    const auto result = eval(context, "function f(){ return 1, 2, 3; } f()");
+    REQUIRE(result && result->is_number() && result->as_number() == 3.0);
+}

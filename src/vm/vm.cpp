@@ -896,6 +896,72 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             stack_.back() = keys_array;
             break;
         }
+        case bytecode::OpCode::get_iterator: {
+            if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "GET_ITERATOR stack underflow"};
+            const Value source = stack_.back(); stack_.pop_back();
+            const auto iterator_result = abstract_operations::get_iterator(*context_, source);
+            if (!iterator_result) return iterator_result.error();
+            if (iterator_result.completion().is_throw()) {
+                if (auto routed = propagate_completion(iterator_result.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!iterator_result.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "GetIterator produced non-normal completion"};
+            const Value iterator = iterator_result.completion().value();
+            const auto next_method = abstract_operations::get_method(*context_, iterator, context_->property_key("next"));
+            if (!next_method) return next_method.error();
+            if (next_method.completion().is_throw()) {
+                if (auto routed = propagate_completion(next_method.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!next_method.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "GetMethod(next) produced non-normal completion"};
+            if (next_method.completion().value().is_undefined()) {
+                const auto failure = abstract_operations::call(*context_, Value::undefined(), iterator);
+                if (!failure) return failure.error();
+                if (auto routed = propagate_completion(failure.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            stack_.push_back(iterator);
+            stack_.push_back(next_method.completion().value());
+            break;
+        }
+        case bytecode::OpCode::iterator_next: {
+            if (stack_.size() < frame.stack_base + 2U) return Error{ErrorCode::vm_error, "ITERATOR_NEXT stack underflow"};
+            const Value next_method = stack_.back(); stack_.pop_back();
+            const Value iterator = stack_.back(); stack_.pop_back();
+            const auto next = abstract_operations::iterator_next(*context_, IteratorRecord{iterator, next_method});
+            if (!next) return next.error();
+            if (next.completion().is_throw()) {
+                if (auto routed = propagate_completion(next.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!next.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "IteratorNext produced non-normal completion"};
+            stack_.push_back(next.completion().value());
+            break;
+        }
+        case bytecode::OpCode::iterator_complete: {
+            if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "ITERATOR_COMPLETE stack underflow"};
+            const auto complete = abstract_operations::iterator_complete(*context_, stack_.back());
+            if (!complete) return complete.error();
+            if (complete.completion().is_throw()) {
+                if (auto routed = propagate_completion(complete.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!complete.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "IteratorComplete produced non-normal completion"};
+            stack_.back() = complete.completion().value();
+            break;
+        }
+        case bytecode::OpCode::iterator_value: {
+            if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "ITERATOR_VALUE stack underflow"};
+            const auto value = abstract_operations::iterator_value(*context_, stack_.back());
+            if (!value) return value.error();
+            if (value.completion().is_throw()) {
+                if (auto routed = propagate_completion(value.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!value.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "IteratorValue produced non-normal completion"};
+            stack_.back() = value.completion().value();
+            break;
+        }
         case bytecode::OpCode::to_object: {
             if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "TO_OBJECT stack underflow"};
             Value value = stack_.back();

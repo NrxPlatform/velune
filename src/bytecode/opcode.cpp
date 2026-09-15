@@ -29,6 +29,10 @@ std::string_view opcode_name(OpCode opcode) noexcept {
     case OpCode::append_hole: return "APPEND_HOLE";
     case OpCode::append_spread: return "APPEND_SPREAD";
     case OpCode::enumerate_keys: return "ENUMERATE_KEYS";
+    case OpCode::get_iterator: return "GET_ITERATOR";
+    case OpCode::iterator_next: return "ITERATOR_NEXT";
+    case OpCode::iterator_complete: return "ITERATOR_COMPLETE";
+    case OpCode::iterator_value: return "ITERATOR_VALUE";
     case OpCode::to_object: return "TO_OBJECT";
     case OpCode::copy_object_rest: return "COPY_OBJECT_REST";
     case OpCode::copy_data_properties: return "COPY_DATA_PROPERTIES";

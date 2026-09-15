@@ -68,7 +68,7 @@ TEST_CASE("for of requires iterator next to return an object result") {
     auto v = eval14(c,
         "function makeIterator(){ function next(){ return 1; } return {next:next}; }"
         "let iterable={}; iterable[Symbol.iterator]=makeIterator; for(let x of iterable){} 0");
-    REQUIRE(!v); REQUIRE(v.error().code() == js::ErrorCode::type_error);
+    REQUIRE(!v); REQUIRE(v.error().code() == js::ErrorCode::uncaught_exception);
 }
 
 TEST_CASE("of remains a contextual keyword outside for of grammar") {
