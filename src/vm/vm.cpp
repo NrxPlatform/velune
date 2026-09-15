@@ -642,7 +642,8 @@ ExecutionResult VM::run_impl(const bytecode::BytecodeChunk& chunk, detail::HeapM
     } else {
         std::vector<BindingSlot> root_locals = make_local_slots(chunk);
         std::vector<detail::HeapUpvalue*> root_captures(root_locals.size(), nullptr);
-        frames_.push_back(Frame{&chunk, 0U, 0U, 0U, Value::undefined(), std::move(root_locals), {}, {}, std::move(root_captures), {}, std::nullopt, ExecutionContext{&context_->realm(), nullptr, module_environment, &context_->realm().global_environment(), &context_->realm().global_environment(), nullptr}});
+        const Value root_this = module_environment == nullptr ? context_->realm().global_object() : Value::undefined();
+        frames_.push_back(Frame{&chunk, 0U, 0U, 0U, root_this, std::move(root_locals), {}, {}, std::move(root_captures), {}, std::nullopt, ExecutionContext{&context_->realm(), nullptr, module_environment, &context_->realm().global_environment(), &context_->realm().global_environment(), nullptr}});
     }
     maximum_frame_depth_ = 1U;
     if (module_environment != nullptr && generator == nullptr) {
