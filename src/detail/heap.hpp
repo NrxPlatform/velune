@@ -71,8 +71,8 @@ struct FunctionCode final {
           this_mode(this_binding_mode), strict(is_strict), method(is_method), simple_parameter_list(simple_parameters) {}
 
     FunctionCode(std::string function_name, std::uint32_t function_arity, NativeFunction native_function,
-                 ConstructorKind constructor = ConstructorKind::None)
-        : name(std::move(function_name)), arity(function_arity), native(native_function), constructor_kind(constructor) {}
+                 ConstructorKind constructor = ConstructorKind::None, NativeFunction native_constructor = nullptr)
+        : name(std::move(function_name)), arity(function_arity), native(native_function), native_construct(native_constructor), constructor_kind(constructor) {}
 
     FunctionCode(std::string function_name, std::uint32_t function_arity)
         : name(std::move(function_name)), arity(function_arity) {}
@@ -85,6 +85,7 @@ struct FunctionCode final {
     std::vector<std::string> parameter_names;
     bytecode::BytecodeChunk chunk;
     NativeFunction native{nullptr};
+    NativeFunction native_construct{nullptr};
     ConstructorKind constructor_kind{ConstructorKind::Base};
     bool generator{false};
     std::optional<std::uint32_t> arguments_slot;

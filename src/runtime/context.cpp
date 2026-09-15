@@ -89,6 +89,75 @@ ExecutionResult builtin_string_constructor(Context& c, Value, std::span<const Va
     return result.completion();
 }
 
+ExecutionResult initialize_primitive_wrapper(Context& c, Value receiver, Value primitive, ValueTag expected, std::string_view name) {
+    if (!receiver.is_object()) return Completion::throw_(c.type_error(std::string(name) + " constructor receiver is not an object"));
+    if (primitive.tag() != expected) return Completion::throw_(c.type_error(std::string(name) + " wrapper primitive has wrong type"));
+    auto* object = detail::ValueAccess::object(receiver);
+    object->boxed_primitive = primitive;
+    if (expected == ValueTag::string) object->object_kind = ObjectKind::StringExotic;
+    return Completion::normal(Value::undefined());
+}
+
+ExecutionResult builtin_boolean_constructor(Context&, Value, std::span<const Value> a) {
+    return Completion::normal(Value::boolean(abstract_operations::to_boolean(argument_or_undefined(a, 0))));
+}
+ExecutionResult builtin_boolean_construct(Context& c, Value receiver, std::span<const Value> a) {
+    return initialize_primitive_wrapper(c, receiver,
+        Value::boolean(abstract_operations::to_boolean(argument_or_undefined(a, 0))), ValueTag::boolean, "Boolean");
+}
+
+ExecutionResult builtin_number_constructor(Context& c, Value, std::span<const Value> a) {
+    if (a.empty()) return Completion::normal(Value::number(0.0));
+    return abstract_operations::to_number(c, a[0]);
+}
+ExecutionResult builtin_number_construct(Context& c, Value receiver, std::span<const Value> a) {
+    Value number = Value::number(0.0);
+    if (!a.empty()) {
+        const auto converted = abstract_operations::to_number(c, a[0]);
+        if (!converted) return converted.error();
+        if (!converted.completion().is_normal()) return converted.completion();
+        number = converted.completion().value();
+    }
+    return initialize_primitive_wrapper(c, receiver, number, ValueTag::number, "Number");
+}
+
+ExecutionResult builtin_string_construct(Context& c, Value receiver, std::span<const Value> a) {
+    Value string = c.string("");
+    if (!a.empty()) {
+        const auto converted = abstract_operations::to_string(c, a[0]);
+        if (!converted) return converted.error();
+        if (!converted.completion().is_normal()) return converted.completion();
+        string = converted.completion().value();
+    }
+    return initialize_primitive_wrapper(c, receiver, string, ValueTag::string, "String");
+}
+
+ExecutionResult builtin_object_constructor(Context& c, Value, std::span<const Value> a) {
+    const Value value = argument_or_undefined(a, 0);
+    if (value.is_null() || value.is_undefined()) return Completion::normal(c.object());
+    if (value.is_object_like()) return Completion::normal(value);
+    return Completion::normal(c.box_primitive(value));
+}
+ExecutionResult builtin_object_construct(Context& c, Value receiver, std::span<const Value> a) {
+    const Value value = argument_or_undefined(a, 0);
+    if (value.is_null() || value.is_undefined()) return Completion::normal(receiver);
+    if (value.is_object_like()) return Completion::normal(value);
+    return Completion::normal(c.box_primitive(value));
+}
+
+ExecutionResult primitive_value_of(Context& c, Value this_value, ValueTag expected, std::string_view name) {
+    if (this_value.tag() == expected) return Completion::normal(this_value);
+    if (this_value.is_object()) {
+        auto* object = detail::ValueAccess::object(this_value);
+        if (object->boxed_primitive && object->boxed_primitive->tag() == expected)
+            return Completion::normal(*object->boxed_primitive);
+    }
+    return Completion::throw_(c.type_error(std::string(name) + ".prototype.valueOf called on incompatible receiver"));
+}
+ExecutionResult builtin_boolean_value_of(Context& c, Value t, std::span<const Value>) { return primitive_value_of(c, t, ValueTag::boolean, "Boolean"); }
+ExecutionResult builtin_number_value_of(Context& c, Value t, std::span<const Value>) { return primitive_value_of(c, t, ValueTag::number, "Number"); }
+ExecutionResult builtin_string_value_of(Context& c, Value t, std::span<const Value>) { return primitive_value_of(c, t, ValueTag::string, "String"); }
+
 ExecutionResult builtin_is_finite(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isfinite(v.as_number()))); }
 ExecutionResult builtin_get_proto(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.get_prototype(argument_or_undefined(a, 0))); }
 
@@ -568,7 +637,10 @@ Value Context::box_primitive(Value primitive) {
     if (!validation || primitive.is_object_like() || primitive.is_null() || primitive.is_undefined()) return Value::undefined();
     Realm& realm = active_realm();
     Value prototype = realm.object_prototype_;
-    if (primitive.is_symbol() && realm.symbol_prototype_.is_object_like()) prototype = realm.symbol_prototype_;
+    if (primitive.is_boolean() && realm.boolean_prototype_.is_object_like()) prototype = realm.boolean_prototype_;
+    else if (primitive.is_number() && realm.number_prototype_.is_object_like()) prototype = realm.number_prototype_;
+    else if (primitive.is_string() && realm.string_prototype_.is_object_like()) prototype = realm.string_prototype_;
+    else if (primitive.is_symbol() && realm.symbol_prototype_.is_object_like()) prototype = realm.symbol_prototype_;
     const auto boxed_result = object_in_realm(realm, prototype);
     if (!boxed_result) return Value::undefined();
     Value boxed = *boxed_result;
@@ -604,8 +676,8 @@ Value Context::reference_error(std::string_view message) {
     return make_error_instance(*this, active_realm().reference_error_prototype_, "ReferenceError", message);
 }
 
-Value Context::native_function(std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind) {
-    return native_function_in_realm(active_realm(), name, arity, function, constructor_kind);
+Value Context::native_function(std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind, NativeFunction construct_function) {
+    return native_function_in_realm(active_realm(), name, arity, function, constructor_kind, construct_function);
 }
 
 Result<Value> Context::bind_function(Value target, Value bound_this, std::span<const Value> bound_arguments) {
@@ -616,8 +688,8 @@ Result<Value> Context::bind_function(Value target, Value bound_this, std::span<c
     return runtime_->make_bound_function(*target.as_heap_function()->realm, target, bound_this, bound_arguments);
 }
 
-Value Context::native_function_in_realm(Realm& realm, std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind) {
-    return runtime_->make_native_function(realm, std::string(name), arity, function, constructor_kind);
+Value Context::native_function_in_realm(Realm& realm, std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind, NativeFunction construct_function) {
+    return runtime_->make_native_function(realm, std::string(name), arity, function, constructor_kind, construct_function);
 }
 
 Result<Value> Context::object(Value prototype) {
@@ -1148,10 +1220,16 @@ void Context::ensure_builtins(Realm& realm) {
     realm.promise_prototype_ = runtime_->make_object(realm);
     realm.regexp_prototype_ = runtime_->make_object(realm);
     realm.symbol_prototype_ = runtime_->make_object(realm);
+    realm.boolean_prototype_ = runtime_->make_object(realm);
+    realm.number_prototype_ = runtime_->make_object(realm);
+    realm.string_prototype_ = runtime_->make_object(realm);
     realm.array_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.promise_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.regexp_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.symbol_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    realm.boolean_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    realm.number_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    realm.string_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.global_object_.as_heap_object()->prototype = realm.object_prototype_;
     (void)set_own_property(realm.object_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_object_value_of));
     (void)set_own_property(realm.object_prototype_, "toString", native_function_in_realm(realm, "toString", 0, builtin_object_to_string));
@@ -1189,15 +1267,30 @@ void Context::ensure_builtins(Realm& realm) {
     (void)define_own_property(array_ns, "prototype", PropertyDescriptor::data(realm.array_prototype_, false, false, false));
     (void)define_own_property(realm.array_prototype_, "constructor", PropertyDescriptor::data(array_ns, true, false, true));
     (void)set_own_property(array_ns, "isArray", native_function_in_realm(realm, "isArray", 1, builtin_is_array));
-    Value string_ns = native_function_in_realm(realm, "String", 1, builtin_string_constructor, ConstructorKind::None);
-    Value number_ns=object_in_realm(realm); (void)set_own_property(number_ns,"isFinite",native_function_in_realm(realm,"isFinite",1,builtin_is_finite));
-    Value object_ns=object_in_realm(realm); (void)set_own_property(object_ns,"getPrototypeOf",native_function_in_realm(realm,"getPrototypeOf",1,builtin_get_proto));
+    Value object_ns = native_function_in_realm(realm, "Object", 1, builtin_object_constructor, ConstructorKind::Base, builtin_object_construct);
+    Value boolean_ns = native_function_in_realm(realm, "Boolean", 1, builtin_boolean_constructor, ConstructorKind::Base, builtin_boolean_construct);
+    Value number_ns = native_function_in_realm(realm, "Number", 1, builtin_number_constructor, ConstructorKind::Base, builtin_number_construct);
+    Value string_ns = native_function_in_realm(realm, "String", 1, builtin_string_constructor, ConstructorKind::Base, builtin_string_construct);
+    auto wire_primitive_constructor = [&](Value constructor, Value prototype) {
+        (void)define_own_property(constructor, "prototype", PropertyDescriptor::data(prototype, false, false, false));
+        (void)define_own_property(prototype, "constructor", PropertyDescriptor::data(constructor, true, false, true));
+    };
+    wire_primitive_constructor(boolean_ns, realm.boolean_prototype_);
+    wire_primitive_constructor(number_ns, realm.number_prototype_);
+    wire_primitive_constructor(string_ns, realm.string_prototype_);
+    (void)set_own_property(realm.boolean_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_boolean_value_of));
+    (void)set_own_property(realm.number_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_number_value_of));
+    (void)set_own_property(realm.string_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_string_value_of));
+    (void)set_own_property(number_ns,"isFinite",native_function_in_realm(realm,"isFinite",1,builtin_is_finite));
+    (void)define_own_property(number_ns, "MAX_VALUE", PropertyDescriptor::data(Value::number(std::numeric_limits<double>::max()), false, false, false));
+    (void)set_own_property(object_ns,"getPrototypeOf",native_function_in_realm(realm,"getPrototypeOf",1,builtin_get_proto));
     (void)set_own_property(object_ns,"defineProperty",native_function_in_realm(realm,"defineProperty",3,builtin_object_define_property));
     (void)set_own_property(object_ns, "getOwnPropertyDescriptor", native_function_in_realm(realm, "getOwnPropertyDescriptor", 2, builtin_object_get_own_property_descriptor));
     (void)set_own_property(object_ns, "getOwnPropertyNames", native_function_in_realm(realm, "getOwnPropertyNames", 1, builtin_object_get_own_property_names));
     (void)set_own_property(object_ns,"keys",native_function_in_realm(realm,"keys",1,builtin_object_keys));
     (void)set_own_property(object_ns,"is",native_function_in_realm(realm,"is",2,builtin_object_is));
-    (void)set_own_property(object_ns, "prototype", realm.object_prototype_);
+    (void)define_own_property(object_ns, "prototype", PropertyDescriptor::data(realm.object_prototype_, false, false, false));
+    (void)define_own_property(realm.object_prototype_, "constructor", PropertyDescriptor::data(object_ns, true, false, true));
     Value math_ns=object_in_realm(realm); (void)set_own_property(math_ns, "pow", native_function_in_realm(realm, "pow", 2, builtin_math_pow));
     Value promise_ns=object_in_realm(realm); (void)set_own_property(promise_ns,"resolve",native_function_in_realm(realm,"resolve",1,builtin_promise_resolve)); (void)set_own_property(promise_ns,"reject",native_function_in_realm(realm,"reject",1,builtin_promise_reject));
     Value symbol_ns = native_function_in_realm(realm, "Symbol", 0, builtin_symbol);
@@ -1222,6 +1315,7 @@ void Context::ensure_builtins(Realm& realm) {
     install_global("TypeError", type_error_ns);
     install_global("ReferenceError", reference_error_ns);
     install_global("Array", array_ns);
+    install_global("Boolean", boolean_ns);
     install_global("Number", number_ns);
     install_global("String", string_ns);
     install_global("Object", object_ns);

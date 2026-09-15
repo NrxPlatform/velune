@@ -52,7 +52,7 @@ public:
     [[nodiscard]] bool is_array(const Value& value) const noexcept;
     [[nodiscard]] Result<Value> object(Value prototype);
     [[nodiscard]] Value native_function(std::string_view name, std::uint32_t arity, NativeFunction function,
-                                        ConstructorKind constructor_kind = ConstructorKind::None);
+                                        ConstructorKind constructor_kind = ConstructorKind::None, NativeFunction construct_function = nullptr);
     [[nodiscard]] Result<Value> bind_function(Value target, Value bound_this, std::span<const Value> bound_arguments);
     [[nodiscard]] ExecutionResult invoke(Value callee, std::span<const Value> arguments, Value this_value = Value::undefined());
     [[nodiscard]] ExecutionResult construct(Value constructor, std::span<const Value> arguments = {});
@@ -119,7 +119,7 @@ private:
     [[nodiscard]] Result<Value> object_in_realm(Realm& realm, Value prototype);
     [[nodiscard]] Value array_in_realm(Realm& realm);
     [[nodiscard]] Value native_function_in_realm(Realm& realm, std::string_view name, std::uint32_t arity, NativeFunction function,
-                                                 ConstructorKind constructor_kind = ConstructorKind::None);
+                                                 ConstructorKind constructor_kind = ConstructorKind::None, NativeFunction construct_function = nullptr);
     Runtime* runtime_;
     Realm* realm_;
     Realm* execution_realm_{nullptr};

@@ -40,6 +40,9 @@ private:
     Value promise_prototype_{Value::undefined()};
     Value regexp_prototype_{Value::undefined()};
     Value symbol_prototype_{Value::undefined()};
+    Value boolean_prototype_{Value::undefined()};
+    Value number_prototype_{Value::undefined()};
+    Value string_prototype_{Value::undefined()};
     bool builtins_initialized_{false};
 };
 

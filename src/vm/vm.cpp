@@ -391,7 +391,10 @@ ExecutionResult VM::invoke_function(Value callee, std::uint32_t argument_count, 
         Realm* previous_execution_realm = context_->execution_realm_;
         context_->execution_realm_ = function->realm;
         ScopeExit realm_cleanup([this, previous_execution_realm] { context_->execution_realm_ = previous_execution_realm; });
-        const auto native_result = function->code->native(*context_, this_value, std::span<const Value>(arguments));
+        const NativeFunction native_entry = construct_receiver && function->code->native_construct != nullptr
+            ? function->code->native_construct
+            : function->code->native;
+        const auto native_result = native_entry(*context_, this_value, std::span<const Value>(arguments));
         if (!native_result) return native_result.error();
         if (native_result.completion().is_throw()) return native_result.completion();
         if (!native_result.completion().is_normal()) return EngineFailure{EngineFailureCode::HostContractViolation, "native function returned non-call completion"};
