@@ -66,6 +66,7 @@ public:
     [[nodiscard]] Result<bool> has_property(const Value& object, PropertyKey key) const;
     [[nodiscard]] Result<bool> has_property(const Value& object, std::string_view key) const { return has_property(object, property_key(key)); }
     [[nodiscard]] Result<bool> delete_property(const Value& object, PropertyKey key) const;
+    [[nodiscard]] ExecutionResult delete_property_semantic(const Value& object, PropertyKey key);
     [[nodiscard]] Result<bool> delete_property(const Value& object, std::string_view key) const { return delete_property(object, property_key(key)); }
     [[nodiscard]] Result<std::vector<PropertyKey>> own_property_keys(const Value& object) const;
     [[nodiscard]] Result<bool> is_extensible(const Value& object) const;

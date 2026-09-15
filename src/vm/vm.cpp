@@ -1127,11 +1127,20 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "DELETE_PROPERTY stack underflow"};
             const Value object = stack_.back(); stack_.pop_back();
             const Value key = frame.chunk->constants()[key_index];
-            const auto deleted = context_->delete_property(object, context_->property_key(key.as_string()));
+            const auto deleted = context_->delete_property_semantic(object, context_->property_key(key.as_string()));
             if (!deleted) return deleted.error();
-            if (!*deleted && opcode == bytecode::OpCode::delete_property_strict)
-                return Error{ErrorCode::type_error, "cannot delete non-configurable property in strict code"};
-            stack_.push_back(Value::boolean(*deleted));
+            if (deleted.completion().is_throw()) {
+                if (auto routed = propagate_completion(deleted.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!deleted.completion().is_normal() || !deleted.completion().value().is_boolean())
+                return EngineFailure{EngineFailureCode::InternalInvariant, "property delete did not return a boolean"};
+            if (!deleted.completion().value().as_boolean() && opcode == bytecode::OpCode::delete_property_strict) {
+                Completion completion = Completion::throw_(context_->type_error("cannot delete non-configurable property in strict code"));
+                if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            stack_.push_back(deleted.completion().value());
             break;
         }
         case bytecode::OpCode::delete_element:
@@ -1144,11 +1153,20 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             if (key.completion().is_throw()) { if (auto routed = propagate_completion(key.completion(), instruction_pc, boundary_depth)) return *routed; break; }
             const auto property_key = context_->property_key(key.completion().value());
             if (!property_key) return property_key.error();
-            const auto deleted = context_->delete_property(object, *property_key);
+            const auto deleted = context_->delete_property_semantic(object, *property_key);
             if (!deleted) return deleted.error();
-            if (!*deleted && opcode == bytecode::OpCode::delete_element_strict)
-                return Error{ErrorCode::type_error, "cannot delete non-configurable property in strict code"};
-            stack_.push_back(Value::boolean(*deleted));
+            if (deleted.completion().is_throw()) {
+                if (auto routed = propagate_completion(deleted.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!deleted.completion().is_normal() || !deleted.completion().value().is_boolean())
+                return EngineFailure{EngineFailureCode::InternalInvariant, "element delete did not return a boolean"};
+            if (!deleted.completion().value().as_boolean() && opcode == bytecode::OpCode::delete_element_strict) {
+                Completion completion = Completion::throw_(context_->type_error("cannot delete non-configurable property in strict code"));
+                if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            stack_.push_back(deleted.completion().value());
             break;
         }
         case bytecode::OpCode::is_nullish: {

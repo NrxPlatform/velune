@@ -885,6 +885,24 @@ Result<bool> Context::delete_property(const Value& object, PropertyKey key) cons
     return true;
 }
 
+
+ExecutionResult Context::delete_property_semantic(const Value& object, PropertyKey key) {
+    const auto object_validation = validate(object);
+    if (!object_validation) return object_validation.error();
+
+    // Delete of a property Reference performs ToObject on the base at the
+    // semantic operation boundary.  null/undefined therefore produce an
+    // ECMAScript TypeError completion, while ordinary primitive bases are
+    // boxed before invoking [[Delete]].
+    const ExecutionResult object_result = abstract_operations::to_object(*this, object);
+    if (!object_result) return object_result.error();
+    if (!object_result.completion().is_normal()) return object_result.completion();
+
+    const auto deleted = delete_property(object_result.completion().value(), key);
+    if (!deleted) return deleted.error();
+    return Completion::normal(Value::boolean(*deleted));
+}
+
 Result<std::vector<PropertyKey>> Context::own_property_keys(const Value& object) const {
     const auto object_validation = validate(object); if (!object_validation) return object_validation.error();
     if (!object.is_object_like()) return Error{ErrorCode::type_error, "property key target is not an object"};
