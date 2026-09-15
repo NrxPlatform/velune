@@ -264,6 +264,7 @@ Result<Compiler::CompiledReference> Compiler::compile_reference(const frontend::
 
     const auto& member = static_cast<const frontend::MemberExprNode&>(target);
     CompiledReference reference;
+    reference.strict = strict_;
     reference.base_slot = scopes_->allocate_temporary();
 
     const auto base = compile_expression(*member.object);
