@@ -748,9 +748,13 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                     break;
                 }
             }
-            const auto value = global.get_binding_value(name);
+            const ExecutionResult value = global.get_binding_value(name);
             if (!value) return value.error();
-            stack_.push_back(*value);
+            if (!value.completion().is_normal()) {
+                if (auto routed = propagate_completion(value.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            stack_.push_back(value.completion().value());
             break;
         }
         case bytecode::OpCode::get_this:
@@ -796,8 +800,12 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             auto& global = frame.execution_context.realm->global_environment();
             const auto name = name_value.as_string();
             if (global.has_binding(name)) {
-                const auto set = global.set_mutable_binding(name, stack_.back());
+                const ExecutionResult set = global.set_mutable_binding(
+                    name, stack_.back(), opcode == bytecode::OpCode::set_name_strict);
                 if (!set) return set.error();
+                if (!set.completion().is_normal()) {
+                    if (auto routed = propagate_completion(set.completion(), instruction_pc, boundary_depth)) return *routed;
+                }
                 break;
             }
             if (opcode == bytecode::OpCode::set_name_strict)
@@ -806,14 +814,8 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                     if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
                     break;
                 }
-            const auto created = global.create_global_var_binding(std::string(name), stack_.back());
+            const auto created = global.create_global_var_binding(std::string(name), stack_.back(), true);
             if (!created) return created.error();
-            const auto defined = context_->define_own_property(
-                frame.execution_context.realm->global_object(),
-                context_->property_key(name),
-                PropertyDescriptor::data(stack_.back(), true, true, true));
-            if (!defined) return defined.error();
-            if (!*defined) return Error{ErrorCode::type_error, "cannot create global property '" + std::string(name) + "'"};
             break;
         }
         case bytecode::OpCode::closure: {

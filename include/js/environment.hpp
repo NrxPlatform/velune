@@ -6,10 +6,13 @@
 #include <unordered_map>
 #include <vector>
 
+#include <js/completion.hpp>
 #include <js/result.hpp>
 #include <js/value.hpp>
 
 namespace js {
+
+class Context;
 
 enum class BindingState : std::uint8_t {
     Uninitialized,
@@ -90,6 +93,17 @@ class ObjectEnvironmentRecord final : public EnvironmentRecord {
 public:
     explicit ObjectEnvironmentRecord(EnvironmentRecord* outer = nullptr) noexcept
         : EnvironmentRecord(EnvironmentKind::Object, outer) {}
+
+    void attach_binding_object(Context& context, Value binding_object) noexcept;
+    [[nodiscard]] bool has_object_binding(std::string_view name) const;
+    [[nodiscard]] ExecutionResult get_object_binding_value(std::string_view name);
+    [[nodiscard]] ExecutionResult set_object_binding_value(std::string_view name, Value value, bool strict);
+    [[nodiscard]] Result<void> create_object_binding(std::string_view name, Value value, bool writable, bool enumerable, bool configurable);
+    [[nodiscard]] std::vector<Value> object_binding_values() const;
+
+private:
+    Context* context_{nullptr};
+    Value binding_object_{Value::undefined()};
 };
 
 class PrivateEnvironmentRecord final : public EnvironmentRecord {
@@ -103,18 +117,20 @@ public:
     GlobalEnvironmentRecord() noexcept
         : EnvironmentRecord(EnvironmentKind::Global), lexical_record_(this), object_record_(this) {}
 
-    [[nodiscard]] bool has_binding(std::string_view name) const noexcept;
-    [[nodiscard]] Result<void> create_global_var_binding(std::string name, Value value);
+    void attach_global_object(Context& context, Value global_object) noexcept;
+    [[nodiscard]] bool has_binding(std::string_view name) const;
+    [[nodiscard]] Result<void> create_global_var_binding(std::string name, Value value, bool configurable = false);
     [[nodiscard]] Result<void> create_global_constant_binding(std::string name, Value value);
     [[nodiscard]] Result<void> create_global_lexical_binding(std::string name, bool immutable);
     [[nodiscard]] Result<void> initialize_lexical_binding(std::string_view name, Value value);
-    [[nodiscard]] Result<void> set_mutable_binding(std::string_view name, Value value);
-    [[nodiscard]] Result<Value> get_binding_value(std::string_view name) const;
+    [[nodiscard]] ExecutionResult set_mutable_binding(std::string_view name, Value value, bool strict = false);
+    [[nodiscard]] ExecutionResult get_binding_value(std::string_view name);
     [[nodiscard]] std::vector<Value> binding_values() const;
 
 private:
+    Context* context_{nullptr};
     DeclarativeEnvironmentRecord lexical_record_;
-    DeclarativeEnvironmentRecord object_record_;
+    ObjectEnvironmentRecord object_record_;
 };
 
 } // namespace js

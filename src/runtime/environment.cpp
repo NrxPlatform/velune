@@ -1,5 +1,6 @@
 #include <js/environment.hpp>
 
+#include <js/context.hpp>
 #include <js/error.hpp>
 
 namespace js {
@@ -68,28 +69,86 @@ std::vector<Value> EnvironmentRecord::binding_values() const {
     return values;
 }
 
-bool GlobalEnvironmentRecord::has_binding(std::string_view name) const noexcept {
-    return lexical_record_.has_binding(name) || object_record_.has_binding(name);
+void ObjectEnvironmentRecord::attach_binding_object(Context& context, Value binding_object) noexcept {
+    context_ = &context;
+    binding_object_ = binding_object;
 }
 
-Result<void> GlobalEnvironmentRecord::create_global_var_binding(std::string name, Value value) {
+bool ObjectEnvironmentRecord::has_object_binding(std::string_view name) const {
+    if (context_ == nullptr || !binding_object_.is_object_like()) return false;
+    const auto present = context_->has_property(binding_object_, name);
+    return present && *present;
+}
+
+ExecutionResult ObjectEnvironmentRecord::get_object_binding_value(std::string_view name) {
+    if (context_ == nullptr || !binding_object_.is_object_like())
+        return EngineFailure{EngineFailureCode::InternalInvariant, "object environment has no binding object"};
+    if (!has_object_binding(name))
+        return Completion::throw_(context_->reference_error("binding '" + std::string(name) + "' is not defined"));
+    return context_->get_property_semantic(binding_object_, context_->property_key(name), binding_object_);
+}
+
+ExecutionResult ObjectEnvironmentRecord::set_object_binding_value(std::string_view name, Value value, bool strict) {
+    if (context_ == nullptr || !binding_object_.is_object_like())
+        return EngineFailure{EngineFailureCode::InternalInvariant, "object environment has no binding object"};
+
+    const ExecutionResult set = context_->set_property_semantic(
+        binding_object_, context_->property_key(name), value, binding_object_);
+    if (!set) return set.error();
+    if (!set.completion().is_normal()) return set.completion();
+    if (!set.completion().value().is_boolean())
+        return EngineFailure{EngineFailureCode::InternalInvariant, "object environment [[Set]] did not return boolean"};
+    if (!set.completion().value().as_boolean() && strict)
+        return Completion::throw_(context_->type_error("assignment to non-writable global property '" + std::string(name) + "'"));
+
+    const auto still_exists = context_->has_property(binding_object_, name);
+    if (!still_exists) return still_exists.error();
+    if (!*still_exists && strict)
+        return Completion::throw_(context_->reference_error("binding '" + std::string(name) + "' is not defined"));
+    return Completion::normal(Value::undefined());
+}
+
+Result<void> ObjectEnvironmentRecord::create_object_binding(
+    std::string_view name, Value value, bool writable, bool enumerable, bool configurable) {
+    if (context_ == nullptr || !binding_object_.is_object_like())
+        return Error{ErrorCode::internal, "object environment has no binding object"};
+    const auto defined = context_->define_own_property(
+        binding_object_, context_->property_key(name),
+        PropertyDescriptor::data(value, writable, enumerable, configurable));
+    if (!defined) return defined.error();
+    if (!*defined) return Error{ErrorCode::type_error, "cannot create global property '" + std::string(name) + "'"};
+    return {};
+}
+
+std::vector<Value> ObjectEnvironmentRecord::object_binding_values() const {
+    // The binding object is already a GC root through Realm::global_object_.
+    // Do not duplicate all of its property values as environment roots.
+    return {};
+}
+
+void GlobalEnvironmentRecord::attach_global_object(Context& context, Value global_object) noexcept {
+    context_ = &context;
+    object_record_.attach_binding_object(context, global_object);
+}
+
+bool GlobalEnvironmentRecord::has_binding(std::string_view name) const {
+    return lexical_record_.has_binding(name) || object_record_.has_object_binding(name);
+}
+
+Result<void> GlobalEnvironmentRecord::create_global_var_binding(std::string name, Value value, bool configurable) {
     if (lexical_record_.has_binding(name))
         return Error{ErrorCode::compile_error, "global var conflicts with lexical binding '" + name + "'"};
-    if (!object_record_.has_binding(name)) {
-        const auto created = object_record_.create_mutable_binding(name, false); if (!created) return created.error();
-        return object_record_.initialize_binding(name, value);
-    }
-    return object_record_.set_mutable_binding(name, value);
+    if (!object_record_.has_object_binding(name))
+        return object_record_.create_object_binding(name, value, true, true, configurable);
+    return {};
 }
 
 Result<void> GlobalEnvironmentRecord::create_global_constant_binding(std::string name, Value value) {
     if (lexical_record_.has_binding(name))
         return Error{ErrorCode::compile_error, "global constant conflicts with lexical binding '" + name + "'"};
-    if (object_record_.has_binding(name))
+    if (object_record_.has_object_binding(name))
         return Error{ErrorCode::internal, "global constant binding '" + name + "' already exists"};
-    const auto created = object_record_.create_immutable_binding(name, false);
-    if (!created) return created.error();
-    return object_record_.initialize_binding(name, value);
+    return object_record_.create_object_binding(name, value, false, false, false);
 }
 
 Result<void> GlobalEnvironmentRecord::create_global_lexical_binding(std::string name, bool immutable) {
@@ -102,21 +161,32 @@ Result<void> GlobalEnvironmentRecord::initialize_lexical_binding(std::string_vie
     return lexical_record_.initialize_binding(name, value);
 }
 
-Result<void> GlobalEnvironmentRecord::set_mutable_binding(std::string_view name, Value value) {
-    if (lexical_record_.has_binding(name)) return lexical_record_.set_mutable_binding(name, value);
-    return object_record_.set_mutable_binding(name, value);
+ExecutionResult GlobalEnvironmentRecord::set_mutable_binding(std::string_view name, Value value, bool strict) {
+    if (lexical_record_.has_binding(name)) {
+        const auto set = lexical_record_.set_mutable_binding(name, value);
+        if (set) return Completion::normal(Value::undefined());
+        if (context_ != nullptr && set.error().code() == ErrorCode::reference_error)
+            return Completion::throw_(context_->reference_error(set.error().message()));
+        if (context_ != nullptr && set.error().code() == ErrorCode::type_error)
+            return Completion::throw_(context_->type_error(set.error().message()));
+        return set.error();
+    }
+    return object_record_.set_object_binding_value(name, value, strict);
 }
 
-Result<Value> GlobalEnvironmentRecord::get_binding_value(std::string_view name) const {
-    if (lexical_record_.has_binding(name)) return lexical_record_.get_binding_value(name);
-    return object_record_.get_binding_value(name);
+ExecutionResult GlobalEnvironmentRecord::get_binding_value(std::string_view name) {
+    if (lexical_record_.has_binding(name)) {
+        const auto value = lexical_record_.get_binding_value(name);
+        if (value) return Completion::normal(*value);
+        if (context_ != nullptr && value.error().code() == ErrorCode::reference_error)
+            return Completion::throw_(context_->reference_error(value.error().message()));
+        return value.error();
+    }
+    return object_record_.get_object_binding_value(name);
 }
 
 std::vector<Value> GlobalEnvironmentRecord::binding_values() const {
-    auto values = lexical_record_.binding_values();
-    auto object_values = object_record_.binding_values();
-    values.insert(values.end(), object_values.begin(), object_values.end());
-    return values;
+    return lexical_record_.binding_values();
 }
 
 } // namespace js

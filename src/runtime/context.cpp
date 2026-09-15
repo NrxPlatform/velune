@@ -1321,6 +1321,7 @@ Result<void> Context::set_prototype(const Value& object, Value prototype) const 
 void Context::ensure_builtins() { ensure_builtins(active_realm()); }
 
 void Context::ensure_builtins(Realm& realm) {
+    realm.global_environment_.attach_global_object(*this, realm.global_object_);
     if (realm.builtins_initialized_) return;
     realm.builtins_initialized_ = true;
     realm.object_prototype_ = runtime_->make_object(realm);
@@ -1425,12 +1426,10 @@ void Context::ensure_builtins(Realm& realm) {
         (void)set_own_property(symbol_ns, name, runtime_->well_known_symbol(name));
     }
     auto install_global = [&](std::string name, Value value) {
-        (void)realm.global_environment_.create_global_var_binding(name, value);
-        (void)set_own_property(realm.global_object_, name, value);
+        (void)realm.global_environment_.create_global_var_binding(name, value, true);
     };
     auto install_constant_global = [&](std::string name, Value value) {
         (void)realm.global_environment_.create_global_constant_binding(name, value);
-        (void)define_own_property(realm.global_object_, name, PropertyDescriptor::data(value, false, false, false));
     };
     install_global("Function", function_ns);
     install_global("Error", error_ns);
@@ -1519,7 +1518,15 @@ Result<Value> Context::promise_result(Value promise) const {
     if (p->promise_state == detail::PromiseState::pending) return Error{ErrorCode::internal, "Promise is still pending"};
     return p->promise_result;
 }
-Result<Value> Context::get_global(std::string_view name) { ensure_builtins(); return active_realm().global_environment_.get_binding_value(name); }
+Result<Value> Context::get_global(std::string_view name) {
+    ensure_builtins();
+    const ExecutionResult result = active_realm().global_environment_.get_binding_value(name);
+    if (!result) return result.error().legacy_error();
+    if (result.completion().is_throw())
+        return Error{ErrorCode::uncaught_exception, "uncaught JavaScript exception: " + result.completion().value().to_debug_string()};
+    if (!result.completion().is_normal()) return Error{ErrorCode::internal, "non-normal completion escaped global binding lookup"};
+    return result.completion().value();
+}
 Result<Value> Context::array_push(Value array_value, Value value) const {
     if (!is_array(array_value)) return Error{ErrorCode::type_error, "Array.prototype.push receiver is not an array"};
     auto* array = array_value.as_heap_object();
