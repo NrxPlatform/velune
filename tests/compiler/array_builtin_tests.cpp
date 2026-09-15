@@ -241,3 +241,15 @@ TEST_CASE("object spread evaluates source getter and creates a data property") {
         "calls===1 && dst.x===9 && d.value===9 && d.get===undefined && d.writable===true && d.enumerable===true && d.configurable===true");
     REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
 }
+
+TEST_CASE("Symbol primitive property access boxes through Symbol prototype") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c, "let s=Symbol('foo'); s.toString()==='Symbol(foo)' && Symbol.prototype.toString.call(s)==='Symbol(foo)'");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("object spread preserves Symbol primitive values that remain method-callable") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c, "let s=Symbol('foo'); let o={i:s}; let x={...o}; x.i===s && x.i.toString()==='Symbol(foo)'");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}

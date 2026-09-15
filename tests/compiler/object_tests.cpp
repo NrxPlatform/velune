@@ -59,12 +59,12 @@ TEST_CASE("missing source property produces undefined") {
     REQUIRE(result->is_undefined());
 }
 
-TEST_CASE("property access on primitive raises runtime type error") {
+TEST_CASE("property access on primitive boxes and resolves through the wrapper prototype") {
     js::Runtime runtime;
     js::Context context(runtime);
     const auto result = eval(context, "let x = 1; x.foo");
-    REQUIRE(!result);
-    REQUIRE(result.error().code() == js::ErrorCode::type_error);
+    REQUIRE(result);
+    REQUIRE(result->is_undefined());
 }
 
 TEST_CASE("computed property access uses element semantics") {

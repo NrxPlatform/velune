@@ -39,6 +39,7 @@ private:
     Value array_prototype_{Value::undefined()};
     Value promise_prototype_{Value::undefined()};
     Value regexp_prototype_{Value::undefined()};
+    Value symbol_prototype_{Value::undefined()};
     bool builtins_initialized_{false};
 };
 

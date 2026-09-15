@@ -355,6 +355,15 @@ ExecutionResult builtin_symbol_key_for(Context& c, Value, std::span<const Value>
     const auto key = c.symbol_key_for(value);
     return Completion::normal(key ? c.string(*key) : c.undefined());
 }
+ExecutionResult builtin_symbol_to_string(Context& c, Value this_value, std::span<const Value>) {
+    Value symbol = this_value;
+    if (this_value.is_object()) {
+        const auto* object = detail::ValueAccess::object(this_value);
+        if (object->boxed_primitive && object->boxed_primitive->is_symbol()) symbol = *object->boxed_primitive;
+    }
+    if (!symbol.is_symbol()) return Completion::throw_(c.type_error("Symbol.prototype.toString requires a Symbol receiver"));
+    return Completion::normal(c.string("Symbol(" + std::string(symbol.symbol_description()) + ")"));
+}
 ExecutionResult builtin_function_call(Context& c, Value target, std::span<const Value> a) {
     if (!target.is_function()) return Error{ErrorCode::type_error, "Function.prototype.call receiver is not callable"};
     const Value this_arg = argument_or_undefined(a, 0);
@@ -557,7 +566,12 @@ Value Context::object() {
 Value Context::box_primitive(Value primitive) {
     const auto validation = validate(primitive);
     if (!validation || primitive.is_object_like() || primitive.is_null() || primitive.is_undefined()) return Value::undefined();
-    Value boxed = object_in_realm(active_realm());
+    Realm& realm = active_realm();
+    Value prototype = realm.object_prototype_;
+    if (primitive.is_symbol() && realm.symbol_prototype_.is_object_like()) prototype = realm.symbol_prototype_;
+    const auto boxed_result = object_in_realm(realm, prototype);
+    if (!boxed_result) return Value::undefined();
+    Value boxed = *boxed_result;
     boxed.as_heap_object()->boxed_primitive = primitive;
     if (primitive.is_string()) boxed.as_heap_object()->object_kind = ObjectKind::StringExotic;
     return boxed;
@@ -948,7 +962,12 @@ ExecutionResult Context::get_property_semantic(const Value& object, PropertyKey 
     if (object.is_string() && key.is_atom() && runtime_->atom_text(key.atom_id()) == "length") {
         return Completion::normal(Value::number(static_cast<double>(object.as_string().size())));
     }
-    if (!object.is_object_like()) return Error{ErrorCode::type_error, "property access target is not an object"};
+    if (!object.is_object_like()) {
+        if (object.is_undefined() || object.is_null()) return Completion::throw_(type_error("cannot read property of null or undefined"));
+        const Value boxed = box_primitive(object);
+        if (boxed.is_undefined()) return EngineFailure{EngineFailureCode::InternalInvariant, "failed to box primitive for property access"};
+        return get_property_semantic(boxed, key, receiver);
+    }
 
     const auto own = get_own_property_descriptor(object, key); if (!own) return own.error();
     if (own->has_value()) {
@@ -1099,9 +1118,11 @@ void Context::ensure_builtins(Realm& realm) {
     realm.array_prototype_ = runtime_->make_array(realm);
     realm.promise_prototype_ = runtime_->make_object(realm);
     realm.regexp_prototype_ = runtime_->make_object(realm);
+    realm.symbol_prototype_ = runtime_->make_object(realm);
     realm.array_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.promise_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.regexp_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    realm.symbol_prototype_.as_heap_object()->prototype = realm.object_prototype_;
     realm.global_object_.as_heap_object()->prototype = realm.object_prototype_;
     (void)set_own_property(realm.object_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_object_value_of));
     (void)set_own_property(realm.object_prototype_, "toString", native_function_in_realm(realm, "toString", 0, builtin_object_to_string));
@@ -1151,6 +1172,9 @@ void Context::ensure_builtins(Realm& realm) {
     Value math_ns=object_in_realm(realm); (void)set_own_property(math_ns, "pow", native_function_in_realm(realm, "pow", 2, builtin_math_pow));
     Value promise_ns=object_in_realm(realm); (void)set_own_property(promise_ns,"resolve",native_function_in_realm(realm,"resolve",1,builtin_promise_resolve)); (void)set_own_property(promise_ns,"reject",native_function_in_realm(realm,"reject",1,builtin_promise_reject));
     Value symbol_ns = native_function_in_realm(realm, "Symbol", 0, builtin_symbol);
+    (void)define_own_property(symbol_ns, "prototype", PropertyDescriptor::data(realm.symbol_prototype_, false, false, false));
+    (void)define_own_property(realm.symbol_prototype_, "constructor", PropertyDescriptor::data(symbol_ns, true, false, true));
+    (void)set_own_property(realm.symbol_prototype_, "toString", native_function_in_realm(realm, "toString", 0, builtin_symbol_to_string));
     (void)set_own_property(symbol_ns, "for", native_function_in_realm(realm, "for", 1, builtin_symbol_for));
     (void)set_own_property(symbol_ns, "keyFor", native_function_in_realm(realm, "keyFor", 1, builtin_symbol_key_for));
     for (const std::string_view name : {"iterator", "asyncIterator", "toPrimitive", "toStringTag", "hasInstance", "species", "match", "matchAll", "replace", "search", "split"}) {
