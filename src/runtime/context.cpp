@@ -512,6 +512,74 @@ void set_internal_prototype(Value value, Value prototype) {
     else if (value.is_function()) const_cast<detail::HeapFunction*>(detail::ValueAccess::function(value))->prototype = prototype;
 }
 
+std::optional<std::uint32_t> canonical_array_index(std::string_view key);
+
+std::vector<std::uint16_t> utf16_code_units(std::string_view input) {
+    std::vector<std::uint16_t> units;
+    units.reserve(input.size());
+    for (std::size_t i = 0; i < input.size();) {
+        const auto first = static_cast<unsigned char>(input[i]);
+        std::uint32_t code_point = first;
+        std::size_t width = 1;
+        if ((first & 0xE0U) == 0xC0U && i + 1U < input.size()) {
+            code_point = first & 0x1FU; width = 2;
+        } else if ((first & 0xF0U) == 0xE0U && i + 2U < input.size()) {
+            code_point = first & 0x0FU; width = 3;
+        } else if ((first & 0xF8U) == 0xF0U && i + 3U < input.size()) {
+            code_point = first & 0x07U; width = 4;
+        }
+        bool valid = width > 1;
+        for (std::size_t j = 1; j < width && valid; ++j) {
+            const auto byte = static_cast<unsigned char>(input[i + j]);
+            if ((byte & 0xC0U) != 0x80U) { valid = false; break; }
+            code_point = (code_point << 6U) | (byte & 0x3FU);
+        }
+        if (!valid) { code_point = first; width = 1; }
+        i += width;
+        if (code_point <= 0xFFFFU) {
+            units.push_back(static_cast<std::uint16_t>(code_point));
+        } else if (code_point <= 0x10FFFFU) {
+            code_point -= 0x10000U;
+            units.push_back(static_cast<std::uint16_t>(0xD800U + (code_point >> 10U)));
+            units.push_back(static_cast<std::uint16_t>(0xDC00U + (code_point & 0x3FFU)));
+        }
+    }
+    return units;
+}
+
+std::string utf8_for_code_unit(std::uint16_t unit) {
+    std::string result;
+    if (unit <= 0x7FU) {
+        result.push_back(static_cast<char>(unit));
+    } else if (unit <= 0x7FFU) {
+        result.push_back(static_cast<char>(0xC0U | (unit >> 6U)));
+        result.push_back(static_cast<char>(0x80U | (unit & 0x3FU)));
+    } else {
+        // Deliberately permit surrogate code units (WTF-8 style): ECMAScript
+        // string indexing exposes UTF-16 code units, including lone surrogates.
+        result.push_back(static_cast<char>(0xE0U | (unit >> 12U)));
+        result.push_back(static_cast<char>(0x80U | ((unit >> 6U) & 0x3FU)));
+        result.push_back(static_cast<char>(0x80U | (unit & 0x3FU)));
+    }
+    return result;
+}
+
+struct StringExoticProperty final {
+    bool is_length{false};
+    std::size_t length{0};
+    std::optional<std::uint16_t> code_unit;
+};
+
+std::optional<StringExoticProperty> string_exotic_property(const detail::HeapObject& object, std::string_view name) {
+    if (object.object_kind != ObjectKind::StringExotic || !object.boxed_primitive || !object.boxed_primitive->is_string())
+        return std::nullopt;
+    const auto units = utf16_code_units(object.boxed_primitive->as_string());
+    if (name == "length") return StringExoticProperty{true, units.size(), std::nullopt};
+    const auto index = canonical_array_index(name);
+    if (!index || *index >= units.size()) return std::nullopt;
+    return StringExoticProperty{false, units.size(), units[*index]};
+}
+
 std::optional<std::uint32_t> canonical_array_index(std::string_view key) {
     if (key.empty()) return std::nullopt;
     if (key.size() > 1U && key.front() == '0') return std::nullopt;
@@ -739,6 +807,16 @@ Result<std::optional<PropertyDescriptor>> Context::get_own_property_descriptor(c
         return std::optional<PropertyDescriptor>{descriptor};
     }
 
+    if (object.is_object()) {
+        if (key.is_atom()) {
+            if (const auto property = string_exotic_property(*object.as_heap_object(), runtime_->atom_text(key.atom_id()))) {
+                if (property->is_length)
+                    return std::optional<PropertyDescriptor>{PropertyDescriptor::data(Value::number(static_cast<double>(property->length)), false, false, false)};
+                return std::optional<PropertyDescriptor>{PropertyDescriptor::data(runtime_->make_string(utf8_for_code_unit(*property->code_unit)), false, true, false)};
+            }
+        }
+    }
+
     if (object.is_object() && object.as_heap_object()->is_array) {
         const auto* array = object.as_heap_object();
         if ((key.is_atom() && runtime_->atom_text(key.atom_id()) == "length")) {
@@ -772,6 +850,24 @@ Result<bool> Context::define_own_property(const Value& object, PropertyKey key, 
     if (descriptor.value) { const auto v = validate(*descriptor.value); if (!v) return v.error(); }
     if (descriptor.get) { const auto v = validate(*descriptor.get); if (!v) return v.error(); }
     if (descriptor.set) { const auto v = validate(*descriptor.set); if (!v) return v.error(); }
+
+    if (object.is_object()) {
+        if (key.is_atom()) {
+            if (const auto property = string_exotic_property(*object.as_heap_object(), runtime_->atom_text(key.atom_id()))) {
+                const Value current_value = property->is_length
+                    ? Value::number(static_cast<double>(property->length))
+                    : runtime_->make_string(utf8_for_code_unit(*property->code_unit));
+                const bool current_enumerable = !property->is_length;
+                if (descriptor.empty()) return true;
+                if (descriptor.configurable.value_or(false)) return false;
+                if (descriptor.enumerable && *descriptor.enumerable != current_enumerable) return false;
+                if (descriptor.is_accessor_descriptor()) return false;
+                if (descriptor.writable.value_or(false)) return false;
+                if (descriptor.value && !same_value(*descriptor.value, current_value)) return false;
+                return true;
+            }
+        }
+    }
 
     if (object.is_object() && object.as_heap_object()->is_array) {
         auto* array = object.as_heap_object();
@@ -933,6 +1029,9 @@ Result<bool> Context::delete_property(const Value& object, PropertyKey key) cons
     const auto object_validation = validate(object); if (!object_validation) return object_validation.error();
     auto* properties = property_table(object);
     if (properties == nullptr) return Error{ErrorCode::type_error, "property deletion target is not an object"};
+    if (object.is_object()) {
+        if (key.is_atom() && string_exotic_property(*object.as_heap_object(), runtime_->atom_text(key.atom_id()))) return false;
+    }
     if (object.is_object() && object.as_heap_object()->is_array) {
         auto* array = object.as_heap_object();
         if ((key.is_atom() && runtime_->atom_text(key.atom_id()) == "length")) return false;
@@ -983,6 +1082,25 @@ ExecutionResult Context::delete_property_semantic(const Value& object, PropertyK
 Result<std::vector<PropertyKey>> Context::own_property_keys(const Value& object) const {
     const auto object_validation = validate(object); if (!object_validation) return object_validation.error();
     if (!object.is_object_like()) return Error{ErrorCode::type_error, "property key target is not an object"};
+    if (object.is_object() && object.as_heap_object()->object_kind == ObjectKind::StringExotic
+        && object.as_heap_object()->boxed_primitive && object.as_heap_object()->boxed_primitive->is_string()) {
+        const auto units = utf16_code_units(object.as_heap_object()->boxed_primitive->as_string());
+        std::vector<PropertyKey> keys;
+        keys.reserve(units.size() + 1U + object.as_heap_object()->property_order.size());
+        for (std::size_t i = 0; i < units.size(); ++i)
+            keys.push_back(PropertyKey::atom(runtime_->intern_atom(std::to_string(i))));
+        keys.push_back(PropertyKey::atom(runtime_->intern_atom("length")));
+        for (const PropertyKey candidate : object.as_heap_object()->property_order) {
+            if (candidate.is_atom()) {
+                const auto name = runtime_->atom_text(candidate.atom_id());
+                if (name == "length") continue;
+                const auto index = canonical_array_index(name);
+                if (index && *index < units.size()) continue;
+            }
+            keys.push_back(candidate);
+        }
+        return keys;
+    }
     if (object.is_object() && object.as_heap_object()->is_array) {
         const auto* array = object.as_heap_object();
         std::vector<std::pair<std::uint32_t, PropertyKey>> indexed;
@@ -1054,9 +1172,6 @@ Result<Value> Context::get_own_property(const Value& object, PropertyKey key) co
 ExecutionResult Context::get_property_semantic(const Value& object, PropertyKey key, Value receiver) {
     const auto object_validation = validate(object); if (!object_validation) return object_validation.error();
     const auto receiver_validation = validate(receiver); if (!receiver_validation) return receiver_validation.error();
-    if (object.is_string() && key.is_atom() && runtime_->atom_text(key.atom_id()) == "length") {
-        return Completion::normal(Value::number(static_cast<double>(object.as_string().size())));
-    }
     if (!object.is_object_like()) {
         if (object.is_undefined() || object.is_null()) return Completion::throw_(type_error("cannot read property of null or undefined"));
         const Value boxed = box_primitive(object);
@@ -1471,8 +1586,6 @@ Result<Value> Context::array_iterator_next(Value iterator) {
 ExecutionResult Context::get_element_semantic(const Value& object, Value key) {
     const auto object_validation = validate(object); if (!object_validation) return object_validation.error();
     const auto key_validation = validate(key); if (!key_validation) return key_validation.error();
-    if (!object.is_object_like()) return Error{ErrorCode::type_error, "element access target is not an object"};
-
     const auto converted_key = abstract_operations::to_property_key(*this, key);
     if (!converted_key) return converted_key.error();
     if (!converted_key.completion().is_normal()) return converted_key.completion();
