@@ -114,6 +114,15 @@ namespace {
 
 } // namespace
 
+double number_exponentiate(double base, double exponent) noexcept {
+    // ECMAScript Number::exponentiate differs from the host pow operation for
+    // an infinite exponent with a base whose magnitude is exactly one.
+    if (std::isinf(exponent) && std::abs(base) == 1.0)
+        return std::numeric_limits<double>::quiet_NaN();
+    return std::pow(base, exponent);
+}
+
+
 bool to_boolean(Value value) noexcept {
     switch (value.tag()) {
     case ValueTag::undefined:

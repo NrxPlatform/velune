@@ -45,6 +45,9 @@ namespace abstract_operations {
 [[nodiscard]] ExecutionResult to_length(Context& context, Value value);
 [[nodiscard]] ExecutionResult to_index(Context& context, Value value);
 
+// ECMAScript Number::exponentiate for the currently-supported Number numeric domain.
+[[nodiscard]] double number_exponentiate(double base, double exponent) noexcept;
+
 [[nodiscard]] bool is_callable(Value value) noexcept;
 [[nodiscard]] bool is_constructor(Value value) noexcept;
 [[nodiscard]] bool is_array(Context& context, Value value) noexcept;

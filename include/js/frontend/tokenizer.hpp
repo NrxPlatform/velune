@@ -494,20 +494,32 @@ private:
             _advance_char();
         }
 
-        // Current intentionally-limited grammar:
-        // digit+ ("." digit+)?
-        if (
-            _peek() == '.' &&
-            std::isdigit(static_cast<unsigned char>(_peek(1)))
-        ) {
-            _advance_char(); // '.'
-
-            while (
-                std::isdigit(
-                    static_cast<unsigned char>(_peek())
-                )
-            ) {
+        // DecimalLiteral subset used by the current Number domain:
+        //   DecimalIntegerLiteral . DecimalDigits? ExponentPart?
+        //   DecimalIntegerLiteral ExponentPart?
+        // Leading-dot literals are handled by the '.' token path separately.
+        if (_peek() == '.') {
+            _advance_char();
+            while (std::isdigit(static_cast<unsigned char>(_peek()))) {
                 _advance_char();
+            }
+        }
+
+        if (_peek() == 'e' || _peek() == 'E') {
+            const std::size_t exponent_start = _position;
+            _advance_char();
+            if (_peek() == '+' || _peek() == '-') _advance_char();
+
+            if (std::isdigit(static_cast<unsigned char>(_peek()))) {
+                while (std::isdigit(static_cast<unsigned char>(_peek()))) {
+                    _advance_char();
+                }
+            } else {
+                // Do not absorb an invalid exponent marker into the numeric token;
+                // leaving it for the normal token stream produces the syntax error.
+                const std::size_t consumed = _position - exponent_start;
+                _position = exponent_start;
+                _column -= consumed;
             }
         }
 

@@ -8,10 +8,10 @@
   },
   "diagnostics": {
     "by_diagnostic_class": {
-      "FRONTEND_PARSE_FAILURE": 48,
+      "FRONTEND_PARSE_FAILURE": 18,
       "PASS_EXPECTED_PARSE_ERROR": 14,
-      "PASS_NORMAL": 22,
-      "RUNTIME_SEMANTIC_FAILURE": 4
+      "PASS_NORMAL": 48,
+      "RUNTIME_SEMANTIC_FAILURE": 8
     },
     "by_directory": {
       "language/expressions/exponentiation": 88
@@ -25,53 +25,53 @@
       "exponentiation": 86
     },
     "by_phase": {
-      "parse": 62,
-      "runtime": 26
+      "parse": 32,
+      "runtime": 56
     },
     "by_variant": {
       "sloppy": 44,
       "strict": 44
     },
     "failures_by_diagnostic_class": {
-      "FRONTEND_PARSE_FAILURE": 48,
-      "RUNTIME_SEMANTIC_FAILURE": 4
+      "FRONTEND_PARSE_FAILURE": 18,
+      "RUNTIME_SEMANTIC_FAILURE": 8
     },
     "failures_by_directory": {
-      "language/expressions/exponentiation": 52
+      "language/expressions/exponentiation": 26
     },
     "failures_by_feature": {
       "BigInt": 14,
       "Symbol": 2,
       "Symbol.toPrimitive": 6,
       "computed-property-names": 6,
-      "exponentiation": 52
+      "exponentiation": 26
     },
     "failures_by_phase": {
-      "parse": 48,
-      "runtime": 4
+      "parse": 18,
+      "runtime": 8
     },
     "failures_by_signature": {
-      "Expected semicolon": 38,
+      "Expected semicolon": 8,
       "Unexpected token in input": 10,
-      "uncaught_exception: uncaught JavaScript exception: <object properties=1>": 4
+      "uncaught_exception: uncaught JavaScript exception: <object properties=1>": 8
     },
     "failures_by_variant": {
-      "sloppy": 26,
-      "strict": 26
+      "sloppy": 13,
+      "strict": 13
     }
   },
   "engine": "/home/rasyid/code/cp/js_engine/build/js",
-  "engine_revision": "7ccbffe48ee51e07729e40c018b156ee4bcc7aa9",
-  "generated_at_utc": "2026-09-15T15:16:05.328285+00:00",
+  "engine_revision": "28d9d9043dad61f5b949d4e715d443be9413de5d",
+  "generated_at_utc": "2026-09-15T15:26:07.376830+00:00",
   "outcomes": {
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js::strict": "FAIL",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A10.js::sloppy": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A10.js::strict": "PASS",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js::strict": "FAIL",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A13.js::sloppy": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A13.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A14.js::sloppy": "FAIL",
@@ -80,34 +80,34 @@
     "test/language/expressions/exponentiation/applying-the-exp-operator_A15.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A16.js::sloppy": "FAIL",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A16.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js::strict": "FAIL",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A19.js::sloppy": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A19.js::strict": "PASS",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js::strict": "FAIL",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A20.js::sloppy": "FAIL",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A20.js::strict": "FAIL",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A21.js::sloppy": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A21.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A22.js::sloppy": "FAIL",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A22.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js::strict": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js::sloppy": "FAIL",
-    "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js::strict": "FAIL",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js::strict": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js::sloppy": "PASS",
+    "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js::strict": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A9.js::sloppy": "PASS",
     "test/language/expressions/exponentiation/applying-the-exp-operator_A9.js::strict": "PASS",
     "test/language/expressions/exponentiation/bigint-and-number.js::sloppy": "FAIL",
@@ -155,132 +155,68 @@
   },
   "results": [
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 9,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 268:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 16,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js",
-      "variant": "strict"
-    },
-    {
       "category": "normal",
-      "duration_ms": 18,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
-      "features": [],
+      "features": [
+        "exponentiation"
+      ],
       "phase": "runtime",
       "returncode": 0,
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A10.js",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js",
       "variant": "sloppy"
     },
     {
       "category": "normal",
-      "duration_ms": 10,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
-      "features": [],
+      "features": [
+        "exponentiation"
+      ],
       "phase": "runtime",
       "returncode": 0,
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A10.js",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A1.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:33: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
+      "category": "normal",
       "duration_ms": 4,
       "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:33: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js",
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A10.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "category": "normal",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js",
+      "failure_signature": null,
+      "features": [],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A10.js",
       "variant": "strict"
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -291,7 +227,39 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A13.js",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A11.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js",
       "variant": "sloppy"
     },
     {
@@ -307,39 +275,231 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A12.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A13.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A13.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "category": "unexpected_runtime_error",
+      "duration_ms": 9,
       "expected_error": null,
-      "failure_signature": "Expected semicolon",
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
       "features": [
         "exponentiation"
       ],
-      "phase": "parse",
-      "returncode": 2,
+      "phase": "runtime",
+      "returncode": 4,
       "status": "FAIL",
-      "stderr": "parse_error at 271:33: Expected semicolon\n",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
       "stdout": "",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A14.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "category": "unexpected_runtime_error",
+      "duration_ms": 7,
       "expected_error": null,
-      "failure_signature": "Expected semicolon",
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
       "features": [
         "exponentiation"
       ],
-      "phase": "parse",
-      "returncode": 2,
+      "phase": "runtime",
+      "returncode": 4,
       "status": "FAIL",
-      "stderr": "parse_error at 272:33: Expected semicolon\n",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
       "stdout": "",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A14.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A15.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A15.js",
+      "variant": "strict"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
+      "stdout": "",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A16.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
+      "stdout": "",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A16.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A19.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A19.js",
       "variant": "strict"
     },
     {
@@ -355,7 +515,7 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A15.js",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js",
       "variant": "sloppy"
     },
     {
@@ -371,204 +531,44 @@
       "status": "PASS",
       "stderr": "",
       "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A15.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 271:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A16.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 272:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A16.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:33: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:33: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A17.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A18.js",
-      "variant": "strict"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 10,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A19.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "normal",
-      "duration_ms": 10,
-      "expected_error": null,
-      "failure_signature": null,
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "runtime",
-      "returncode": 0,
-      "status": "PASS",
-      "stderr": "",
-      "stdout": "undefined\n",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A19.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 7,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 271:30: Expected semicolon\n",
-      "stdout": "",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A2.js",
       "variant": "strict"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 9,
+      "category": "unexpected_runtime_error",
+      "duration_ms": 7,
       "expected_error": null,
-      "failure_signature": "Expected semicolon",
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
       "features": [
         "exponentiation"
       ],
-      "phase": "parse",
-      "returncode": 2,
+      "phase": "runtime",
+      "returncode": 4,
       "status": "FAIL",
-      "stderr": "parse_error at 271:33: Expected semicolon\n",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
       "stdout": "",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A20.js",
       "variant": "sloppy"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "category": "unexpected_runtime_error",
+      "duration_ms": 6,
       "expected_error": null,
-      "failure_signature": "Expected semicolon",
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
       "features": [
         "exponentiation"
       ],
-      "phase": "parse",
-      "returncode": 2,
+      "phase": "runtime",
+      "returncode": 4,
       "status": "FAIL",
-      "stderr": "parse_error at 272:33: Expected semicolon\n",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
       "stdout": "",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A20.js",
       "variant": "strict"
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 10,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -599,246 +599,6 @@
       "variant": "strict"
     },
     {
-      "category": "unexpected_parse_error",
-      "duration_ms": 3,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 271:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A22.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 2,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 272:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A22.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 268:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 271:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 3,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:34: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 3,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 4,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 269:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_parse_error",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": "Expected semicolon",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "parse",
-      "returncode": 2,
-      "status": "FAIL",
-      "stderr": "parse_error at 270:30: Expected semicolon\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js",
-      "variant": "sloppy"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 5,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js",
-      "variant": "strict"
-    },
-    {
-      "category": "unexpected_runtime_error",
-      "duration_ms": 6,
-      "expected_error": null,
-      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
-      "features": [
-        "exponentiation"
-      ],
-      "phase": "runtime",
-      "returncode": 4,
-      "status": "FAIL",
-      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
-      "stdout": "",
-      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js",
-      "variant": "sloppy"
-    },
-    {
       "category": "unexpected_runtime_error",
       "duration_ms": 7,
       "expected_error": null,
@@ -851,6 +611,246 @@
       "status": "FAIL",
       "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
       "stdout": "",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A22.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "unexpected_runtime_error",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": "uncaught_exception: uncaught JavaScript exception: <object properties=1>",
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 4,
+      "status": "FAIL",
+      "stderr": "uncaught_exception: uncaught JavaScript exception: <object properties=1>\n",
+      "stdout": "",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A22.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 11,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 13,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A23.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 8,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A3.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 8,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A4.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A5.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 4,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A6.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 6,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 5,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A7.js",
+      "variant": "strict"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 8,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
+      "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js",
+      "variant": "sloppy"
+    },
+    {
+      "category": "normal",
+      "duration_ms": 7,
+      "expected_error": null,
+      "failure_signature": null,
+      "features": [
+        "exponentiation"
+      ],
+      "phase": "runtime",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "undefined\n",
       "test": "test/language/expressions/exponentiation/applying-the-exp-operator_A8.js",
       "variant": "strict"
     },
@@ -872,7 +872,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 5,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -888,7 +888,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Expected semicolon",
       "features": [
@@ -905,7 +905,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 8,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Expected semicolon",
       "features": [
@@ -922,7 +922,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -939,7 +939,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -956,7 +956,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Expected semicolon",
       "features": [
@@ -976,7 +976,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": "Expected semicolon",
       "features": [
@@ -996,7 +996,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Expected semicolon",
       "features": [
@@ -1013,7 +1013,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Expected semicolon",
       "features": [
@@ -1068,7 +1068,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1087,7 +1087,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 2,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1106,7 +1106,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1123,7 +1123,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 6,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1140,7 +1140,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1172,7 +1172,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 6,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1204,7 +1204,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1220,7 +1220,7 @@
     },
     {
       "category": "unexpected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": null,
       "failure_signature": "Unexpected token in input",
       "features": [
@@ -1236,7 +1236,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 7,
+      "duration_ms": 8,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1252,7 +1252,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 8,
+      "duration_ms": 6,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1268,7 +1268,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1300,7 +1300,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 2,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1316,7 +1316,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1332,7 +1332,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 2,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1348,7 +1348,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 5,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1364,7 +1364,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1380,7 +1380,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 5,
+      "duration_ms": 8,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1412,7 +1412,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1460,7 +1460,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1476,7 +1476,7 @@
     },
     {
       "category": "expected_parse_error",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": "SyntaxError",
       "failure_signature": null,
       "features": [
@@ -1524,7 +1524,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 4,
+      "duration_ms": 3,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1540,7 +1540,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 3,
+      "duration_ms": 4,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1556,7 +1556,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1573,7 +1573,7 @@
     },
     {
       "category": "normal",
-      "duration_ms": 6,
+      "duration_ms": 7,
       "expected_error": null,
       "failure_signature": null,
       "features": [
@@ -1592,9 +1592,9 @@
   "schema_version": 3,
   "summary": {
     "CRASH": 0,
-    "FAIL": 52,
+    "FAIL": 26,
     "HARNESS_ERROR": 0,
-    "PASS": 36,
+    "PASS": 62,
     "SKIP_UNSUPPORTED": 0,
     "TIMEOUT": 0
   },

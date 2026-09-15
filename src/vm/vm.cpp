@@ -1379,7 +1379,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             case bytecode::OpCode::multiply: result = lhs * rhs; break;
             case bytecode::OpCode::divide: result = lhs / rhs; break;
             case bytecode::OpCode::remainder: result = std::fmod(lhs, rhs); break;
-            case bytecode::OpCode::exponentiate: result = std::pow(lhs, rhs); break;
+            case bytecode::OpCode::exponentiate: result = abstract_operations::number_exponentiate(lhs, rhs); break;
             default: return Error{ErrorCode::internal, "unexpected numeric binary opcode"};
             }
             stack_.push_back(Value::number(result));
