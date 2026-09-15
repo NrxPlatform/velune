@@ -374,7 +374,12 @@ private:
 
     std::optional<StaticSemanticError> validate_expression(const ASTNode& node, bool strict) {
         switch (node.type) {
-        case ASTNodeType::IDENTIFIER:
+        case ASTNodeType::IDENTIFIER: {
+            const auto& identifier = static_cast<const IdentifierNode&>(node);
+            if (strict && identifier.name == "yield")
+                return error(identifier, "'yield' is not permitted as an IdentifierReference in strict code");
+            return {};
+        }
         case ASTNodeType::NUMBER_LITERAL:
         case ASTNodeType::STRING_LITERAL:
         case ASTNodeType::BOOLEAN_LITERAL:

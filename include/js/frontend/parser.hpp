@@ -416,9 +416,9 @@ private:
             Token right = _consume(TokenKind::RIGHT_BRACE);
             target = std::make_unique<ObjectPatternNode>(left, right, std::move(properties), std::move(rest_element));
         } else {
-            if (_peek().kind != TokenKind::IDENTIFIER) _fail("Expected binding or assignment target in pattern");
+            if (!_is_identifier_reference(_peek().kind)) _fail("Expected binding or assignment target in pattern");
             if (binding_context) {
-                target = std::make_unique<IdentifierNode>(_consume(TokenKind::IDENTIFIER));
+                target = _consume_identifier_reference();
             } else {
                 target = _parse_member_call();
                 if (!_is_simple_assignment_target(target.get())) _fail("Invalid assignment target in destructuring pattern");
@@ -1160,7 +1160,7 @@ private:
             return std::make_unique<StringLiteralNode>(token);
         }
 
-        if (token.kind == TokenKind::IDENTIFIER){
+        if (_is_identifier_reference(token.kind)){
             _tokenizer.advance();
             return std::make_unique<IdentifierNode>(token);
         }
@@ -1542,6 +1542,23 @@ private:
             std::move(test), std::move(consequent), std::move(alternate));
     }
 
+    bool _is_contextual_identifier_reference(TokenKind kind) const noexcept {
+        if (kind == TokenKind::AWAIT) return !_grammar_context.allow_await;
+        if (kind == TokenKind::YIELD) return !_grammar_context.allow_yield;
+        return false;
+    }
+
+    bool _is_identifier_reference(TokenKind kind) const noexcept {
+        return kind == TokenKind::IDENTIFIER || _is_contextual_identifier_reference(kind);
+    }
+
+    std::unique_ptr<IdentifierNode> _consume_identifier_reference() {
+        if (!_is_identifier_reference(_peek().kind)) _fail("Expected IdentifierReference");
+        Token token = _peek();
+        _tokenizer.advance();
+        return std::make_unique<IdentifierNode>(token);
+    }
+
     bool _is_assignment_operator(TokenKind kind) const {
         switch (kind) {
             case TokenKind::EQUAL:
@@ -1567,11 +1584,7 @@ private:
     }
 
     std::unique_ptr<ASTNode> _parse_assignment(){
-        if (_peek().kind == TokenKind::YIELD) {
-            if (!_grammar_context.allow_yield &&
-                (_generator_function_depth == 0 || _generator_function_depth != _function_depth)) {
-                _fail("yield is only valid directly inside a generator function");
-            }
+        if (_peek().kind == TokenKind::YIELD && _grammar_context.allow_yield) {
             Token yield_token = _consume(TokenKind::YIELD);
             std::unique_ptr<ASTNode> argument;
             if (_peek().kind != TokenKind::SEMICOLON &&
