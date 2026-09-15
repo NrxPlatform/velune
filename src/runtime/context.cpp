@@ -82,6 +82,13 @@ ExecutionResult builtin_array_constructor(Context& c, Value, std::span<const Val
     }
     return Completion::normal(array);
 }
+ExecutionResult builtin_string_constructor(Context& c, Value, std::span<const Value> a) {
+    if (a.empty()) return Completion::normal(c.string(""));
+    const auto result = abstract_operations::to_string(c, a[0]);
+    if (!result) return result.error();
+    return result.completion();
+}
+
 ExecutionResult builtin_is_finite(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isfinite(v.as_number()))); }
 ExecutionResult builtin_get_proto(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.get_prototype(argument_or_undefined(a, 0))); }
 
@@ -170,6 +177,108 @@ ExecutionResult builtin_object_define_property(Context& c, Value, std::span<cons
     if (!defined) return defined.error();
     if (!*defined) return Error{ErrorCode::type_error, "Object.defineProperty rejected property definition"};
     return Completion::normal(target);
+}
+
+Result<Value> from_property_descriptor(Context& c, const PropertyDescriptor& descriptor) {
+    Value result = c.object();
+    auto define_field = [&](std::string_view name, Value value) -> Result<void> {
+        const auto defined = c.define_own_property(
+            result,
+            name,
+            PropertyDescriptor::data(value, true, true, true));
+        if (!defined) return defined.error();
+        if (!*defined) return Error{ErrorCode::type_error, "failed to create property descriptor object"};
+        return {};
+    };
+
+    if (descriptor.is_data_descriptor()) {
+        const auto value = define_field("value", descriptor.value.value_or(Value::undefined()));
+        if (!value) return value.error();
+        const auto writable = define_field("writable", c.boolean(descriptor.writable.value_or(false)));
+        if (!writable) return writable.error();
+    } else if (descriptor.is_accessor_descriptor()) {
+        const auto getter = define_field("get", descriptor.get.value_or(Value::undefined()));
+        if (!getter) return getter.error();
+        const auto setter = define_field("set", descriptor.set.value_or(Value::undefined()));
+        if (!setter) return setter.error();
+    }
+
+    const auto enumerable = define_field("enumerable", c.boolean(descriptor.enumerable.value_or(false)));
+    if (!enumerable) return enumerable.error();
+    const auto configurable = define_field("configurable", c.boolean(descriptor.configurable.value_or(false)));
+    if (!configurable) return configurable.error();
+    return result;
+}
+
+ExecutionResult builtin_object_get_own_property_descriptor(Context& c, Value, std::span<const Value> a) {
+    const auto object_result = abstract_operations::to_object(c, argument_or_undefined(a, 0));
+    if (!object_result) return object_result.error();
+    if (!object_result.completion().is_normal()) return object_result.completion();
+    const Value target = object_result.completion().value();
+
+    const auto key_result = abstract_operations::to_property_key(c, argument_or_undefined(a, 1));
+    if (!key_result) return key_result.error();
+    if (!key_result.completion().is_normal()) return key_result.completion();
+    const Value key_value = key_result.completion().value();
+    const PropertyKey key = key_value.is_symbol()
+        ? PropertyKey::symbol(key_value.as_symbol_id())
+        : c.property_key(key_value.as_string());
+
+    const auto descriptor = c.get_own_property_descriptor(target, key);
+    if (!descriptor) return descriptor.error();
+    if (!descriptor->has_value()) return Completion::normal(Value::undefined());
+    const auto result = from_property_descriptor(c, **descriptor);
+    if (!result) return result.error();
+    return Completion::normal(*result);
+}
+
+ExecutionResult builtin_object_get_own_property_names(Context& c, Value, std::span<const Value> a) {
+    const auto object_result = abstract_operations::to_object(c, argument_or_undefined(a, 0));
+    if (!object_result) return object_result.error();
+    if (!object_result.completion().is_normal()) return object_result.completion();
+    const Value target = object_result.completion().value();
+
+    const auto keys = c.own_property_keys(target);
+    if (!keys) return keys.error();
+    Value result = c.array();
+    for (const PropertyKey key : *keys) {
+        if (!key.is_atom()) continue;
+        const auto pushed = c.array_push(result, c.string(std::string(c.property_key_text(key))));
+        if (!pushed) return pushed.error();
+    }
+    return Completion::normal(result);
+}
+
+ExecutionResult builtin_object_property_is_enumerable(Context& c, Value this_value, std::span<const Value> a) {
+    const auto object_result = abstract_operations::to_object(c, this_value);
+    if (!object_result) return object_result.error();
+    if (!object_result.completion().is_normal()) return object_result.completion();
+    const Value target = object_result.completion().value();
+
+    const auto key_result = abstract_operations::to_property_key(c, argument_or_undefined(a, 0));
+    if (!key_result) return key_result.error();
+    if (!key_result.completion().is_normal()) return key_result.completion();
+    const Value key_value = key_result.completion().value();
+    const PropertyKey key = key_value.is_symbol()
+        ? PropertyKey::symbol(key_value.as_symbol_id())
+        : c.property_key(key_value.as_string());
+
+    const auto descriptor = c.get_own_property_descriptor(target, key);
+    if (!descriptor) return descriptor.error();
+    return Completion::normal(c.boolean(
+        descriptor->has_value() && (**descriptor).enumerable.value_or(false)));
+}
+
+ExecutionResult builtin_math_pow(Context& c, Value, std::span<const Value> a) {
+    const auto base_result = abstract_operations::to_number(c, argument_or_undefined(a, 0));
+    if (!base_result) return base_result.error();
+    if (!base_result.completion().is_normal()) return base_result.completion();
+    const auto exponent_result = abstract_operations::to_number(c, argument_or_undefined(a, 1));
+    if (!exponent_result) return exponent_result.error();
+    if (!exponent_result.completion().is_normal()) return exponent_result.completion();
+    return Completion::normal(Value::number(std::pow(
+        base_result.completion().value().as_number(),
+        exponent_result.completion().value().as_number())));
 }
 
 ExecutionResult builtin_object_has_own_property(Context& c, Value t, std::span<const Value> a) {
@@ -997,6 +1106,7 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(realm.object_prototype_, "valueOf", native_function_in_realm(realm, "valueOf", 0, builtin_object_value_of));
     (void)set_own_property(realm.object_prototype_, "toString", native_function_in_realm(realm, "toString", 0, builtin_object_to_string));
     (void)set_own_property(realm.object_prototype_, "hasOwnProperty", native_function_in_realm(realm, "hasOwnProperty", 1, builtin_object_has_own_property));
+    (void)set_own_property(realm.object_prototype_, "propertyIsEnumerable", native_function_in_realm(realm, "propertyIsEnumerable", 1, builtin_object_property_is_enumerable));
     (void)set_own_property(realm.function_prototype_, "call", native_function_in_realm(realm, "call", 1, builtin_function_call));
     (void)set_own_property(realm.function_prototype_, "apply", native_function_in_realm(realm, "apply", 2, builtin_function_apply));
     (void)set_own_property(realm.function_prototype_, "bind", native_function_in_realm(realm, "bind", 1, builtin_function_bind));
@@ -1029,12 +1139,16 @@ void Context::ensure_builtins(Realm& realm) {
     (void)define_own_property(array_ns, "prototype", PropertyDescriptor::data(realm.array_prototype_, false, false, false));
     (void)define_own_property(realm.array_prototype_, "constructor", PropertyDescriptor::data(array_ns, true, false, true));
     (void)set_own_property(array_ns, "isArray", native_function_in_realm(realm, "isArray", 1, builtin_is_array));
+    Value string_ns = native_function_in_realm(realm, "String", 1, builtin_string_constructor, ConstructorKind::None);
     Value number_ns=object_in_realm(realm); (void)set_own_property(number_ns,"isFinite",native_function_in_realm(realm,"isFinite",1,builtin_is_finite));
     Value object_ns=object_in_realm(realm); (void)set_own_property(object_ns,"getPrototypeOf",native_function_in_realm(realm,"getPrototypeOf",1,builtin_get_proto));
     (void)set_own_property(object_ns,"defineProperty",native_function_in_realm(realm,"defineProperty",3,builtin_object_define_property));
+    (void)set_own_property(object_ns, "getOwnPropertyDescriptor", native_function_in_realm(realm, "getOwnPropertyDescriptor", 2, builtin_object_get_own_property_descriptor));
+    (void)set_own_property(object_ns, "getOwnPropertyNames", native_function_in_realm(realm, "getOwnPropertyNames", 1, builtin_object_get_own_property_names));
     (void)set_own_property(object_ns,"keys",native_function_in_realm(realm,"keys",1,builtin_object_keys));
     (void)set_own_property(object_ns,"is",native_function_in_realm(realm,"is",2,builtin_object_is));
     (void)set_own_property(object_ns, "prototype", realm.object_prototype_);
+    Value math_ns=object_in_realm(realm); (void)set_own_property(math_ns, "pow", native_function_in_realm(realm, "pow", 2, builtin_math_pow));
     Value promise_ns=object_in_realm(realm); (void)set_own_property(promise_ns,"resolve",native_function_in_realm(realm,"resolve",1,builtin_promise_resolve)); (void)set_own_property(promise_ns,"reject",native_function_in_realm(realm,"reject",1,builtin_promise_reject));
     Value symbol_ns = native_function_in_realm(realm, "Symbol", 0, builtin_symbol);
     (void)set_own_property(symbol_ns, "for", native_function_in_realm(realm, "for", 1, builtin_symbol_for));
@@ -1056,7 +1170,9 @@ void Context::ensure_builtins(Realm& realm) {
     install_global("ReferenceError", reference_error_ns);
     install_global("Array", array_ns);
     install_global("Number", number_ns);
+    install_global("String", string_ns);
     install_global("Object", object_ns);
+    install_global("Math", math_ns);
     install_global("Promise", promise_ns);
     install_global("Symbol", symbol_ns);
     install_global("isNaN", native_function_in_realm(realm,"isNaN",1,builtin_is_nan));

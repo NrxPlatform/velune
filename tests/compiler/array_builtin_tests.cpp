@@ -179,3 +179,40 @@ TEST_CASE("Object is implements SameValue semantics") {
         "Object.is(3,3) && !Object.is(3,'3')");
     REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
 }
+
+TEST_CASE("Object getOwnPropertyDescriptor exposes complete data descriptors") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let o={}; Object.defineProperty(o,'x',{value:7,writable:false,enumerable:true,configurable:false}); "
+        "let d=Object.getOwnPropertyDescriptor(o,'x'); "
+        "d.value===7 && d.writable===false && d.enumerable===true && d.configurable===false");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("Object getOwnPropertyNames preserves own string key order and excludes symbols") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let s=Symbol('s'); let o={b:1}; o[2]=2; o[1]=1; o.a=3; o[s]=4; "
+        "let n=Object.getOwnPropertyNames(o); "
+        "n.length===4 && n[0]==='1' && n[1]==='2' && n[2]==='b' && n[3]==='a'");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("Object propertyIsEnumerable uses own descriptor enumerable attribute") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let o={visible:1}; Object.defineProperty(o,'hidden',{value:2,enumerable:false}); "
+        "o.propertyIsEnumerable('visible') && !o.propertyIsEnumerable('hidden') && !o.propertyIsEnumerable('missing')");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
+
+TEST_CASE("property helper primordial dependencies are callable") {
+    js::Runtime r; js::Context c(r);
+    auto v = eval10(c,
+        "let push=Function.prototype.call.bind(Array.prototype.push); "
+        "let has=Function.prototype.call.bind(Object.prototype.hasOwnProperty); "
+        "let enumerable=Function.prototype.call.bind(Object.prototype.propertyIsEnumerable); "
+        "let a=[]; push(a,String(Math.pow(2,5))); let o={x:1}; "
+        "a[0]==='32' && has(o,'x') && enumerable(o,'x') && typeof Object.getOwnPropertyDescriptor==='function' && typeof Object.getOwnPropertyNames==='function'");
+    REQUIRE(v); REQUIRE(v->is_boolean()); REQUIRE(v->as_boolean());
+}
