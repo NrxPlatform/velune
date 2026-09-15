@@ -24,6 +24,28 @@ namespace {
 Value argument_or_undefined(std::span<const Value> arguments, std::size_t index) noexcept {
     return index < arguments.size() ? arguments[index] : Value::undefined();
 }
+
+Value make_error_instance(Context& c, Value prototype, std::string_view name, std::string_view message) {
+    auto object = c.object(prototype);
+    if (!object) return Value::undefined();
+    (void)c.set_own_property(*object, "name", c.string(name));
+    (void)c.set_own_property(*object, "message", c.string(message));
+    return *object;
+}
+
+ExecutionResult builtin_error_constructor(Context& c, Value, std::span<const Value> a) {
+    const Value message = argument_or_undefined(a, 0);
+    return Completion::normal(c.error(message.is_undefined() ? std::string_view{} : message.to_debug_string()));
+}
+ExecutionResult builtin_type_error_constructor(Context& c, Value, std::span<const Value> a) {
+    const Value message = argument_or_undefined(a, 0);
+    return Completion::normal(c.type_error(message.is_undefined() ? std::string_view{} : message.to_debug_string()));
+}
+ExecutionResult builtin_reference_error_constructor(Context& c, Value, std::span<const Value> a) {
+    const Value message = argument_or_undefined(a, 0);
+    return Completion::normal(c.reference_error(message.is_undefined() ? std::string_view{} : message.to_debug_string()));
+}
+
 ExecutionResult builtin_push(Context& c, Value t, std::span<const Value> a) { return execution_from_result(c.array_push(t, argument_or_undefined(a, 0))); }
 ExecutionResult builtin_pop(Context& c, Value t, std::span<const Value>) { return execution_from_result(c.array_pop(t)); }
 ExecutionResult builtin_array_iterator(Context& c, Value t, std::span<const Value>) { return execution_from_result(c.array_iterator(t)); }
@@ -434,6 +456,21 @@ Value Context::object_in_realm(Realm& realm) {
 Value Context::object_prototype() {
     ensure_builtins();
     return active_realm().object_prototype_;
+}
+
+Value Context::error(std::string_view message) {
+    ensure_builtins();
+    return make_error_instance(*this, active_realm().error_prototype_, "Error", message);
+}
+
+Value Context::type_error(std::string_view message) {
+    ensure_builtins();
+    return make_error_instance(*this, active_realm().type_error_prototype_, "TypeError", message);
+}
+
+Value Context::reference_error(std::string_view message) {
+    ensure_builtins();
+    return make_error_instance(*this, active_realm().reference_error_prototype_, "ReferenceError", message);
 }
 
 Value Context::native_function(std::string_view name, std::uint32_t arity, NativeFunction function, ConstructorKind constructor_kind) {
@@ -932,6 +969,12 @@ void Context::ensure_builtins(Realm& realm) {
     realm.object_prototype_ = runtime_->make_object(realm);
     realm.function_prototype_ = runtime_->make_object(realm);
     realm.function_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    realm.error_prototype_ = runtime_->make_object(realm);
+    realm.error_prototype_.as_heap_object()->prototype = realm.object_prototype_;
+    realm.type_error_prototype_ = runtime_->make_object(realm);
+    realm.type_error_prototype_.as_heap_object()->prototype = realm.error_prototype_;
+    realm.reference_error_prototype_ = runtime_->make_object(realm);
+    realm.reference_error_prototype_.as_heap_object()->prototype = realm.error_prototype_;
     realm.array_prototype_ = runtime_->make_array(realm);
     realm.promise_prototype_ = runtime_->make_object(realm);
     realm.regexp_prototype_ = runtime_->make_object(realm);
@@ -952,6 +995,18 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(realm.promise_prototype_, "catch", native_function_in_realm(realm, "catch", 1, builtin_promise_catch));
     (void)set_own_property(realm.regexp_prototype_, "test", native_function_in_realm(realm, "test", 1, builtin_regexp_test));
     (void)set_own_property(realm.regexp_prototype_, "exec", native_function_in_realm(realm, "exec", 1, builtin_regexp_exec));
+    Value error_ns = native_function_in_realm(realm, "Error", 1, builtin_error_constructor, ConstructorKind::Base);
+    Value type_error_ns = native_function_in_realm(realm, "TypeError", 1, builtin_type_error_constructor, ConstructorKind::Base);
+    Value reference_error_ns = native_function_in_realm(realm, "ReferenceError", 1, builtin_reference_error_constructor, ConstructorKind::Base);
+    auto wire_error_constructor = [&](Value constructor, Value prototype, std::string_view name) {
+        (void)define_own_property(constructor, "prototype", PropertyDescriptor::data(prototype, false, false, false));
+        (void)define_own_property(prototype, "constructor", PropertyDescriptor::data(constructor, true, false, true));
+        (void)define_own_property(prototype, "name", PropertyDescriptor::data(string(name), true, false, true));
+        (void)define_own_property(prototype, "message", PropertyDescriptor::data(string(""), true, false, true));
+    };
+    wire_error_constructor(error_ns, realm.error_prototype_, "Error");
+    wire_error_constructor(type_error_ns, realm.type_error_prototype_, "TypeError");
+    wire_error_constructor(reference_error_ns, realm.reference_error_prototype_, "ReferenceError");
     Value array_ns = native_function_in_realm(realm, "Array", 1, builtin_array_constructor, ConstructorKind::Base);
     (void)define_own_property(array_ns, "prototype", PropertyDescriptor::data(realm.array_prototype_, false, false, false));
     (void)define_own_property(realm.array_prototype_, "constructor", PropertyDescriptor::data(array_ns, true, false, true));
@@ -977,6 +1032,9 @@ void Context::ensure_builtins(Realm& realm) {
         (void)realm.global_environment_.create_global_constant_binding(name, value);
         (void)define_own_property(realm.global_object_, name, PropertyDescriptor::data(value, false, false, false));
     };
+    install_global("Error", error_ns);
+    install_global("TypeError", type_error_ns);
+    install_global("ReferenceError", reference_error_ns);
     install_global("Array", array_ns);
     install_global("Number", number_ns);
     install_global("Object", object_ns);

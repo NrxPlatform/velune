@@ -69,9 +69,7 @@ namespace {
 }
 
 [[nodiscard]] ExecutionResult type_error(Context& context, std::string_view message) {
-    // Error objects are completed in P15; the important substrate invariant here is that
-    // language-level failure travels through Completion::Throw, never EngineFailure.
-    return Completion::throw_(context.string(std::string("TypeError: ") + std::string(message)));
+    return Completion::throw_(context.type_error(message));
 }
 
 [[nodiscard]] bool same_type_strict_equal(Value left, Value right) noexcept {

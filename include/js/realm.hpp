@@ -33,6 +33,9 @@ private:
     Value global_object_{Value::undefined()};
     Value object_prototype_{Value::undefined()};
     Value function_prototype_{Value::undefined()};
+    Value error_prototype_{Value::undefined()};
+    Value type_error_prototype_{Value::undefined()};
+    Value reference_error_prototype_{Value::undefined()};
     Value array_prototype_{Value::undefined()};
     Value promise_prototype_{Value::undefined()};
     Value regexp_prototype_{Value::undefined()};

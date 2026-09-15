@@ -738,7 +738,11 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                     stack_.push_back(Value::undefined());
                     break;
                 }
-                return Error{ErrorCode::reference_error, "binding '" + std::string(name) + "' is not defined"};
+                {
+                    Completion completion = Completion::throw_(context_->reference_error("binding '" + std::string(name) + "' is not defined"));
+                    if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                    break;
+                }
             }
             const auto value = global.get_binding_value(name);
             if (!value) return value.error();
@@ -793,7 +797,11 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                 break;
             }
             if (opcode == bytecode::OpCode::set_name_strict)
-                return Error{ErrorCode::reference_error, "binding '" + std::string(name) + "' is not defined"};
+                {
+                    Completion completion = Completion::throw_(context_->reference_error("binding '" + std::string(name) + "' is not defined"));
+                    if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                    break;
+                }
             const auto created = global.create_global_var_binding(std::string(name), stack_.back());
             if (!created) return created.error();
             const auto defined = context_->define_own_property(

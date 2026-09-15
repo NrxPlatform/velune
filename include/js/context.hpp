@@ -30,6 +30,9 @@ public:
     [[nodiscard]] Realm& realm() const noexcept { return *realm_; }
     [[nodiscard]] Value global_object() const noexcept { return realm_->global_object(); }
     [[nodiscard]] Value object_prototype();
+    [[nodiscard]] Value error(std::string_view message = {});
+    [[nodiscard]] Value type_error(std::string_view message = {});
+    [[nodiscard]] Value reference_error(std::string_view message = {});
 
     [[nodiscard]] Value undefined() const noexcept { return Value::undefined(); }
     [[nodiscard]] Value null() const noexcept { return Value::null(); }
