@@ -1244,7 +1244,12 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             const Value left = stack_.back(); stack_.pop_back();
 
             if (opcode == bytecode::OpCode::in_operator) {
-                if (!right.is_object_like()) return Error{ErrorCode::type_error, "right-hand side of 'in' is not an object"};
+                if (!right.is_object_like()) {
+                    Completion completion = Completion::throw_(
+                        context_->type_error("right-hand side of 'in' is not an object"));
+                    if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                    break;
+                }
                 const auto key_value = abstract_operations::to_property_key(*context_, left);
                 if (!key_value) return key_value.error();
                 if (key_value.completion().is_throw()) { if (auto routed = propagate_completion(key_value.completion(), instruction_pc, boundary_depth)) return *routed; break; }
