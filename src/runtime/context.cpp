@@ -398,7 +398,12 @@ ExecutionResult builtin_object_keys(Context& c, Value, std::span<const Value> a)
     }
     return Completion::normal(result);
 }
-ExecutionResult builtin_is_nan(Context& c, Value, std::span<const Value> a) { const Value v = argument_or_undefined(a, 0); return Completion::normal(c.boolean(v.is_number() && std::isnan(v.as_number()))); }
+ExecutionResult builtin_is_nan(Context& c, Value, std::span<const Value> a) {
+    const auto number_result = abstract_operations::to_number(c, argument_or_undefined(a, 0));
+    if (!number_result) return number_result.error();
+    if (!number_result.completion().is_normal()) return number_result.completion();
+    return Completion::normal(c.boolean(std::isnan(number_result.completion().value().as_number())));
+}
 ExecutionResult builtin_promise_resolve(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.promise_resolve(argument_or_undefined(a, 0))); }
 ExecutionResult builtin_promise_reject(Context& c, Value, std::span<const Value> a) { return execution_from_result(c.promise_reject(argument_or_undefined(a, 0))); }
 ExecutionResult builtin_promise_then(Context& c, Value t, std::span<const Value> a) { return execution_from_result(c.promise_then(t, argument_or_undefined(a, 0))); }
@@ -1291,7 +1296,9 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(object_ns,"is",native_function_in_realm(realm,"is",2,builtin_object_is));
     (void)define_own_property(object_ns, "prototype", PropertyDescriptor::data(realm.object_prototype_, false, false, false));
     (void)define_own_property(realm.object_prototype_, "constructor", PropertyDescriptor::data(object_ns, true, false, true));
-    Value math_ns=object_in_realm(realm); (void)set_own_property(math_ns, "pow", native_function_in_realm(realm, "pow", 2, builtin_math_pow));
+    Value math_ns=object_in_realm(realm);
+    (void)set_own_property(math_ns, "pow", native_function_in_realm(realm, "pow", 2, builtin_math_pow));
+    (void)define_own_property(math_ns, "PI", PropertyDescriptor::data(Value::number(std::numbers::pi_v<double>), false, false, false));
     Value promise_ns=object_in_realm(realm); (void)set_own_property(promise_ns,"resolve",native_function_in_realm(realm,"resolve",1,builtin_promise_resolve)); (void)set_own_property(promise_ns,"reject",native_function_in_realm(realm,"reject",1,builtin_promise_reject));
     Value symbol_ns = native_function_in_realm(realm, "Symbol", 0, builtin_symbol);
     (void)define_own_property(symbol_ns, "prototype", PropertyDescriptor::data(realm.symbol_prototype_, false, false, false));
