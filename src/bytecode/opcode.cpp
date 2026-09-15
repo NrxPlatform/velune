@@ -44,6 +44,7 @@ std::string_view opcode_name(OpCode opcode) noexcept {
     case OpCode::set_property: return "SET_PROPERTY";
     case OpCode::set_property_strict: return "SET_PROPERTY_STRICT";
     case OpCode::get_element: return "GET_ELEMENT";
+    case OpCode::get_element_reference: return "GET_ELEMENT_REFERENCE";
     case OpCode::set_element: return "SET_ELEMENT";
     case OpCode::set_element_strict: return "SET_ELEMENT_STRICT";
     case OpCode::pop: return "POP";

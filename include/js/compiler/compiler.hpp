@@ -126,6 +126,7 @@ private:
 
     [[nodiscard]] Result<CompiledReference> compile_reference(const frontend::ASTNode& target);
     [[nodiscard]] Result<void> emit_get_value(const CompiledReference& reference);
+    [[nodiscard]] Result<void> emit_get_value_preserving_key(const CompiledReference& reference);
     [[nodiscard]] Result<void> emit_put_value(const CompiledReference& reference);
     void emit_get_this_value(const CompiledReference& reference);
     [[nodiscard]] bool is_property_reference(const CompiledReference& reference) const noexcept;

@@ -243,6 +243,7 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         case OpCode::set_property:
         case OpCode::set_property_strict: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
         case OpCode::get_element: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
+        case OpCode::get_element_reference: { const auto ok = require(2U); if (!ok) return ok.error(); /* object,key -> converted-key,value */ break; }
         case OpCode::set_element:
         case OpCode::set_element_strict: { const auto ok = require(3U); if (!ok) return ok.error(); depth -= 2U; break; }
         case OpCode::reset_local: case OpCode::clone_local_binding: break;

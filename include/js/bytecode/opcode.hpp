@@ -46,6 +46,7 @@ enum class OpCode : std::uint8_t {
     set_property,
     set_property_strict,
     get_element,
+    get_element_reference,
     set_element,
     set_element_strict,
     pop,

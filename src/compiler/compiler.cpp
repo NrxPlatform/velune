@@ -313,6 +313,28 @@ Result<void> Compiler::emit_get_value(const CompiledReference& reference) {
     return Error{ErrorCode::internal, "unknown compiled reference kind"};
 }
 
+Result<void> Compiler::emit_get_value_preserving_key(const CompiledReference& reference) {
+    if (reference.kind != ReferenceKind::computed_property) return emit_get_value(reference);
+
+    // A computed Reference carries the evaluated property expression.  For a
+    // read-modify-write operation, ToPropertyKey must happen at most once and
+    // the resulting key must be reused by PutValue.
+    builder_.emit_local(bytecode::OpCode::get_local, reference.base_slot);
+    builder_.emit_local(bytecode::OpCode::get_local, reference.key_slot);
+    builder_.emit(bytecode::OpCode::get_element_reference);
+
+    // GET_ELEMENT_REFERENCE leaves [convertedKey, value].  Preserve the value,
+    // replace the Reference's raw key with the converted PropertyKey value, and
+    // restore the value as the expression result.
+    const auto value_slot = scopes_->allocate_temporary();
+    builder_.emit_local(bytecode::OpCode::set_local, value_slot);
+    builder_.emit(bytecode::OpCode::pop);
+    builder_.emit_local(bytecode::OpCode::set_local, reference.key_slot);
+    builder_.emit(bytecode::OpCode::pop);
+    builder_.emit_local(bytecode::OpCode::get_local, value_slot);
+    return {};
+}
+
 Result<void> Compiler::emit_put_value(const CompiledReference& reference) {
     if (reference.kind == ReferenceKind::environment) {
         if (!reference.binding) return Error{ErrorCode::internal, "environment reference is missing binding metadata"};
@@ -565,7 +587,7 @@ Result<void> Compiler::compile_update(const frontend::UpdateExprNode& update) {
     const auto reference = compile_reference(*update.argument);
     if (!reference) return reference.error();
 
-    const auto read = emit_get_value(*reference);
+    const auto read = emit_get_value_preserving_key(*reference);
     if (!read) return read.error();
     builder_.emit(bytecode::OpCode::positive);
 
@@ -623,7 +645,7 @@ Result<void> Compiler::compile_assignment(const frontend::AssignmentExprNode& as
     if (is_logical_assignment(assignment.op)) {
         // Preserve both the Reference and its current value across RHS evaluation.
         // compile_reference() has already captured a computed base/key exactly once.
-        const auto read = emit_get_value(*reference);
+        const auto read = emit_get_value_preserving_key(*reference);
         if (!read) return read.error();
 
         const auto old_value_slot = scopes_->allocate_temporary();
@@ -661,7 +683,7 @@ Result<void> Compiler::compile_assignment(const frontend::AssignmentExprNode& as
     const auto opcode = compound_assignment_opcode(assignment.op);
     if (!opcode) return error_at(assignment, "unsupported assignment operator");
 
-    const auto read = emit_get_value(*reference);
+    const auto read = emit_get_value_preserving_key(*reference);
     if (!read) return read.error();
     const auto rhs = compile_expression(*assignment.right);
     if (!rhs) return rhs.error();

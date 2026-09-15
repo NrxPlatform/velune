@@ -1109,6 +1109,41 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             if (!r.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "element get produced non-normal completion"};
             stack_.push_back(r.completion().value()); break;
         }
+        case bytecode::OpCode::get_element_reference: {
+            if (stack_.size() < frame.stack_base + 2U) return Error{ErrorCode::vm_error, "GET_ELEMENT_REFERENCE stack underflow"};
+            const Value key_value = stack_.back(); stack_.pop_back();
+            const Value object = stack_.back(); stack_.pop_back();
+
+            // The pinned Test262 Reference model requires null/undefined base
+            // failure before ToPropertyKey for GetValue.  For a valid base,
+            // convert exactly once and return that key alongside the value so
+            // a later PutValue can reuse it without observable re-coercion.
+            if (object.is_null() || object.is_undefined()) {
+                Completion completion = Completion::throw_(context_->type_error("cannot read property of null or undefined"));
+                if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            const auto converted = abstract_operations::to_property_key(*context_, key_value);
+            if (!converted) return converted.error();
+            if (converted.completion().is_throw()) {
+                if (auto routed = propagate_completion(converted.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!converted.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "ToPropertyKey produced non-normal completion"};
+            const Value converted_key = converted.completion().value();
+            const auto property_key = context_->property_key(converted_key);
+            if (!property_key) return property_key.error();
+            const auto result = context_->get_property_semantic(object, *property_key, object);
+            if (!result) return result.error();
+            if (result.completion().is_throw()) {
+                if (auto routed = propagate_completion(result.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (!result.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "element reference get produced non-normal completion"};
+            stack_.push_back(converted_key);
+            stack_.push_back(result.completion().value());
+            break;
+        }
         case bytecode::OpCode::set_element:
         case bytecode::OpCode::set_element_strict: {
             if(stack_.size()<frame.stack_base+3U) return Error{ErrorCode::vm_error,"SET_ELEMENT stack underflow"};
