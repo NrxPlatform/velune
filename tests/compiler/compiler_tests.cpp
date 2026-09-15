@@ -332,9 +332,28 @@ TEST_CASE("P10.2 typeof reports core runtime categories") {
     js::Runtime runtime;
     js::Context context(runtime);
 
-    const auto function_type = eval(context, "function f(){} typeof f");
-    REQUIRE(function_type && function_type->is_string() && function_type->as_string() == "function");
+    struct TypeofCase {
+        std::string_view source;
+        std::string_view expected;
+    };
 
+    constexpr TypeofCase cases[] = {
+        {"typeof undefined", "undefined"},
+        {"typeof null", "object"},
+        {"typeof true", "boolean"},
+        {"typeof 42", "number"},
+        {"typeof 'velune'", "string"},
+        {"typeof {}", "object"},
+        {"typeof []", "object"},
+        {"function f(){} typeof f", "function"},
+    };
+
+    for (const auto& test_case : cases) {
+        const auto result = eval(context, test_case.source);
+        REQUIRE(result);
+        REQUIRE(result->is_string());
+        REQUIRE(result->as_string() == test_case.expected);
+    }
 }
 
 TEST_CASE("P10.2 void preserves side effects and produces undefined") {

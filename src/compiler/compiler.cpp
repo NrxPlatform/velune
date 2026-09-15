@@ -331,12 +331,12 @@ Result<void> Compiler::emit_put_value(const CompiledReference& reference) {
     if (reference.kind == ReferenceKind::computed_property) {
         builder_.emit_local(bytecode::OpCode::get_local, reference.key_slot);
         builder_.emit_local(bytecode::OpCode::get_local, value_slot);
-        builder_.emit(bytecode::OpCode::set_element);
+        builder_.emit(reference.strict ? bytecode::OpCode::set_element_strict : bytecode::OpCode::set_element);
         return {};
     }
 
     builder_.emit_local(bytecode::OpCode::get_local, value_slot);
-    builder_.emit_property(bytecode::OpCode::set_property, reference.key_constant);
+    builder_.emit_property(reference.strict ? bytecode::OpCode::set_property_strict : bytecode::OpCode::set_property, reference.key_constant);
     return {};
 }
 

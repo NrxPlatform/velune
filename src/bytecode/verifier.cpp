@@ -52,6 +52,7 @@ struct Instruction final {
     case OpCode::define_getter:
     case OpCode::get_property:
     case OpCode::set_property:
+    case OpCode::set_property_strict:
     case OpCode::delete_property:
     case OpCode::delete_property_strict:
     case OpCode::jump_if_false:
@@ -106,10 +107,10 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         if (count >= 1U) { operand = read_u32(code, pc); pc += sizeof(std::uint32_t); }
         if (count >= 2U) { operand2 = read_u32(code, pc); pc += sizeof(std::uint32_t); }
 
-        if ((opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) && operand >= chunk.constant_count()) {
+        if ((opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) && operand >= chunk.constant_count()) {
             return verification_error(instruction_pc, "constant index out of bounds");
         }
-        if ((opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) && !chunk.constants()[operand].is_string()) {
+        if ((opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) && !chunk.constants()[operand].is_string()) {
             return verification_error(instruction_pc, "property key constant is not a string value");
         }
         if (opcode == OpCode::closure && (!chunk.constants()[operand].is_function())) return verification_error(instruction_pc, "CLOSURE constant is not a function value");
@@ -239,9 +240,11 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         case OpCode::define_element:
         case OpCode::define_getter_element: { const auto ok = require(3U); if (!ok) return ok.error(); depth -= 2U; break; }
         case OpCode::get_property: { const auto ok = require(1U); if (!ok) return ok.error(); break; }
-        case OpCode::set_property: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
+        case OpCode::set_property:
+        case OpCode::set_property_strict: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
         case OpCode::get_element: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
-        case OpCode::set_element: { const auto ok = require(3U); if (!ok) return ok.error(); depth -= 2U; break; }
+        case OpCode::set_element:
+        case OpCode::set_element_strict: { const auto ok = require(3U); if (!ok) return ok.error(); depth -= 2U; break; }
         case OpCode::reset_local: case OpCode::clone_local_binding: break;
         case OpCode::set_local:
         case OpCode::initialize_local:

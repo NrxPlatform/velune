@@ -42,8 +42,10 @@ std::string_view opcode_name(OpCode opcode) noexcept {
     case OpCode::define_getter_element: return "DEFINE_GETTER_ELEMENT";
     case OpCode::get_property: return "GET_PROPERTY";
     case OpCode::set_property: return "SET_PROPERTY";
+    case OpCode::set_property_strict: return "SET_PROPERTY_STRICT";
     case OpCode::get_element: return "GET_ELEMENT";
     case OpCode::set_element: return "SET_ELEMENT";
+    case OpCode::set_element_strict: return "SET_ELEMENT_STRICT";
     case OpCode::pop: return "POP";
     case OpCode::add: return "ADD";
     case OpCode::subtract: return "SUBTRACT";

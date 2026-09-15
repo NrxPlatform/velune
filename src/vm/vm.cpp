@@ -1074,7 +1074,8 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             stack_.push_back(value.completion().value());
             break;
         }
-        case bytecode::OpCode::set_property: {
+        case bytecode::OpCode::set_property:
+        case bytecode::OpCode::set_property_strict: {
             const auto key_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             if (stack_.size() < frame.stack_base + 2U) return Error{ErrorCode::vm_error, "SET_PROPERTY stack underflow"};
             const Value value = stack_.back(); stack_.pop_back();
@@ -1087,7 +1088,12 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                 break;
             }
             if (!set.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "property set produced non-normal completion"};
-            if (!set.completion().value().is_boolean() || !set.completion().value().as_boolean()) return Error{ErrorCode::type_error, "property is not writable"};
+            if (!set.completion().value().is_boolean()) return EngineFailure{EngineFailureCode::InternalInvariant, "property set did not return a boolean"};
+            if (!set.completion().value().as_boolean() && opcode == bytecode::OpCode::set_property_strict) {
+                Completion completion = Completion::throw_(context_->type_error("property is not writable"));
+                if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
             stack_.push_back(value);
             break;
         }
@@ -1099,13 +1105,19 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             if (!r.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "element get produced non-normal completion"};
             stack_.push_back(r.completion().value()); break;
         }
-        case bytecode::OpCode::set_element: {
+        case bytecode::OpCode::set_element:
+        case bytecode::OpCode::set_element_strict: {
             if(stack_.size()<frame.stack_base+3U) return Error{ErrorCode::vm_error,"SET_ELEMENT stack underflow"};
             Value value=stack_.back(); stack_.pop_back(); Value key=stack_.back(); stack_.pop_back(); Value object=stack_.back(); stack_.pop_back();
             auto r=context_->set_element_semantic(object,key,value); if(!r) return r.error();
             if (r.completion().is_throw()) { if (auto routed = propagate_completion(r.completion(), instruction_pc, boundary_depth)) return *routed; break; }
             if (!r.completion().is_normal()) return EngineFailure{EngineFailureCode::InternalInvariant, "element set produced non-normal completion"};
-            if (!r.completion().value().is_boolean() || !r.completion().value().as_boolean()) return Error{ErrorCode::type_error, "property is not writable"};
+            if (!r.completion().value().is_boolean()) return EngineFailure{EngineFailureCode::InternalInvariant, "element set did not return a boolean"};
+            if (!r.completion().value().as_boolean() && opcode == bytecode::OpCode::set_element_strict) {
+                Completion completion = Completion::throw_(context_->type_error("property is not writable"));
+                if (auto routed = propagate_completion(completion, instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
             stack_.push_back(value); break;
         }
         case bytecode::OpCode::pop: stack_.pop_back(); break;
