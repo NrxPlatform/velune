@@ -428,7 +428,7 @@ ExecutionResult VM::invoke_function(Value callee, std::uint32_t argument_count, 
 ExecutionResult VM::invoke_construct(Value callee, std::uint32_t argument_count, std::size_t operand_base, std::size_t argument_start, bool& frame_pushed) {
     const auto validation = context_->validate(callee);
     if (!validation) return validation.error();
-    if (!callee.is_function()) return Error{ErrorCode::type_error, "constructor target is not a function"};
+    if (!callee.is_function()) return Completion::throw_(context_->type_error("constructor target is not a function"));
     const auto* function = callee.as_heap_function();
     if (!function->bound_target.is_undefined()) {
         const std::size_t argc = static_cast<std::size_t>(argument_count);
@@ -443,7 +443,7 @@ ExecutionResult VM::invoke_construct(Value callee, std::uint32_t argument_count,
         return Completion::normal(result.completion().value());
     }
     if (function->code->constructor_kind == ConstructorKind::None)
-        return Error{ErrorCode::type_error, "function is not a constructor"};
+        return Completion::throw_(context_->type_error("function is not a constructor"));
 
     Value prototype = function->realm->object_prototype();
     const auto prototype_property = context_->get_property_semantic(callee, context_->property_key("prototype"));
