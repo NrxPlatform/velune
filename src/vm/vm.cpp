@@ -257,7 +257,7 @@ ExecutionResult VM::invoke_function(Value callee, std::uint32_t argument_count, 
     if (!validation) return validation.error();
     const auto this_validation = context_->validate(this_value);
     if (!this_validation) return this_validation.error();
-    if (!callee.is_function()) return Error{ErrorCode::type_error, "call target is not a function"};
+    if (!callee.is_function()) return Completion::throw_(context_->type_error("call target is not a function"));
 
     const auto* function = callee.as_heap_function();
     if (function->code->this_mode == ThisMode::Lexical && function->lexical_this) {
