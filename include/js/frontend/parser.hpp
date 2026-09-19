@@ -1836,38 +1836,12 @@ private:
 
     std::unique_ptr<DoWhileStatementNode> _parse_do_while_statement() {
         Token do_token = _consume(TokenKind::DO);
-        // The grammar requires Statement, not Declaration. Keep this check
-        // at the statement boundary so illegal declarations cannot be hidden
-        // by a later compiler transformation.
-        if (_matches(_peek().kind, {TokenKind::CONST, TokenKind::CLASS,
-                                    TokenKind::FUNCTION}))
-            _fail("Expected a statement after do (declarations are not permitted)");
-        bool let_expression_statement = false;
-        if (_peek().kind == TokenKind::LET) {
-            auto checkpoint = _tokenizer.checkpoint();
-            _tokenizer.advance();
-            const auto following = _peek();
-            _tokenizer.restore(checkpoint);
-            if (following.kind == TokenKind::LEFT_BRACKET)
-                _fail("let [ cannot start an expression statement");
-            let_expression_statement = following.line_break_before ||
-                following.kind == TokenKind::SEMICOLON ||
-                following.kind == TokenKind::RIGHT_BRACE ||
-                following.kind == TokenKind::END_OF_FILE;
-            if (!let_expression_statement)
-                _fail("Expected a statement after do (declarations are not permitted)");
-        }
         std::unique_ptr<ASTNode> body;
         {
             LoopContextGuard loop_guard(_loop_depth);
             BreakableContextGuard break_guard(_breakable_depth);
-            body = let_expression_statement ? _parse_expression_statement() : _parse_statement();
+            body = _parse_statement();
         }
-        const ASTNode* innermost = body.get();
-        while (innermost->type == ASTNodeType::LABELED_STATEMENT)
-            innermost = static_cast<const LabeledStatementNode*>(innermost)->body.get();
-        if (innermost->type == ASTNodeType::FUNCTION_DECLARATION)
-            _fail("A labelled function cannot be the body of do");
         _consume(TokenKind::WHILE);
         _consume(TokenKind::LEFT_PAREN);
         auto test = _parse_expression();
@@ -1943,7 +1917,30 @@ private:
             {
                 LoopContextGuard loop_guard(_loop_depth);
                 BreakableContextGuard break_guard(_breakable_depth);
-                body = _parse_statement();
+                if (_matches(_peek().kind, {TokenKind::CONST, TokenKind::CLASS,
+                                            TokenKind::FUNCTION}))
+                    _fail("A declaration cannot be a for-loop body");
+                bool let_expression = false;
+                if (_peek().kind == TokenKind::LET) {
+                    auto checkpoint = _tokenizer.checkpoint();
+                    _tokenizer.advance();
+                    const auto following = _peek();
+                    _tokenizer.restore(checkpoint);
+                    if (following.kind == TokenKind::LEFT_BRACKET)
+                        _fail("let [ cannot begin an expression statement");
+                    let_expression = following.line_break_before ||
+                        following.kind == TokenKind::SEMICOLON ||
+                        following.kind == TokenKind::RIGHT_BRACE ||
+                        following.kind == TokenKind::END_OF_FILE;
+                    if (!let_expression)
+                        _fail("A lexical declaration cannot be a for-loop body");
+                }
+                body = let_expression ? _parse_expression_statement() : _parse_statement();
+                const ASTNode* innermost = body.get();
+                while (innermost->type == ASTNodeType::LABELED_STATEMENT)
+                    innermost = static_cast<const LabeledStatementNode*>(innermost)->body.get();
+                if (innermost->type == ASTNodeType::FUNCTION_DECLARATION)
+                    _fail("A labelled function cannot be a for-loop body");
             }
             if (is_in)
                 return std::make_unique<ForInStatementNode>(for_token, std::move(init), std::move(rhs), std::move(body));
@@ -1966,7 +1963,30 @@ private:
         {
             LoopContextGuard loop_guard(_loop_depth);
             BreakableContextGuard break_guard(_breakable_depth);
-            body = _parse_statement();
+            if (_matches(_peek().kind, {TokenKind::CONST, TokenKind::CLASS,
+                                        TokenKind::FUNCTION}))
+                _fail("A declaration cannot be a for-loop body");
+            bool let_expression = false;
+            if (_peek().kind == TokenKind::LET) {
+                auto checkpoint = _tokenizer.checkpoint();
+                _tokenizer.advance();
+                const auto following = _peek();
+                _tokenizer.restore(checkpoint);
+                if (following.kind == TokenKind::LEFT_BRACKET)
+                    _fail("let [ cannot begin an expression statement");
+                let_expression = following.line_break_before ||
+                    following.kind == TokenKind::SEMICOLON ||
+                    following.kind == TokenKind::RIGHT_BRACE ||
+                    following.kind == TokenKind::END_OF_FILE;
+                if (!let_expression)
+                    _fail("A lexical declaration cannot be a for-loop body");
+            }
+            body = let_expression ? _parse_expression_statement() : _parse_statement();
+            const ASTNode* innermost = body.get();
+            while (innermost->type == ASTNodeType::LABELED_STATEMENT)
+                innermost = static_cast<const LabeledStatementNode*>(innermost)->body.get();
+            if (innermost->type == ASTNodeType::FUNCTION_DECLARATION)
+                _fail("A labelled function cannot be a for-loop body");
         }
         return std::make_unique<ForStatementNode>(for_token, std::move(init), std::move(test), std::move(update), std::move(body));
     }

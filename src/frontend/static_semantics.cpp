@@ -330,6 +330,24 @@ private:
                     ? validate_statement(*statement.init, strict) : validate_expression(*statement.init, strict);
                 if (result) return result;
             }
+            // ForStatement early error: a lexical binding in the head must not
+            // occur among the VarDeclaredNames of the loop body.  A nested
+            // function is a var-scope boundary; collect_var_names observes it.
+            if (statement.init && statement.init->type == ASTNodeType::VARIABLE_DECLARATION) {
+                const auto& head = static_cast<const VariableDeclarationNode&>(*statement.init);
+                if (head.kind != VariableKind::VAR) {
+                    std::unordered_set<std::string_view> head_names;
+                    for (const auto& declarator : head.declarations)
+                        for (const auto* identifier : bound_names(*declarator->id))
+                            head_names.insert(identifier->name);
+                    std::vector<const IdentifierNode*> body_var_names;
+                    collect_var_names(*statement.body, body_var_names);
+                    for (const auto* identifier : body_var_names)
+                        if (head_names.contains(identifier->name))
+                            return error(*identifier, "for-loop body var declaration conflicts with lexical head binding '" +
+                                std::string(identifier->name) + "'");
+                }
+            }
             if (statement.test) if (auto test = validate_expression(*statement.test, strict)) return test;
             if (statement.update) if (auto update = validate_expression(*statement.update, strict)) return update;
             return validate_statement(*statement.body, strict);
