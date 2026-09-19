@@ -65,6 +65,7 @@ private:
     void close_frame_upvalues(Frame& frame) noexcept;
     void close_all_open_upvalues() noexcept;
     void discard_overridden_completions(Frame& frame, std::size_t pc) noexcept;
+    void release_abandoned_references(Frame& frame, std::size_t begin, std::size_t end) noexcept;
     [[nodiscard]] const bytecode::ExceptionHandler* find_exception_handler(const Frame& frame, std::size_t pc, bool& use_catch) const noexcept;
     [[nodiscard]] const bytecode::ExceptionHandler* find_finally_handler(const Frame& frame, std::size_t pc) const noexcept;
     [[nodiscard]] std::optional<ExecutionResult> propagate_completion(Completion completion, std::size_t origin_pc, std::size_t boundary_depth);

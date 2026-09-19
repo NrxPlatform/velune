@@ -126,6 +126,15 @@ void VM::close_all_open_upvalues() noexcept {
     for (auto& frame : frames_) close_frame_upvalues(frame);
 }
 
+void VM::release_abandoned_references(Frame& frame, std::size_t begin, std::size_t end) noexcept {
+    // A handler abandons only the evaluation region being exited. References
+    // resolved before that region belong to enclosing expressions and survive.
+    for (auto& reference : frame.retained_references) {
+        if (!reference.name.empty() && reference.origin_pc >= begin && reference.origin_pc < end)
+            reference = DynamicBindingReference{};
+    }
+}
+
 void VM::discard_overridden_completions(Frame& frame, std::size_t pc) noexcept {
     while (!frame.pending_completions.empty()) {
         const auto finally_start = frame.pending_completions.back().finally_start;
@@ -188,6 +197,9 @@ std::optional<ExecutionResult> VM::propagate_completion(Completion completion, s
         Frame& frame = frames_.back();
         discard_overridden_completions(frame, pc);
         if (const auto* handler = find_finally_handler(frame, pc)) {
+            const bool in_try = pc >= handler->try_start && pc < handler->try_end;
+            release_abandoned_references(frame, in_try ? handler->try_start : handler->catch_start,
+                                         in_try ? handler->try_end : handler->catch_end);
             stack_.resize(frame.stack_base);
             frame.pending_completions.push_back(PendingFinally{completion, handler->finally_start});
             frame.pc = handler->finally_start;
@@ -212,6 +224,9 @@ std::optional<ExecutionResult> VM::propagate_completion(Completion completion, s
         Frame& frame = frames_.back();
         discard_overridden_completions(frame, pc);
         if (const auto* handler = find_finally_handler(frame, pc)) {
+            const bool in_try = pc >= handler->try_start && pc < handler->try_end;
+            release_abandoned_references(frame, in_try ? handler->try_start : handler->catch_start,
+                                         in_try ? handler->try_end : handler->catch_end);
             stack_.resize(frame.stack_base);
             frame.pending_completions.push_back(PendingFinally{completion, handler->finally_start});
             frame.pc = handler->finally_start;
@@ -230,6 +245,9 @@ std::optional<ExecutionResult> VM::propagate_completion(Completion completion, s
         bool use_catch = false;
         const auto* handler = find_exception_handler(frame, pc, use_catch);
         if (handler != nullptr) {
+            const bool in_try = pc >= handler->try_start && pc < handler->try_end;
+            release_abandoned_references(frame, in_try ? handler->try_start : handler->catch_start,
+                                         in_try ? handler->try_end : handler->catch_end);
             stack_.resize(frame.stack_base);
             if (use_catch) {
                 stack_.push_back(exception);
@@ -715,6 +733,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                 if (auto routed = propagate_completion(resolved.completion(), instruction_pc, boundary_depth)) return *routed;
                 break;
             }
+            selected.origin_pc = instruction_pc;
             frames_[frame_index].retained_references[slot] = std::move(selected);
             break;
         }

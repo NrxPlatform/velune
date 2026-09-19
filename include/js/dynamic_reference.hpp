@@ -2,6 +2,7 @@
 
 #include <string>
 #include <string_view>
+#include <cstddef>
 
 #include <js/completion.hpp>
 
@@ -22,6 +23,9 @@ struct DynamicBindingReference final {
     GlobalEnvironmentRecord* global{nullptr};
     std::string name;
     bool strict{false};
+    // Bytecode position where this Reference was created. Used only by the
+    // VM to release references when their evaluation region is abandoned.
+    std::size_t origin_pc{0};
 
     [[nodiscard]] ExecutionResult get(Context& context) const;
     [[nodiscard]] ExecutionResult put(Context& context, Value value) const;

@@ -157,3 +157,36 @@ TEST_CASE("retained dynamic Reference strict unresolvable assignment throws") {
     REQUIRE(result);
     REQUIRE(result.completion().is_throw());
 }
+
+TEST_CASE("retained outer Reference survives a handled inner abrupt completion") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::bytecode::BytecodeBuilder builder;
+    builder.set_local_count(1U);
+    const auto name = builder.add_constant(context.string("outer_binding"));
+    const auto initial = builder.add_constant(context.number(41));
+    const auto exception = builder.add_constant(context.number(99));
+    REQUIRE(name && initial && exception);
+    builder.emit_constant(*initial);
+    builder.emit_local(js::bytecode::OpCode::set_local, 0U);
+    builder.emit(js::bytecode::OpCode::pop);
+    builder.emit_dynamic_reference(*name, 1U, false); // slot 0: outside try
+    const auto try_start = static_cast<std::uint32_t>(builder.offset());
+    builder.emit_dynamic_reference(*name, 1U, false); // slot 1: abandoned
+    builder.emit_constant(*exception);
+    builder.emit(js::bytecode::OpCode::throw_);
+    const auto try_end = static_cast<std::uint32_t>(builder.offset());
+    const auto catch_start = try_end;
+    builder.emit(js::bytecode::OpCode::pop); // caught exception
+    builder.emit_local(js::bytecode::OpCode::get_dynamic_ref, 0U);
+    builder.emit_local(js::bytecode::OpCode::release_dynamic_ref, 0U);
+    builder.emit(js::bytecode::OpCode::return_);
+    const auto catch_end = static_cast<std::uint32_t>(builder.offset());
+    builder.add_exception_handler(js::bytecode::ExceptionHandler{
+        try_start, try_end, catch_start, catch_end});
+    js::VM vm(context);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(result);
+    REQUIRE(result->is_number());
+    REQUIRE(result->as_number() == 41.0);
+}
