@@ -678,6 +678,10 @@ Result<void> Compiler::compile_assignment(const frontend::AssignmentExprNode& as
         if (builder_.offset() > static_cast<std::size_t>(std::numeric_limits<std::uint32_t>::max()))
             return error_at(assignment, "bytecode offset exceeds 32-bit jump range");
         builder_.patch_jump(skip_assignment, static_cast<std::uint32_t>(builder_.offset()));
+        // Short-circuiting does not execute emit_put_value(), so the retained
+        // identifier Reference must be released on this branch as well.
+        if (reference->kind == ReferenceKind::runtime_environment)
+            builder_.emit_local(bytecode::OpCode::release_dynamic_ref, reference->base_slot);
         builder_.emit_local(bytecode::OpCode::get_local, old_value_slot);
 
         if (builder_.offset() > static_cast<std::size_t>(std::numeric_limits<std::uint32_t>::max()))
