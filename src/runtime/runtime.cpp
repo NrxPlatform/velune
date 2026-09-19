@@ -414,6 +414,10 @@ void Runtime::trace_cell(detail::HeapCell* cell) {
             for (Value value : generator.stack) mark_value(value);
             for (auto* upvalue : generator.upvalues) mark_cell(upvalue);
             for (auto* upvalue : generator.captured_locals) mark_cell(upvalue);
+            for (const auto& reference : generator.retained_references) {
+                mark_cell(reference.environment);
+                mark_cell(reference.static_binding);
+            }
             mark_cell(generator.module_environment);
             mark_cell(generator.dynamic_environment);
             if (generator.code && !generator.code->is_native()) mark_chunk(generator.code->chunk);
@@ -450,6 +454,10 @@ void Runtime::mark_vm(const VM& vm) {
         for (const Value argument : frame.actual_arguments) mark_value(argument);
         for (auto* upvalue : frame.upvalues) mark_cell(upvalue);
         for (auto* upvalue : frame.captured_locals) mark_cell(upvalue);
+        for (const auto& reference : frame.retained_references) {
+            mark_cell(reference.environment);
+            mark_cell(reference.static_binding);
+        }
         for (const auto& pending : frame.pending_completions) mark_value(pending.completion.value());
         if (frame.construct_receiver) mark_value(*frame.construct_receiver);
         mark_cell(frame.execution_context.module_environment);

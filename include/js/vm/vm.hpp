@@ -10,6 +10,7 @@
 #include <js/context.hpp>
 #include <js/completion.hpp>
 #include <js/environment.hpp>
+#include <js/dynamic_reference.hpp>
 #include <js/execution_context.hpp>
 #include <js/result.hpp>
 #include <js/value.hpp>
@@ -51,6 +52,7 @@ private:
         std::vector<Value> actual_arguments;
         std::vector<detail::HeapUpvalue*> upvalues;
         std::vector<detail::HeapUpvalue*> captured_locals;
+        std::vector<DynamicBindingReference> retained_references;
         std::vector<PendingFinally> pending_completions;
         std::optional<Value> construct_receiver;
         ExecutionContext execution_context;

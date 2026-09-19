@@ -10,6 +10,7 @@
 
 #include <js/bytecode/chunk.hpp>
 #include <js/environment.hpp>
+#include <js/dynamic_reference.hpp>
 #include <js/function_semantics.hpp>
 #include <js/native_function.hpp>
 #include <js/property_key.hpp>
@@ -140,6 +141,7 @@ struct GeneratorState final {
     std::vector<Value> stack;
     std::vector<HeapUpvalue*> upvalues;
     std::vector<HeapUpvalue*> captured_locals;
+    std::vector<DynamicBindingReference> retained_references;
     struct HeapModuleEnvironment* module_environment{nullptr};
     struct HeapDynamicEnvironment* dynamic_environment{nullptr};
 };

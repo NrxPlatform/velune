@@ -420,7 +420,7 @@ ExecutionResult VM::invoke_function(Value callee, std::uint32_t argument_count, 
     std::vector<BindingSlot> locals = make_local_slots(function->code->chunk);
     std::vector<detail::HeapUpvalue*> captured_locals(locals.size(), nullptr);
     const auto initialized = initialize_call_locals(locals, captured_locals); if (!initialized) return initialized.error();
-    frames_.push_back(Frame{&function->code->chunk, 0U, 0U, operand_base, this_value, std::move(locals), arguments, function->upvalues, std::move(captured_locals), {}, construct_receiver, ExecutionContext{function->realm, function, function->module_environment, function->captured_dynamic_environment}});
+    frames_.push_back(Frame{&function->code->chunk, 0U, 0U, operand_base, this_value, std::move(locals), arguments, function->upvalues, std::move(captured_locals), {}, {}, construct_receiver, ExecutionContext{function->realm, function, function->module_environment, function->captured_dynamic_environment}});
     if (frames_.size() > maximum_frame_depth_) maximum_frame_depth_ = frames_.size();
     frame_pushed = true;
     return Completion::normal(Value::undefined());
@@ -589,8 +589,9 @@ ExecutionResult VM::resume_generator(Value generator, Value input) {
             stack_.insert(stack_.end(), state.stack.begin(), state.stack.end());
             state.stack.clear();
             frames_.push_back(Frame{&state.code->chunk, state.pc, state.last_instruction_pc, stack_base, state.this_value,
-                std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {},
+                std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, {},
                 std::nullopt, ExecutionContext{state.realm, state.function, state.module_environment, state.dynamic_environment}});
+            frames_.back().retained_references = std::move(state.retained_references);
             if (resuming_yield) stack_.push_back(input);
             if (frames_.size() > maximum_frame_depth_) maximum_frame_depth_ = frames_.size();
             const Value previous_active = active_generator_;
@@ -638,13 +639,14 @@ ExecutionResult VM::run_impl(const bytecode::BytecodeChunk& chunk, detail::HeapM
         const bool resuming_yield = state.state == detail::GeneratorStateKind::suspended_yield;
         state.state = detail::GeneratorStateKind::executing;
         stack_ = std::move(state.stack);
-        frames_.push_back(Frame{&chunk, state.pc, state.last_instruction_pc, 0U, state.this_value, std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, std::nullopt, ExecutionContext{state.realm, state.function, state.module_environment, state.dynamic_environment}});
+        frames_.push_back(Frame{&chunk, state.pc, state.last_instruction_pc, 0U, state.this_value, std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, {}, std::nullopt, ExecutionContext{state.realm, state.function, state.module_environment, state.dynamic_environment}});
+        frames_.back().retained_references = std::move(state.retained_references);
         if (resuming_yield) stack_.push_back(resume_input);
     } else {
         std::vector<BindingSlot> root_locals = make_local_slots(chunk);
         std::vector<detail::HeapUpvalue*> root_captures(root_locals.size(), nullptr);
         const Value root_this = module_environment == nullptr ? context_->realm().global_object() : Value::undefined();
-        frames_.push_back(Frame{&chunk, 0U, 0U, 0U, root_this, std::move(root_locals), {}, {}, std::move(root_captures), {}, std::nullopt, ExecutionContext{&context_->realm(), nullptr, module_environment, nullptr, &context_->realm().global_environment(), &context_->realm().global_environment(), nullptr}});
+        frames_.push_back(Frame{&chunk, 0U, 0U, 0U, root_this, std::move(root_locals), {}, {}, std::move(root_captures), {}, {}, std::nullopt, ExecutionContext{&context_->realm(), nullptr, module_environment, nullptr, &context_->realm().global_environment(), &context_->realm().global_environment(), nullptr}});
     }
     maximum_frame_depth_ = 1U;
     if (module_environment != nullptr && generator == nullptr) {
@@ -1614,6 +1616,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             stack_.resize(frame.stack_base);
             state.upvalues = frame.upvalues;
             state.captured_locals = std::move(frame.captured_locals);
+            state.retained_references = std::move(frame.retained_references);
             state.module_environment = frame.execution_context.module_environment;
             state.dynamic_environment = frame.execution_context.dynamic_environment;
             state.state = detail::GeneratorStateKind::suspended_yield;
