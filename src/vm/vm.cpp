@@ -692,6 +692,12 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             const std::size_t frame_index = frames_.size() - 1U;
             const std::size_t slot = frames_[frame_index].retained_references.size();
             frames_[frame_index].retained_references.emplace_back();
+            // Resolution itself can invoke user code (HasProperty and
+            // @@unscopables). Root both inputs before the first observable
+            // operation, not only after the selected Reference is published.
+            auto& resolution_root = frames_[frame_index].retained_references[slot];
+            resolution_root.environment = frames_[frame_index].execution_context.dynamic_environment;
+            resolution_root.static_binding = fallback;
             // Resolve into a local value: a reference to a vector element can
             // dangle when a property trap reenters this VM and grows its frames.
             DynamicBindingReference selected;
@@ -700,8 +706,12 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             auto* realm = frames_[frame_index].execution_context.realm;
             const auto resolved = resolve_dynamic_binding(*context_, active,
                 realm->global_environment(), name, strict, selected, fallback);
-            if (!resolved) return resolved.error();
+            if (!resolved) {
+                frames_[frame_index].retained_references[slot] = DynamicBindingReference{};
+                return resolved.error();
+            }
             if (!resolved.completion().is_normal()) {
+                frames_[frame_index].retained_references[slot] = DynamicBindingReference{};
                 if (auto routed = propagate_completion(resolved.completion(), instruction_pc, boundary_depth)) return *routed;
                 break;
             }
