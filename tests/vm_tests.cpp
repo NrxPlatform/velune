@@ -108,3 +108,52 @@ TEST_CASE("vm can return a same-runtime heap-backed constant") {
     REQUIRE(result->is_string());
     REQUIRE(result->as_string() == "hello bytecode");
 }
+
+TEST_CASE("retained dynamic Reference preserves static fallback across RHS mutation") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::bytecode::BytecodeBuilder builder;
+    builder.set_local_count(1U);
+    const auto name = builder.add_constant(context.string("retained_local"));
+    const auto initial = builder.add_constant(context.number(10));
+    const auto changed = builder.add_constant(context.number(30));
+    const auto assigned = builder.add_constant(context.number(21));
+    REQUIRE(name && initial && changed && assigned);
+    builder.emit_constant(*initial);
+    builder.emit_local(js::bytecode::OpCode::set_local, 0U);
+    builder.emit(js::bytecode::OpCode::pop);
+    builder.emit_dynamic_reference(*name, 1U, false);
+    builder.emit_constant(*changed);
+    builder.emit_local(js::bytecode::OpCode::set_local, 0U);
+    builder.emit(js::bytecode::OpCode::pop);
+    builder.emit_local(js::bytecode::OpCode::get_dynamic_ref, 0U);
+    builder.emit(js::bytecode::OpCode::pop);
+    builder.emit_constant(*assigned);
+    builder.emit_local(js::bytecode::OpCode::put_dynamic_ref, 0U);
+    builder.emit(js::bytecode::OpCode::pop);
+    builder.emit_local(js::bytecode::OpCode::get_dynamic_ref, 0U);
+    builder.emit_local(js::bytecode::OpCode::release_dynamic_ref, 0U);
+    builder.emit(js::bytecode::OpCode::return_);
+    js::VM vm(context);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(result);
+    REQUIRE(result->is_number());
+    REQUIRE(result->as_number() == 21.0);
+}
+
+TEST_CASE("retained dynamic Reference strict unresolvable assignment throws") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    js::bytecode::BytecodeBuilder builder;
+    const auto name = builder.add_constant(context.string("__velune_missing_strict_ref__"));
+    const auto value = builder.add_constant(context.number(7));
+    REQUIRE(name && value);
+    builder.emit_dynamic_reference(*name, 0U, true);
+    builder.emit_constant(*value);
+    builder.emit_local(js::bytecode::OpCode::put_dynamic_ref, 0U);
+    builder.emit(js::bytecode::OpCode::return_);
+    js::VM vm(context);
+    const auto result = vm.run(std::move(builder).finish());
+    REQUIRE(result);
+    REQUIRE(result.completion().is_throw());
+}

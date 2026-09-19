@@ -22,6 +22,8 @@ public:
     void emit_upvalue(OpCode opcode, std::uint32_t upvalue_index);
     void emit_module(OpCode opcode, std::uint32_t module_index);
     void emit_name(OpCode opcode, std::uint32_t name_constant_index);
+    // Resolve a binding once; the returned slot is internal to the VM frame.
+    void emit_dynamic_reference(std::uint32_t name_constant_index, std::uint32_t fallback_index, bool strict);
     void emit_argument(std::uint32_t index);
     void emit_rest_arguments(std::uint32_t start_index);
     void emit_closure(std::uint32_t function_constant_index);
