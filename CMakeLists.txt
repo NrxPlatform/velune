@@ -22,6 +22,7 @@ target_sources(jsengine
         src/runtime/runtime.cpp
         src/runtime/atom_table.cpp
         src/runtime/environment.cpp
+        src/runtime/dynamic_reference.cpp
         src/runtime/context.cpp
         src/runtime/abstract_operations.cpp
         src/runtime/value.cpp
