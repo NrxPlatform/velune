@@ -30,6 +30,7 @@ enum class HeapKind {
     upvalue,
     object,
     module_environment,
+    dynamic_environment,
 };
 
 
@@ -140,6 +141,7 @@ struct GeneratorState final {
     std::vector<HeapUpvalue*> upvalues;
     std::vector<HeapUpvalue*> captured_locals;
     struct HeapModuleEnvironment* module_environment{nullptr};
+    struct HeapDynamicEnvironment* dynamic_environment{nullptr};
 };
 
 struct HeapObject final : HeapCell {
@@ -212,6 +214,16 @@ struct HeapModuleEnvironment final : HeapCell {
     std::vector<ModuleBindingCell> bindings;
 };
 
+// GC-owned lifetime anchor for a materialized dynamic lexical environment.
+// Identifier resolution and WithStatement lowering are intentionally added in later patches.
+struct HeapDynamicEnvironment final : HeapCell {
+    HeapDynamicEnvironment(Runtime* runtime, Value object, HeapDynamicEnvironment* enclosing = nullptr)
+        : HeapCell(runtime, HeapKind::dynamic_environment), binding_object(object), outer(enclosing) {}
+
+    Value binding_object{Value::undefined()};
+    HeapDynamicEnvironment* outer{nullptr};
+};
+
 struct HeapFunction final : HeapCell {
     HeapFunction(Runtime* owner_runtime, Realm* owner_realm, std::shared_ptr<const FunctionCode> function_code, std::vector<HeapUpvalue*> function_upvalues = {}, HeapModuleEnvironment* function_module_environment = nullptr)
         : HeapCell(owner_runtime, HeapKind::function), realm(owner_realm), code(std::move(function_code)), upvalues(std::move(function_upvalues)), module_environment(function_module_environment) {}
@@ -222,6 +234,7 @@ struct HeapFunction final : HeapCell {
     std::shared_ptr<const FunctionCode> code;
     std::vector<HeapUpvalue*> upvalues;
     struct HeapModuleEnvironment* module_environment{nullptr};
+    HeapDynamicEnvironment* captured_dynamic_environment{nullptr};
     std::unordered_map<PropertyKey, PropertyDescriptor, PropertyKeyHash> properties;
     std::vector<PropertyKey> property_order;
     Value prototype{Value::null()};

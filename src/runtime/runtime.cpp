@@ -221,6 +221,7 @@ Value Runtime::make_closure(const detail::HeapFunction& prototype, std::vector<d
     auto cell = std::make_unique<detail::HeapFunction>(this, prototype.realm, prototype.code, std::move(upvalues), module_environment);
     cell->prototype = prototype.prototype;
     cell->home_object = prototype.home_object;
+    cell->captured_dynamic_environment = prototype.captured_dynamic_environment;
     auto* raw = cell.get();
     heap_.push_back(std::move(cell));
     const Value closure(raw);
@@ -246,6 +247,15 @@ Value Runtime::make_closure(const detail::HeapFunction& prototype, std::vector<d
 
 detail::HeapModuleEnvironment* Runtime::make_module_environment(std::size_t binding_count) {
     auto cell = std::make_unique<detail::HeapModuleEnvironment>(this, binding_count);
+    auto* raw = cell.get();
+    heap_.push_back(std::move(cell));
+    return raw;
+}
+
+detail::HeapDynamicEnvironment* Runtime::make_dynamic_environment(Value binding_object, detail::HeapDynamicEnvironment* outer) {
+    assert(owns(binding_object));
+    assert(outer == nullptr || outer->owner == this);
+    auto cell = std::make_unique<detail::HeapDynamicEnvironment>(this, binding_object, outer);
     auto* raw = cell.get();
     heap_.push_back(std::move(cell));
     return raw;
@@ -358,6 +368,7 @@ void Runtime::trace_cell(detail::HeapCell* cell) {
         auto* function = static_cast<detail::HeapFunction*>(cell);
         for (auto* upvalue : function->upvalues) mark_cell(upvalue);
         mark_cell(function->module_environment);
+        mark_cell(function->captured_dynamic_environment);
         if (function->lexical_this) mark_value(*function->lexical_this);
         mark_value(function->home_object);
         mark_value(function->bound_target);
@@ -376,6 +387,12 @@ void Runtime::trace_cell(detail::HeapCell* cell) {
     case detail::HeapKind::upvalue: {
         auto* upvalue = static_cast<detail::HeapUpvalue*>(cell);
         mark_value(upvalue->get());
+        break;
+    }
+    case detail::HeapKind::dynamic_environment: {
+        auto* environment = static_cast<detail::HeapDynamicEnvironment*>(cell);
+        mark_value(environment->binding_object);
+        mark_cell(environment->outer);
         break;
     }
     case detail::HeapKind::module_environment: {
@@ -398,6 +415,7 @@ void Runtime::trace_cell(detail::HeapCell* cell) {
             for (auto* upvalue : generator.upvalues) mark_cell(upvalue);
             for (auto* upvalue : generator.captured_locals) mark_cell(upvalue);
             mark_cell(generator.module_environment);
+            mark_cell(generator.dynamic_environment);
             if (generator.code && !generator.code->is_native()) mark_chunk(generator.code->chunk);
         }
         if (object->boxed_primitive) mark_value(*object->boxed_primitive);
@@ -435,6 +453,7 @@ void Runtime::mark_vm(const VM& vm) {
         for (const auto& pending : frame.pending_completions) mark_value(pending.completion.value());
         if (frame.construct_receiver) mark_value(*frame.construct_receiver);
         mark_cell(frame.execution_context.module_environment);
+        mark_cell(frame.execution_context.dynamic_environment);
     }
 }
 

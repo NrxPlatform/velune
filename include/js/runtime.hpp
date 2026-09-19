@@ -42,6 +42,7 @@ struct HeapFunction;
 struct HeapUpvalue;
 struct HeapObject;
 struct HeapModuleEnvironment;
+struct HeapDynamicEnvironment;
 struct SymbolRecord;
 }
 
@@ -151,6 +152,7 @@ private:
     [[nodiscard]] Value make_bound_function(Realm& realm, Value target, Value bound_this, std::span<const Value> bound_arguments);
     [[nodiscard]] Value make_closure(const detail::HeapFunction& prototype, std::vector<detail::HeapUpvalue*> upvalues, detail::HeapModuleEnvironment* module_environment = nullptr);
     [[nodiscard]] detail::HeapModuleEnvironment* make_module_environment(std::size_t binding_count);
+    [[nodiscard]] detail::HeapDynamicEnvironment* make_dynamic_environment(Value binding_object, detail::HeapDynamicEnvironment* outer = nullptr);
     [[nodiscard]] detail::HeapUpvalue* make_upvalue(BindingSlot* location);
     [[nodiscard]] bool owns(const Value& value) const noexcept;
 

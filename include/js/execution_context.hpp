@@ -9,6 +9,7 @@ class PrivateEnvironmentRecord;
 namespace detail {
 struct HeapFunction;
 struct HeapModuleEnvironment;
+struct HeapDynamicEnvironment;
 }
 
 // Compact runtime representation of the currently executing ECMAScript context.
@@ -18,6 +19,7 @@ struct ExecutionContext final {
     Realm* realm{nullptr};
     const detail::HeapFunction* function{nullptr};
     detail::HeapModuleEnvironment* module_environment{nullptr};
+    detail::HeapDynamicEnvironment* dynamic_environment{nullptr};
     EnvironmentRecord* lexical_environment{nullptr};
     EnvironmentRecord* variable_environment{nullptr};
     PrivateEnvironmentRecord* private_environment{nullptr};
