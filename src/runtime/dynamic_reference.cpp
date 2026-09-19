@@ -29,7 +29,8 @@ ExecutionResult has_with_binding(Context& context, Value object, std::string_vie
 
 ExecutionResult resolve_dynamic_binding(Context& context, detail::HeapDynamicEnvironment* active,
                                         GlobalEnvironmentRecord& global, std::string_view name,
-                                        bool strict, DynamicBindingReference& output) {
+                                        bool strict, DynamicBindingReference& output,
+                                        detail::HeapUpvalue* static_fallback) {
     // Do not publish a partially resolved Reference if a property trap throws.
     DynamicBindingReference candidate;
     candidate.name = std::string(name);
@@ -46,6 +47,12 @@ ExecutionResult resolve_dynamic_binding(Context& context, detail::HeapDynamicEnv
             return Completion::normal();
         }
     }
+    if (static_fallback != nullptr) {
+        candidate.target = DynamicBindingReference::Target::StaticBinding;
+        candidate.static_binding = static_fallback;
+        output = std::move(candidate);
+        return Completion::normal();
+    }
     candidate.target = global.has_binding(name)
         ? DynamicBindingReference::Target::GlobalEnvironment
         : DynamicBindingReference::Target::Unresolvable;
@@ -56,6 +63,12 @@ ExecutionResult resolve_dynamic_binding(Context& context, detail::HeapDynamicEnv
 ExecutionResult DynamicBindingReference::get(Context& context) const {
     if (target == Target::Unresolvable)
         return Completion::throw_(context.reference_error("binding '" + name + "' is not defined"));
+    if (target == Target::StaticBinding) {
+        if (static_binding == nullptr) return EngineFailure{EngineFailureCode::InternalInvariant, "missing static fallback"};
+        if (static_binding->state() == BindingState::Uninitialized)
+            return Completion::throw_(context.reference_error("cannot access lexical binding before initialization"));
+        return Completion::normal(static_binding->get());
+    }
     if (target == Target::GlobalEnvironment) return global->get_binding_value(name);
     const Value object = environment->binding_object;
     // A selected object environment is retained even if its property vanished.
@@ -70,6 +83,15 @@ ExecutionResult DynamicBindingReference::put(Context& context, Value value) cons
     if (target == Target::Unresolvable) {
         if (strict) return Completion::throw_(context.reference_error("binding '" + name + "' is not defined"));
         return global->set_mutable_binding(name, value, false);
+    }
+    if (target == Target::StaticBinding) {
+        if (static_binding == nullptr) return EngineFailure{EngineFailureCode::InternalInvariant, "missing static fallback"};
+        if (static_binding->state() == BindingState::Uninitialized)
+            return Completion::throw_(context.reference_error("cannot assign to lexical binding before initialization"));
+        if (static_binding->immutable())
+            return Completion::throw_(context.type_error("assignment to immutable binding"));
+        static_binding->set(value);
+        return Completion::normal();
     }
     if (target == Target::GlobalEnvironment) return global->set_mutable_binding(name, value, strict);
     const Value object = environment->binding_object;
@@ -89,6 +111,7 @@ ExecutionResult DynamicBindingReference::put(Context& context, Value value) cons
 
 ExecutionResult DynamicBindingReference::delete_binding(Context& context) const {
     if (target == Target::Unresolvable) return Completion::normal(Value::boolean(true));
+    if (target == Target::StaticBinding) return Completion::normal(Value::boolean(false));
     if (target == Target::GlobalEnvironment) {
         // Global lexical bindings are not deletable. The existing global record
         // does not yet expose a semantic DeleteBinding operation.
