@@ -19,6 +19,7 @@ struct Instruction final {
     OpCode opcode;
     std::uint32_t operand{0};
     std::uint32_t operand2{0};
+    std::uint32_t operand3{0};
     std::size_t next_pc{0};
 };
 
@@ -69,7 +70,7 @@ struct Instruction final {
     case OpCode::call_with_this:
     case OpCode::end_finally:
         return 1U;
-    case OpCode::resolve_dynamic_ref:
+    case OpCode::resolve_dynamic_ref: return 3U;
     case OpCode::call_method:
         return 2U;
     case OpCode::call_method_spread:
@@ -109,8 +110,10 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         if (code.size() - pc < count * sizeof(std::uint32_t)) return verification_error(instruction_pc, "truncated " + std::string(opcode_name(opcode)) + " operand");
         std::uint32_t operand = 0;
         std::uint32_t operand2 = 0;
+        std::uint32_t operand3 = 0;
         if (count >= 1U) { operand = read_u32(code, pc); pc += sizeof(std::uint32_t); }
         if (count >= 2U) { operand2 = read_u32(code, pc); pc += sizeof(std::uint32_t); }
+        if (count >= 3U) { operand3 = read_u32(code, pc); pc += sizeof(std::uint32_t); }
 
         if ((opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict || opcode == OpCode::resolve_dynamic_ref) && operand >= chunk.constant_count()) {
             return verification_error(instruction_pc, "constant index out of bounds");
@@ -125,7 +128,7 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
 
         if (opcode == OpCode::resolve_dynamic_ref && (operand2 & 0x7fffffffU) > chunk.local_count() + chunk.upvalue_count())
             return verification_error(instruction_pc, "dynamic Reference fallback index out of bounds");
-        instructions.emplace(instruction_pc, Instruction{opcode, operand, operand2, pc});
+        instructions.emplace(instruction_pc, Instruction{opcode, operand, operand2, operand3, pc});
         ++info.instruction_count;
     }
     boundaries.insert(code.size());

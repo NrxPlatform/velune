@@ -697,6 +697,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
         case bytecode::OpCode::resolve_dynamic_ref: {
             const auto name_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             const auto encoded_fallback = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            const auto slot = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             const bool strict = (encoded_fallback & 0x80000000U) != 0U;
             const auto fallback_index = encoded_fallback & 0x7fffffffU;
             detail::HeapUpvalue* fallback = nullptr;
@@ -708,8 +709,13 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             // Store the unresolved candidate in the frame before invoking any
             // observable property operations. Nested calls may relocate frames_.
             const std::size_t frame_index = frames_.size() - 1U;
-            const std::size_t slot = frames_[frame_index].retained_references.size();
-            frames_[frame_index].retained_references.emplace_back();
+            // Explicit slot identity is stable across loops, branches and nested resolution.
+            if (slot > frames_[frame_index].retained_references.size())
+                return Error{ErrorCode::vm_error, "dynamic Reference slot has a gap"};
+            if (slot == frames_[frame_index].retained_references.size())
+                frames_[frame_index].retained_references.emplace_back();
+            else if (!frames_[frame_index].retained_references[slot].name.empty())
+                return Error{ErrorCode::vm_error, "dynamic Reference slot is already live"};
             // Resolution itself can invoke user code (HasProperty and
             // @@unscopables). Root both inputs before the first observable
             // operation, not only after the selected Reference is published.

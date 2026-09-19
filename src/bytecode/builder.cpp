@@ -51,10 +51,11 @@ void BytecodeBuilder::emit_name(OpCode opcode, std::uint32_t name_constant_index
     emit_u32(name_constant_index);
 }
 
-void BytecodeBuilder::emit_dynamic_reference(std::uint32_t name_constant_index, std::uint32_t fallback_index, bool strict) {
+void BytecodeBuilder::emit_dynamic_reference(std::uint32_t name_constant_index, std::uint32_t fallback_index, bool strict, std::uint32_t slot) {
     emit(OpCode::resolve_dynamic_ref);
     emit_u32(name_constant_index);
     emit_u32((fallback_index & 0x7fffffffU) | (strict ? 0x80000000U : 0U));
+    emit_u32(slot);
 }
 
 void BytecodeBuilder::emit_argument(std::uint32_t index) {

@@ -100,7 +100,7 @@ enum class OpCode : std::uint8_t {
     end_finally,
     yield_,
     return_,
-    resolve_dynamic_ref, // u32 name constant, u32 fallback (bit 31 strict; low 31 bits: 0 none, 1..locals, then upvalues)
+    resolve_dynamic_ref, // u32 name constant, u32 fallback, u32 retained slot (bit 31 strict; low 31 bits: 0 none, 1..locals, then upvalues)
     get_dynamic_ref,     // u32 retained slot
     put_dynamic_ref,     // u32 retained slot; preserve top-of-stack RHS value
     delete_dynamic_ref,  // u32 retained slot; push boolean

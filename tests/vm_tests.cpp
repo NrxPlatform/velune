@@ -122,7 +122,7 @@ TEST_CASE("retained dynamic Reference preserves static fallback across RHS mutat
     builder.emit_constant(*initial);
     builder.emit_local(js::bytecode::OpCode::set_local, 0U);
     builder.emit(js::bytecode::OpCode::pop);
-    builder.emit_dynamic_reference(*name, 1U, false);
+    builder.emit_dynamic_reference(*name, 1U, false, 0U);
     builder.emit_constant(*changed);
     builder.emit_local(js::bytecode::OpCode::set_local, 0U);
     builder.emit(js::bytecode::OpCode::pop);
@@ -148,7 +148,7 @@ TEST_CASE("retained dynamic Reference strict unresolvable assignment throws") {
     const auto name = builder.add_constant(context.string("__velune_missing_strict_ref__"));
     const auto value = builder.add_constant(context.number(7));
     REQUIRE(name && value);
-    builder.emit_dynamic_reference(*name, 0U, true);
+    builder.emit_dynamic_reference(*name, 0U, true, 0U);
     builder.emit_constant(*value);
     builder.emit_local(js::bytecode::OpCode::put_dynamic_ref, 0U);
     builder.emit(js::bytecode::OpCode::return_);
@@ -170,9 +170,9 @@ TEST_CASE("retained outer Reference survives a handled inner abrupt completion")
     builder.emit_constant(*initial);
     builder.emit_local(js::bytecode::OpCode::set_local, 0U);
     builder.emit(js::bytecode::OpCode::pop);
-    builder.emit_dynamic_reference(*name, 1U, false); // slot 0: outside try
+    builder.emit_dynamic_reference(*name, 1U, false, 0U); // slot 0: outside try
     const auto try_start = static_cast<std::uint32_t>(builder.offset());
-    builder.emit_dynamic_reference(*name, 1U, false); // slot 1: abandoned
+    builder.emit_dynamic_reference(*name, 1U, false, 1U); // slot 1: abandoned
     builder.emit_constant(*exception);
     builder.emit(js::bytecode::OpCode::throw_);
     const auto try_end = static_cast<std::uint32_t>(builder.offset());
