@@ -95,6 +95,7 @@ public:
         : EnvironmentRecord(EnvironmentKind::Object, outer) {}
 
     void attach_binding_object(Context& context, Value binding_object) noexcept;
+    [[nodiscard]] Value binding_object() const noexcept { return binding_object_; }
     [[nodiscard]] bool has_object_binding(std::string_view name) const;
     [[nodiscard]] ExecutionResult get_object_binding_value(std::string_view name);
     [[nodiscard]] ExecutionResult set_object_binding_value(std::string_view name, Value value, bool strict);
@@ -125,6 +126,7 @@ public:
     [[nodiscard]] Result<void> initialize_lexical_binding(std::string_view name, Value value);
     [[nodiscard]] ExecutionResult set_mutable_binding(std::string_view name, Value value, bool strict = false);
     [[nodiscard]] ExecutionResult get_binding_value(std::string_view name);
+    [[nodiscard]] ExecutionResult delete_binding_semantic(std::string_view name);
     [[nodiscard]] std::vector<Value> binding_values() const;
 
 private:

@@ -185,6 +185,16 @@ ExecutionResult GlobalEnvironmentRecord::get_binding_value(std::string_view name
     return object_record_.get_object_binding_value(name);
 }
 
+ExecutionResult GlobalEnvironmentRecord::delete_binding_semantic(std::string_view name) {
+    // Declarative global bindings cannot be deleted. Object bindings obey
+    // the global object's [[Delete]] semantics, including configurability.
+    if (lexical_record_.has_binding(name))
+        return Completion::normal(Value::boolean(false));
+    if (context_ == nullptr || !object_record_.binding_object().is_object_like())
+        return EngineFailure{EngineFailureCode::InternalInvariant, "global environment has no binding object"};
+    return context_->delete_property_semantic(object_record_.binding_object(), context_->property_key(name));
+}
+
 std::vector<Value> GlobalEnvironmentRecord::binding_values() const {
     return lexical_record_.binding_values();
 }

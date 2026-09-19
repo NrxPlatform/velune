@@ -112,11 +112,8 @@ ExecutionResult DynamicBindingReference::put(Context& context, Value value) cons
 ExecutionResult DynamicBindingReference::delete_binding(Context& context) const {
     if (target == Target::Unresolvable) return Completion::normal(Value::boolean(true));
     if (target == Target::StaticBinding) return Completion::normal(Value::boolean(false));
-    if (target == Target::GlobalEnvironment) {
-        // Global lexical bindings are not deletable. The existing global record
-        // does not yet expose a semantic DeleteBinding operation.
-        return EngineFailure{EngineFailureCode::InternalInvariant, "global DeleteBinding requires global environment integration"};
-    }
+    if (target == Target::GlobalEnvironment)
+        return global->delete_binding_semantic(name);
     const auto deleted = context.delete_property_semantic(environment->binding_object, context.property_key(name));
     if (!deleted) return deleted.error();
     if (!deleted.completion().is_normal()) return deleted.completion();
