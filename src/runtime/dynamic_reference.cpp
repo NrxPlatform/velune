@@ -71,11 +71,17 @@ ExecutionResult DynamicBindingReference::get(Context& context) const {
     }
     if (target == Target::GlobalEnvironment) return global->get_binding_value(name);
     const Value object = environment->binding_object;
-    // A selected object environment is retained even if its property vanished.
+    // ObjectEnvironmentRecord.GetBindingValue performs HasProperty on the
+    // *selected* binding object. Do not rerun dynamic identifier resolution:
+    // the property can disappear during the original HasBinding/unscopables
+    // lookup, or its getter can delete it after this presence check.
     if (!object.is_object_like()) return EngineFailure{EngineFailureCode::InternalInvariant, "invalid with binding object"};
     const auto present = context.has_property(object, name);
     if (!present) return present.error();
-    if (!*present) return Completion::throw_(context.reference_error("binding '" + name + "' is not defined"));
+    if (!*present) {
+        if (strict) return Completion::throw_(context.reference_error("binding '" + name + "' is not defined"));
+        return Completion::normal(Value::undefined());
+    }
     return context.get_property_semantic(object, context.property_key(name), object);
 }
 
@@ -95,6 +101,12 @@ ExecutionResult DynamicBindingReference::put(Context& context, Value value) cons
     }
     if (target == Target::GlobalEnvironment) return global->set_mutable_binding(name, value, strict);
     const Value object = environment->binding_object;
+    // ObjectEnvironmentRecord.SetMutableBinding checks presence against the
+    // originally selected binding object, not the current environment chain.
+    const auto present = context.has_property(object, name);
+    if (!present) return present.error();
+    if (!*present && strict)
+        return Completion::throw_(context.reference_error("binding '" + name + "' is not defined"));
     const auto set = context.set_property_semantic(object, context.property_key(name), value, object);
     if (!set) return set.error();
     if (!set.completion().is_normal()) return set.completion();
@@ -102,10 +114,6 @@ ExecutionResult DynamicBindingReference::put(Context& context, Value value) cons
         return EngineFailure{EngineFailureCode::InternalInvariant, "object environment [[Set]] did not return boolean"};
     if (!set.completion().value().as_boolean() && strict)
         return Completion::throw_(context.type_error("assignment to non-writable property '" + name + "'"));
-    const auto present = context.has_property(object, name);
-    if (!present) return present.error();
-    if (!*present && strict)
-        return Completion::throw_(context.reference_error("binding '" + name + "' is not defined"));
     return Completion::normal();
 }
 

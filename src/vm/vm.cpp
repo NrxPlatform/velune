@@ -69,8 +69,8 @@ private:
     return {};
 }
 
-ExecutionResult generator_next_builtin(Context& context, Value receiver, std::span<const Value>) {
-    return context.resume_generator(receiver);
+ExecutionResult generator_next_builtin(Context& context, Value receiver, std::span<const Value> arguments) {
+    return context.resume_generator(receiver, arguments.empty() ? Value::undefined() : arguments.front());
 }
 
 ExecutionResult generator_iterator_builtin(Context&, Value receiver, std::span<const Value>) {
@@ -438,7 +438,7 @@ ExecutionResult VM::invoke_function(Value callee, std::uint32_t argument_count, 
     std::vector<BindingSlot> locals = make_local_slots(function->code->chunk);
     std::vector<detail::HeapUpvalue*> captured_locals(locals.size(), nullptr);
     const auto initialized = initialize_call_locals(locals, captured_locals); if (!initialized) return initialized.error();
-    frames_.push_back(Frame{&function->code->chunk, 0U, 0U, operand_base, this_value, std::move(locals), arguments, function->upvalues, std::move(captured_locals), {}, {}, construct_receiver, ExecutionContext{function->realm, function, function->module_environment, function->captured_dynamic_environment}});
+    frames_.push_back(Frame{&function->code->chunk, 0U, 0U, operand_base, this_value, std::move(locals), arguments, function->upvalues, std::move(captured_locals), {}, {}, {}, construct_receiver, ExecutionContext{function->realm, function, function->module_environment, function->captured_dynamic_environment}});
     if (frames_.size() > maximum_frame_depth_) maximum_frame_depth_ = frames_.size();
     frame_pushed = true;
     return Completion::normal(Value::undefined());
@@ -607,9 +607,11 @@ ExecutionResult VM::resume_generator(Value generator, Value input) {
             stack_.insert(stack_.end(), state.stack.begin(), state.stack.end());
             state.stack.clear();
             frames_.push_back(Frame{&state.code->chunk, state.pc, state.last_instruction_pc, stack_base, state.this_value,
-                std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, {},
+                std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, {}, {},
                 std::nullopt, ExecutionContext{state.realm, state.function, state.module_environment, state.dynamic_environment}});
             frames_.back().retained_references = std::move(state.retained_references);
+            for (const auto& region : state.with_regions) frames_.back().with_regions.push_back(WithRegion{region.first, region.second});
+            state.with_regions.clear();
             if (resuming_yield) stack_.push_back(input);
             if (frames_.size() > maximum_frame_depth_) maximum_frame_depth_ = frames_.size();
             const Value previous_active = active_generator_;
@@ -657,14 +659,16 @@ ExecutionResult VM::run_impl(const bytecode::BytecodeChunk& chunk, detail::HeapM
         const bool resuming_yield = state.state == detail::GeneratorStateKind::suspended_yield;
         state.state = detail::GeneratorStateKind::executing;
         stack_ = std::move(state.stack);
-        frames_.push_back(Frame{&chunk, state.pc, state.last_instruction_pc, 0U, state.this_value, std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, {}, std::nullopt, ExecutionContext{state.realm, state.function, state.module_environment, state.dynamic_environment}});
+        frames_.push_back(Frame{&chunk, state.pc, state.last_instruction_pc, 0U, state.this_value, std::move(state.locals), std::move(state.actual_arguments), state.upvalues, std::move(state.captured_locals), {}, {}, {}, std::nullopt, ExecutionContext{state.realm, state.function, state.module_environment, state.dynamic_environment}});
         frames_.back().retained_references = std::move(state.retained_references);
+        for (const auto& region : state.with_regions) frames_.back().with_regions.push_back(WithRegion{region.first, region.second});
+        state.with_regions.clear();
         if (resuming_yield) stack_.push_back(resume_input);
     } else {
         std::vector<BindingSlot> root_locals = make_local_slots(chunk);
         std::vector<detail::HeapUpvalue*> root_captures(root_locals.size(), nullptr);
         const Value root_this = module_environment == nullptr ? context_->realm().global_object() : Value::undefined();
-        frames_.push_back(Frame{&chunk, 0U, 0U, 0U, root_this, std::move(root_locals), {}, {}, std::move(root_captures), {}, {}, std::nullopt, ExecutionContext{&context_->realm(), nullptr, module_environment, nullptr, &context_->realm().global_environment(), &context_->realm().global_environment(), nullptr}});
+        frames_.push_back(Frame{&chunk, 0U, 0U, 0U, root_this, std::move(root_locals), {}, {}, std::move(root_captures), {}, {}, {}, std::nullopt, ExecutionContext{&context_->realm(), nullptr, module_environment, nullptr, &context_->realm().global_environment(), &context_->realm().global_environment(), nullptr}});
     }
     maximum_frame_depth_ = 1U;
     if (module_environment != nullptr && generator == nullptr) {
@@ -687,6 +691,13 @@ ExecutionResult VM::run_impl(const bytecode::BytecodeChunk& chunk, detail::HeapM
 ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject* generator) {
     while (!frames_.empty()) {
         Frame& frame = frames_.back();
+        while (!frame.with_regions.empty() &&
+               (frame.pc < frame.with_regions.back().begin_pc || frame.pc >= frame.with_regions.back().end_pc)) {
+            if (frame.execution_context.dynamic_environment == nullptr)
+                return Error{ErrorCode::vm_error, "WITH environment stack underflow"};
+            frame.execution_context.dynamic_environment = frame.execution_context.dynamic_environment->outer;
+            frame.with_regions.pop_back();
+        }
         const auto& code = frame.chunk->code();
         if (frame.pc >= code.size()) return Error{ErrorCode::vm_error, "execution frame reached end without RETURN"};
         const std::size_t instruction_pc = frame.pc;
@@ -694,26 +705,53 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
         const auto opcode = static_cast<bytecode::OpCode>(code[frame.pc++]);
 
         switch (opcode) {
+        case bytecode::OpCode::enter_with: {
+            const auto end_pc = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "ENTER_WITH stack underflow"};
+            const Value candidate = stack_.back();
+            const auto object = abstract_operations::to_object(*context_, candidate);
+            if (!object) return object.error();
+            if (!object.completion().is_normal()) {
+                if (auto routed = propagate_completion(object.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            const auto frame_index = frames_.size() - 1U;
+            // Keep converted object rooted on the operand stack during allocation.
+            stack_.back() = object.completion().value();
+            auto* environment = context_->runtime().make_dynamic_environment(stack_.back(), frames_[frame_index].execution_context.dynamic_environment);
+            frames_[frame_index].execution_context.dynamic_environment = environment;
+            frames_[frame_index].with_regions.push_back(WithRegion{frames_[frame_index].pc, end_pc});
+            stack_.pop_back();
+            break;
+        }
+        case bytecode::OpCode::leave_with: {
+            if (frame.with_regions.empty() || frame.execution_context.dynamic_environment == nullptr)
+                return Error{ErrorCode::vm_error, "LEAVE_WITH without an active WITH region"};
+            frame.execution_context.dynamic_environment = frame.execution_context.dynamic_environment->outer;
+            frame.with_regions.pop_back();
+            break;
+        }
         case bytecode::OpCode::resolve_dynamic_ref: {
             const auto name_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             const auto encoded_fallback = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             const auto slot = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             const bool strict = (encoded_fallback & 0x80000000U) != 0U;
-            const auto fallback_index = encoded_fallback & 0x7fffffffU;
+            const bool fallback_is_upvalue = (encoded_fallback & 0x40000000U) != 0U;
+            const auto fallback_index = encoded_fallback & 0x3fffffffU;
             detail::HeapUpvalue* fallback = nullptr;
             if (fallback_index != 0U) {
-                if (fallback_index <= frame.locals.size())
-                    fallback = capture_local(frame, fallback_index - 1U);
-                else fallback = frame.upvalues[fallback_index - 1U - frame.locals.size()];
+                fallback = fallback_is_upvalue ? frame.upvalues[fallback_index - 1U]
+                                             : capture_local(frame, fallback_index - 1U);
             }
             // Store the unresolved candidate in the frame before invoking any
             // observable property operations. Nested calls may relocate frames_.
             const std::size_t frame_index = frames_.size() - 1U;
             // Explicit slot identity is stable across loops, branches and nested resolution.
-            if (slot > frames_[frame_index].retained_references.size())
-                return Error{ErrorCode::vm_error, "dynamic Reference slot has a gap"};
-            if (slot == frames_[frame_index].retained_references.size())
-                frames_[frame_index].retained_references.emplace_back();
+            if (slot > code.size()) return Error{ErrorCode::vm_error, "dynamic Reference slot exceeds bytecode size"};
+            // Statically numbered slots may be skipped by conditional branches.
+            // An empty gap is not a live Reference and is GC-neutral.
+            if (slot >= frames_[frame_index].retained_references.size())
+                frames_[frame_index].retained_references.resize(slot + 1U);
             else if (!frames_[frame_index].retained_references[slot].name.empty())
                 return Error{ErrorCode::vm_error, "dynamic Reference slot is already live"};
             // Resolution itself can invoke user code (HasProperty and
@@ -744,6 +782,8 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             break;
         }
         case bytecode::OpCode::get_dynamic_ref:
+        case bytecode::OpCode::typeof_dynamic_ref:
+        case bytecode::OpCode::this_dynamic_ref:
         case bytecode::OpCode::put_dynamic_ref:
         case bytecode::OpCode::delete_dynamic_ref:
         case bytecode::OpCode::release_dynamic_ref: {
@@ -756,6 +796,17 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                 frames_[frame_index].retained_references[slot] = DynamicBindingReference{};
                 break;
             }
+            if (opcode == bytecode::OpCode::this_dynamic_ref) {
+                const auto& selected = frames_[frame_index].retained_references[slot];
+                stack_.push_back(selected.target == DynamicBindingReference::Target::ObjectEnvironment
+                    ? selected.environment->binding_object : Value::undefined());
+                break;
+            }
+            if (opcode == bytecode::OpCode::typeof_dynamic_ref &&
+                frames_[frame_index].retained_references[slot].target == DynamicBindingReference::Target::Unresolvable) {
+                stack_.push_back(Value::undefined());
+                break;
+            }
             // Copy before calling into JS: getter/setter/proxy reentry may
             // relocate the owning frame and its retained-reference vector.
             const DynamicBindingReference selected = frames_[frame_index].retained_references[slot];
@@ -763,7 +814,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                 return Error{ErrorCode::vm_error, "PUT_DYNAMIC_REF requires a value"};
             const Value assigned = opcode == bytecode::OpCode::put_dynamic_ref
                 ? stack_.back() : Value::undefined();
-            const auto result = opcode == bytecode::OpCode::get_dynamic_ref
+            const auto result = (opcode == bytecode::OpCode::get_dynamic_ref || opcode == bytecode::OpCode::typeof_dynamic_ref)
                 ? selected.get(*context_)
                 : opcode == bytecode::OpCode::delete_dynamic_ref
                     ? selected.delete_binding(*context_)
@@ -940,6 +991,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
                 }
             }
             Value closure = context_->runtime().make_closure(*prototype, std::move(captures), frame.execution_context.module_environment);
+            const_cast<detail::HeapFunction*>(closure.as_heap_function())->captured_dynamic_environment = frame.execution_context.dynamic_environment;
             if (prototype->code->this_mode == ThisMode::Lexical) {
                 const_cast<detail::HeapFunction*>(closure.as_heap_function())->lexical_this = frame.this_value;
             }
@@ -1704,7 +1756,7 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
         }
         case bytecode::OpCode::yield_: {
             if (generator == nullptr) return Error{ErrorCode::vm_error, "YIELD executed outside generator resumption"};
-            if (stack_.size() != frame.stack_base + 1U) return Error{ErrorCode::vm_error, "YIELD requires exactly one current-frame yielded value"};
+            if (stack_.size() <= frame.stack_base) return Error{ErrorCode::vm_error, "YIELD requires a yielded value"};
             const Value yielded = stack_.back();
             stack_.pop_back();
             auto& state = generator->generator_state;
@@ -1718,6 +1770,8 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
             state.upvalues = frame.upvalues;
             state.captured_locals = std::move(frame.captured_locals);
             state.retained_references = std::move(frame.retained_references);
+            for (const auto& region : frame.with_regions) state.with_regions.emplace_back(region.begin_pc, region.end_pc);
+            frame.with_regions.clear();
             state.module_environment = frame.execution_context.module_environment;
             state.dynamic_environment = frame.execution_context.dynamic_environment;
             state.state = detail::GeneratorStateKind::suspended_yield;

@@ -123,6 +123,9 @@ void ScopeStack::collect_var_names(const std::vector<std::unique_ptr<frontend::A
             if (statement.alternate) self(self, statement.alternate.get());
             break;
         }
+        case frontend::ASTNodeType::WITH_STATEMENT:
+            self(self, static_cast<const frontend::WithStatementNode&>(*node).body.get());
+            break;
         case frontend::ASTNodeType::WHILE_STATEMENT:
             self(self, static_cast<const frontend::WhileStatementNode&>(*node).body.get());
             break;

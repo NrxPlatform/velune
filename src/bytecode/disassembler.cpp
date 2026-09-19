@@ -17,11 +17,12 @@ namespace {
 }
 [[nodiscard]] std::size_t operand_count(OpCode opcode) noexcept {
     switch (opcode) {
-    case OpCode::get_dynamic_ref: case OpCode::put_dynamic_ref: case OpCode::delete_dynamic_ref: case OpCode::release_dynamic_ref:
+    case OpCode::get_dynamic_ref: case OpCode::typeof_dynamic_ref: case OpCode::this_dynamic_ref: case OpCode::put_dynamic_ref: case OpCode::delete_dynamic_ref: case OpCode::release_dynamic_ref:
     case OpCode::constant: case OpCode::get_local: case OpCode::set_local: case OpCode::initialize_local: case OpCode::reset_local: case OpCode::clone_local_binding: case OpCode::get_upvalue: case OpCode::get_module: case OpCode::get_name: case OpCode::get_name_or_undefined: case OpCode::set_upvalue: case OpCode::set_module: case OpCode::set_name: case OpCode::set_name_strict:
     case OpCode::closure: case OpCode::define_property: case OpCode::define_getter: case OpCode::get_property: case OpCode::set_property: case OpCode::set_property_strict:
     case OpCode::delete_property: case OpCode::delete_property_strict:
     case OpCode::jump_if_false: case OpCode::jump: case OpCode::call: case OpCode::construct: case OpCode::call_element: case OpCode::end_finally: return 1U;
+    case OpCode::enter_with: return 1U;
     case OpCode::resolve_dynamic_ref: return 3U;
     case OpCode::call_method: return 2U;
     case OpCode::call_method_spread: return 1U;

@@ -1422,7 +1422,7 @@ void Context::ensure_builtins(Realm& realm) {
     (void)set_own_property(realm.symbol_prototype_, "toString", native_function_in_realm(realm, "toString", 0, builtin_symbol_to_string));
     (void)set_own_property(symbol_ns, "for", native_function_in_realm(realm, "for", 1, builtin_symbol_for));
     (void)set_own_property(symbol_ns, "keyFor", native_function_in_realm(realm, "keyFor", 1, builtin_symbol_key_for));
-    for (const std::string_view name : {"iterator", "asyncIterator", "toPrimitive", "toStringTag", "hasInstance", "species", "match", "matchAll", "replace", "search", "split"}) {
+    for (const std::string_view name : {"iterator", "asyncIterator", "toPrimitive", "toStringTag", "hasInstance", "species", "unscopables", "match", "matchAll", "replace", "search", "split"}) {
         (void)set_own_property(symbol_ns, name, runtime_->well_known_symbol(name));
     }
     auto install_global = [&](std::string name, Value value) {

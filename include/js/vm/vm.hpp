@@ -42,6 +42,10 @@ private:
         std::uint32_t finally_start;
     };
 
+    struct WithRegion final {
+        std::size_t begin_pc;
+        std::size_t end_pc;
+    };
     struct Frame final {
         const bytecode::BytecodeChunk* chunk;
         std::size_t pc;
@@ -53,6 +57,7 @@ private:
         std::vector<detail::HeapUpvalue*> upvalues;
         std::vector<detail::HeapUpvalue*> captured_locals;
         std::vector<DynamicBindingReference> retained_references;
+        std::vector<WithRegion> with_regions;
         std::vector<PendingFinally> pending_completions;
         std::optional<Value> construct_receiver;
         ExecutionContext execution_context;

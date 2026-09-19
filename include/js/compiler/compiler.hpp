@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 #include <unordered_map>
+#include <utility>
 
 #include <js/bytecode/builder.hpp>
 #include <js/bytecode/chunk.hpp>
@@ -155,6 +156,14 @@ private:
     bool in_generator_{false};
     bool strict_{false};
     std::uint32_t next_dynamic_reference_slot_{0};
+    std::size_t with_depth_{0};
+    bool may_capture_with_{false};
+    // AST ranges of active with bodies, innermost last. A lexical binding
+    // declared inside the innermost body cannot be intercepted by that with.
+    std::vector<std::pair<std::size_t, std::size_t>> with_body_ranges_;
+    [[nodiscard]] bool direct_binding_preferred(std::string_view name) const noexcept;
+    [[nodiscard]] Result<void> compile_with(const frontend::WithStatementNode& statement);
+    [[nodiscard]] Result<std::uint32_t> dynamic_fallback(std::string_view name, const frontend::ASTNode& use);
     std::size_t protected_finally_depth_{0};
     std::vector<ControlContext> controls_;
 };

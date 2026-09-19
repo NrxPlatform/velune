@@ -137,6 +137,7 @@ Compiler::Compiler(Context& context, Compiler* parent)
     : context_(&context), parent_(parent), scopes_(std::make_unique<detail::ScopeStack>()) {
     if (parent_ != nullptr) {
         strict_ = parent_->strict_;
+        may_capture_with_ = parent_->with_depth_ != 0 || parent_->may_capture_with_;
         module_imports_ = parent_->module_imports_;
         module_binding_count_ = parent_->module_binding_count_;
         module_mode_ = parent_->module_mode_;
@@ -241,11 +242,29 @@ Result<std::uint32_t> Compiler::add_property_key(std::string_view key) {
     return builder_.add_constant(context_->string(key));
 }
 
+bool Compiler::direct_binding_preferred(std::string_view name) const noexcept {
+    const auto* binding = scopes_->find_binding(name);
+    if (binding == nullptr) return false;
+    if (with_depth_ == 0) {
+        // In a nested closure, its own parameter/var/lexical bindings are
+        // inside the captured with environment and cannot be intercepted.
+        return true;
+    }
+    if (with_body_ranges_.empty()) return false;
+    // Var bindings are instantiated in VariableEnvironment, outside with.
+    // Lexical bindings declared in a block inside the innermost with body
+    // shadow its object environment and retain the ordinary slot fast path.
+    if (binding->kind == detail::BindingKind::var_binding) return false;
+    const auto& body = with_body_ranges_.back();
+    return binding->declaration_start >= body.first &&
+           binding->declaration_end <= body.second;
+}
+
 Result<Compiler::CompiledReference> Compiler::compile_reference(const frontend::ASTNode& target) {
     if (const auto* identifier = as_identifier(&target)) {
         CompiledReference reference;
         reference.strict = strict_;
-        if (is_unresolvable_reference(*identifier)) {
+        if (!direct_binding_preferred(identifier->name) && (with_depth_ != 0 || may_capture_with_ || is_unresolvable_reference(*identifier))) {
             const auto name = add_property_key(identifier->name);
             if (!name) return name.error();
             reference.kind = ReferenceKind::runtime_environment;
@@ -253,7 +272,9 @@ Result<Compiler::CompiledReference> Compiler::compile_reference(const frontend::
             // Each syntactic Reference gets its own slot. A loop reuses its
             // slot only after the emitted RELEASE on the normal path.
             reference.base_slot = next_dynamic_reference_slot_++;
-            builder_.emit_dynamic_reference(reference.name_constant, 0U,
+            const auto fallback = dynamic_fallback(identifier->name, *identifier);
+            if (!fallback) return fallback.error();
+            builder_.emit_dynamic_reference(reference.name_constant, *fallback,
                                             reference.strict, reference.base_slot);
             return reference;
         }
@@ -486,10 +507,15 @@ Result<void> Compiler::compile_logical(const frontend::LogicalExprNode& logical)
 
 Result<void> Compiler::compile_unary(const frontend::UnaryExprNode& unary) {
     if (unary.op == frontend::TokenKind::TYPEOF) {
-        if (const auto* identifier = as_identifier(unary.argument.get()); identifier != nullptr && is_unresolvable_reference(*identifier)) {
+        if (const auto* identifier = as_identifier(unary.argument.get()); identifier != nullptr && with_depth_ == 0 && !may_capture_with_ && is_unresolvable_reference(*identifier)) {
             const auto name = add_property_key(identifier->name);
             if (!name) return name.error();
             builder_.emit_name(bytecode::OpCode::get_name_or_undefined, *name);
+        } else if (const auto* with_identifier = as_identifier(unary.argument.get());
+                   with_identifier != nullptr && (with_depth_ != 0 || may_capture_with_) && !direct_binding_preferred(with_identifier->name)) {
+            const auto reference = compile_reference(*with_identifier); if (!reference) return reference.error();
+            builder_.emit_local(bytecode::OpCode::typeof_dynamic_ref, reference->base_slot);
+            builder_.emit_local(bytecode::OpCode::release_dynamic_ref, reference->base_slot);
         } else {
             const auto operand = compile_expression(*unary.argument); if (!operand) return operand.error();
         }
@@ -507,6 +533,13 @@ Result<void> Compiler::compile_unary(const frontend::UnaryExprNode& unary) {
     if (unary.op == frontend::TokenKind::DELETE) {
         if (const auto* identifier = as_identifier(unary.argument.get())) {
             if (strict_) return error_at(unary, "delete of an unqualified identifier is not permitted in strict code");
+            if ((with_depth_ != 0 || may_capture_with_) && !direct_binding_preferred(identifier->name)) {
+                const auto reference = compile_reference(*identifier);
+                if (!reference) return reference.error();
+                builder_.emit_local(bytecode::OpCode::delete_dynamic_ref, reference->base_slot);
+                builder_.emit_local(bytecode::OpCode::release_dynamic_ref, reference->base_slot);
+                return {};
+            }
             bool resolvable = scopes_->find_binding(identifier->name) != nullptr;
             if (!resolvable && parent_ != nullptr) resolvable = parent_->resolve_capture(identifier->name).has_value();
             if (!resolvable) {
@@ -805,6 +838,15 @@ Result<void> Compiler::compile_call(const frontend::CallExprNode& call) {
         }
         return {};
     }
+    if (call.callee && call.callee->type == frontend::ASTNodeType::IDENTIFIER && (with_depth_ != 0 || may_capture_with_) && !direct_binding_preferred(static_cast<const frontend::IdentifierNode&>(*call.callee).name)) {
+        const auto reference = compile_reference(*call.callee); if (!reference) return reference.error();
+        const auto callee = emit_get_value(*reference); if (!callee) return callee.error();
+        builder_.emit_local(bytecode::OpCode::this_dynamic_ref, reference->base_slot);
+        builder_.emit_local(bytecode::OpCode::release_dynamic_ref, reference->base_slot);
+        if (has_spread) { const auto args = compile_argument_array(call.arguments); if (!args) return args.error(); builder_.emit_call_with_this_spread(); }
+        else { for (const auto& argument : call.arguments) { const auto r = compile_expression(*argument); if (!r) return r.error(); } builder_.emit_call_with_this(static_cast<std::uint32_t>(call.arguments.size())); }
+        return {};
+    }
     const auto callee = compile_expression(*call.callee); if (!callee) return callee.error();
     if (has_spread) { const auto args=compile_argument_array(call.arguments); if(!args) return args.error(); builder_.emit(bytecode::OpCode::call_spread); }
     else { for (const auto& argument : call.arguments) { const auto r=compile_expression(*argument); if(!r) return r.error(); } builder_.emit_call(static_cast<std::uint32_t>(call.arguments.size())); }
@@ -1090,7 +1132,7 @@ Result<void> Compiler::compile_expression(const frontend::ASTNode& node) {
     }
     case frontend::ASTNodeType::IDENTIFIER: {
         const auto& identifier = static_cast<const frontend::IdentifierNode&>(node);
-        if (!is_unresolvable_reference(identifier)) {
+        if (direct_binding_preferred(identifier.name) || (with_depth_ == 0 && !may_capture_with_ && !is_unresolvable_reference(identifier))) {
             const auto binding = resolve_read(identifier.name, identifier);
             if (!binding) return binding.error();
             emit_get(*binding);
@@ -1098,7 +1140,11 @@ Result<void> Compiler::compile_expression(const frontend::ASTNode& node) {
         }
         const auto name = add_property_key(identifier.name);
         if (!name) return name.error();
-        builder_.emit_name(bytecode::OpCode::get_name, *name);
+        if (with_depth_ != 0 || may_capture_with_) {
+            const auto reference = compile_reference(identifier); if (!reference) return reference.error();
+            const auto get = emit_get_value(*reference); if (!get) return get.error();
+            builder_.emit_local(bytecode::OpCode::release_dynamic_ref, reference->base_slot);
+        } else builder_.emit_name(bytecode::OpCode::get_name, *name);
         return {};
     }
     case frontend::ASTNodeType::THIS_EXPR:
@@ -1305,7 +1351,17 @@ Result<void> Compiler::compile_variable_declaration(const frontend::VariableDecl
             if (declarator->init) {
                 const auto initializer = compile_expression(*declarator->init); if (!initializer) return initializer.error();
             } else builder_.emit(bytecode::OpCode::undefined);
-            builder_.emit_local(declaration.kind == frontend::VariableKind::VAR ? bytecode::OpCode::set_local : bytecode::OpCode::initialize_local, binding.value()->slot);
+            if (declaration.kind == frontend::VariableKind::VAR && (with_depth_ != 0 || may_capture_with_)) {
+                // Declaration instantiation targets VariableEnvironment, while
+                // the initializer evaluates as an AssignmentExpression in the
+                // current LexicalEnvironment (which may include a with object).
+                const auto target = compile_reference(identifier);
+                if (!target) return target.error();
+                const auto put = emit_put_value(*target);
+                if (!put) return put.error();
+            } else {
+                builder_.emit_local(declaration.kind == frontend::VariableKind::VAR ? bytecode::OpCode::set_local : bytecode::OpCode::initialize_local, binding.value()->slot);
+            }
             builder_.emit(bytecode::OpCode::pop);
             scopes_->mark_initialized(*binding.value());
             continue;
@@ -1872,6 +1928,33 @@ Result<void> Compiler::compile_block(const frontend::BlockStatementNode& block) 
     return body;
 }
 
+Result<std::uint32_t> Compiler::dynamic_fallback(std::string_view name, const frontend::ASTNode& use) {
+    if (is_unresolvable_reference(use)) return 0U;
+    const auto binding = resolve_read(name, use);
+    if (!binding) return binding.error();
+    if (binding->storage == BindingStorage::module) return error_at(use, "module binding cannot be a WITH static fallback");
+    if (binding->index >= 0x3ffffffeU) return error_at(use, "WITH fallback binding index overflow");
+    return (binding->index + 1U) | (binding->storage == BindingStorage::upvalue ? 0x40000000U : 0U);
+}
+
+Result<void> Compiler::compile_with(const frontend::WithStatementNode& statement) {
+    if (strict_) return error_at(statement, "with statement is forbidden in strict mode");
+    const auto object = compile_expression(*statement.object);
+    if (!object) return object.error();
+    const auto end_patch = builder_.emit_jump(bytecode::OpCode::enter_with);
+    ++with_depth_;
+    with_body_ranges_.emplace_back(statement.body->start, statement.body->end);
+    const auto body = compile_statement(*statement.body, false);
+    with_body_ranges_.pop_back();
+    --with_depth_;
+    if (!body) return body.error();
+    builder_.emit(bytecode::OpCode::leave_with);
+    if (builder_.offset() > static_cast<std::size_t>(std::numeric_limits<std::uint32_t>::max()))
+        return error_at(statement, "WITH body exceeds bytecode address space");
+    builder_.patch_jump(end_patch, static_cast<std::uint32_t>(builder_.offset()));
+    return {};
+}
+
 Result<void> Compiler::compile_statement(const frontend::ASTNode& node, bool preserve_expression_value) {
     switch (node.type) {
     case frontend::ASTNodeType::VARIABLE_DECLARATION: return compile_variable_declaration(static_cast<const frontend::VariableDeclarationNode&>(node));
@@ -1881,7 +1964,7 @@ Result<void> Compiler::compile_statement(const frontend::ASTNode& node, bool pre
     case frontend::ASTNodeType::THROW_STATEMENT: return compile_throw(static_cast<const frontend::ThrowStatementNode&>(node));
     case frontend::ASTNodeType::TRY_STATEMENT: return compile_try(static_cast<const frontend::TryStatementNode&>(node));
     case frontend::ASTNodeType::IF_STATEMENT: return compile_if(static_cast<const frontend::IfStatementNode&>(node));
-    case frontend::ASTNodeType::WITH_STATEMENT: return error_at(node, "with statement requires dynamic-environment entry and compiler Reference lowering");
+    case frontend::ASTNodeType::WITH_STATEMENT: return compile_with(static_cast<const frontend::WithStatementNode&>(node));
     case frontend::ASTNodeType::WHILE_STATEMENT: return compile_while(static_cast<const frontend::WhileStatementNode&>(node));
     case frontend::ASTNodeType::DO_WHILE_STATEMENT: return compile_do_while(static_cast<const frontend::DoWhileStatementNode&>(node));
     case frontend::ASTNodeType::FOR_STATEMENT: return compile_for(static_cast<const frontend::ForStatementNode&>(node));

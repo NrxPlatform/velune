@@ -770,3 +770,110 @@ TEST_CASE("return statement accepts a comma expression and returns its final val
     const auto result = eval(context, "function f(){ return 1, 2, 3; } f()");
     REQUIRE(result && result->is_number() && result->as_number() == 3.0);
 }
+
+// P10.4: A Reference selects its ObjectEnvironmentRecord at resolution time.
+// Reading through its accessor may delete the binding before PutValue.
+// This is the permanent with/getter-deletion acceptance case.
+TEST_CASE("with prefix update retains object binding when getter deletes its property") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var x = 10;
+        var scope = {
+            get x() {
+                delete scope.x;
+                return 20;
+            }
+        };
+        with (scope) {
+            var result = ++x;
+        }
+        result === 21 && scope.x === 21 && x === 10;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}
+
+TEST_CASE("with dynamic reference retains object across RHS side effects") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var x = 1, obj = {x: 10};
+        with (obj) { x += (function() { delete obj.x; return 5; })(); }
+        obj.x === 15 && x === 1;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}
+
+TEST_CASE("with closure retains dynamic environment after statement exits") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var obj = {x: 3}, closure;
+        with (obj) { closure = function() { return x; }; }
+        closure() === 3;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}
+
+TEST_CASE("with generator suspension retains object binding across resume") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var x = 1, obj = {x: 3};
+        function* f() { with (obj) { x += (yield 4); } }
+        var generator = f(), first = generator.next(), second = generator.next(5);
+        first.value === 4 && obj.x === 8 && x === 1;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}
+
+TEST_CASE("with unscopables deletion preserves strict object environment error") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var obj = {x: 1, get [Symbol.unscopables]() { delete obj.x; return null; }};
+        var threw = false;
+        with (obj) {
+            try { (function() { "use strict"; return x; })(); }
+            catch (error) { threw = error instanceof ReferenceError; }
+        }
+        threw;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}
+
+TEST_CASE("with captured environment cannot intercept closure parameter") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var x = 20, scope = {x: 4}, closure;
+        with (scope) { closure = function(x) { return x + 1; }; }
+        closure(8) === 9 && scope.x === 4;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}
+
+TEST_CASE("with object cannot intercept lexical binding declared inside its body") {
+    js::Runtime runtime;
+    js::Context context(runtime);
+    const auto result = eval(context, R"JS(
+        var x = 20, scope = {x: 4}, result = 0;
+        with (scope) { { let x = 8; result = x + 1; } }
+        result === 9 && scope.x === 4;
+    )JS");
+    REQUIRE(result);
+    REQUIRE(result->is_boolean());
+    REQUIRE(result->as_boolean());
+}

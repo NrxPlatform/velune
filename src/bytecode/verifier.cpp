@@ -33,6 +33,8 @@ struct Instruction final {
 [[nodiscard]] std::size_t operand_count(OpCode opcode) noexcept {
     switch (opcode) {
     case OpCode::get_dynamic_ref:
+    case OpCode::typeof_dynamic_ref:
+    case OpCode::this_dynamic_ref:
     case OpCode::put_dynamic_ref:
     case OpCode::delete_dynamic_ref:
     case OpCode::release_dynamic_ref:
@@ -70,6 +72,7 @@ struct Instruction final {
     case OpCode::call_with_this:
     case OpCode::end_finally:
         return 1U;
+    case OpCode::enter_with: return 1U;
     case OpCode::resolve_dynamic_ref: return 3U;
     case OpCode::call_method:
         return 2U;
@@ -104,7 +107,7 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         const std::size_t instruction_pc = pc;
         boundaries.insert(instruction_pc);
         const auto raw = code[pc++];
-        if (raw > static_cast<std::uint8_t>(OpCode::release_dynamic_ref)) return verification_error(instruction_pc, "unknown opcode " + std::to_string(raw));
+        if (raw > static_cast<std::uint8_t>(OpCode::leave_with)) return verification_error(instruction_pc, "unknown opcode " + std::to_string(raw));
         const auto opcode = static_cast<OpCode>(raw);
         const std::size_t count = operand_count(opcode);
         if (code.size() - pc < count * sizeof(std::uint32_t)) return verification_error(instruction_pc, "truncated " + std::string(opcode_name(opcode)) + " operand");
@@ -126,14 +129,19 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         if ((opcode == OpCode::get_upvalue || opcode == OpCode::set_upvalue) && operand >= chunk.upvalue_count()) return verification_error(instruction_pc, "upvalue index out of bounds");
         if ((opcode == OpCode::get_module || opcode == OpCode::set_module) && operand >= chunk.module_binding_count()) return verification_error(instruction_pc, "module binding index out of bounds");
 
-        if (opcode == OpCode::resolve_dynamic_ref && (operand2 & 0x7fffffffU) > chunk.local_count() + chunk.upvalue_count())
-            return verification_error(instruction_pc, "dynamic Reference fallback index out of bounds");
+        if (opcode == OpCode::resolve_dynamic_ref) {
+            const bool upvalue = (operand2 & 0x40000000U) != 0U;
+            const std::uint32_t index = operand2 & 0x3fffffffU;
+            if (index > (upvalue ? chunk.upvalue_count() : chunk.local_count()) || (upvalue && index == 0U))
+                return verification_error(instruction_pc, "dynamic Reference fallback index out of bounds");
+        }
         instructions.emplace(instruction_pc, Instruction{opcode, operand, operand2, operand3, pc});
         ++info.instruction_count;
     }
     boundaries.insert(code.size());
 
     for (const auto& [instruction_pc, instruction] : instructions) {
+        if (instruction.opcode == OpCode::enter_with && (instruction.operand >= code.size() || boundaries.find(instruction.operand) == boundaries.end())) return verification_error(instruction_pc, "WITH end is not an instruction boundary");
         if (instruction.opcode == OpCode::jump || instruction.opcode == OpCode::jump_if_false || instruction.opcode == OpCode::break_ || instruction.opcode == OpCode::continue_) {
             const auto target = static_cast<std::size_t>(instruction.operand);
             if (target >= code.size() || boundaries.find(target) == boundaries.end()) return verification_error(instruction_pc, "jump target is not an instruction boundary");
@@ -220,6 +228,8 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
 
         switch (instruction.opcode) {
         case OpCode::get_dynamic_ref:
+        case OpCode::typeof_dynamic_ref:
+        case OpCode::this_dynamic_ref:
         case OpCode::delete_dynamic_ref:
         case OpCode::constant:
         case OpCode::undefined:
@@ -301,6 +311,8 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         case OpCode::shift_right_unsigned:
         case OpCode::in_operator:
         case OpCode::instanceof_operator: { const auto ok = require(2U); if (!ok) return ok.error(); --depth; break; }
+        case OpCode::enter_with: { const auto ok = require(1U); if (!ok) return ok.error(); --depth; break; }
+        case OpCode::leave_with: break;
         case OpCode::jump_if_false: { const auto ok = require(1U); if (!ok) return ok.error(); --depth; const auto r=enqueue(static_cast<std::size_t>(instruction.operand), depth); if(!r) return r.error(); break; }
         case OpCode::jump:
         case OpCode::break_:
@@ -340,8 +352,9 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         case OpCode::end_finally:
             break;
         case OpCode::yield_:
-            if (depth != 1U) return verification_error(instruction_pc, "YIELD requires exactly one value in the current frame expression stack");
-            depth = 1U;
+            if (depth < 1U) return verification_error(instruction_pc, "YIELD requires an operand");
+            // Suspended compound/assignment expressions retain earlier operand Values.
+            // YIELD replaces its operand with the resume value, preserving stack depth.
             break;
         case OpCode::return_:
             if (depth != 1U) return verification_error(instruction_pc, "RETURN requires exactly one value in the current frame expression stack");

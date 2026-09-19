@@ -8,7 +8,11 @@ std::string_view opcode_name(OpCode opcode) noexcept {
     case OpCode::get_dynamic_ref: return "GET_DYNAMIC_REF";
     case OpCode::put_dynamic_ref: return "PUT_DYNAMIC_REF";
     case OpCode::delete_dynamic_ref: return "DELETE_DYNAMIC_REF";
+    case OpCode::typeof_dynamic_ref: return "TYPEOF_DYNAMIC_REF";
+    case OpCode::this_dynamic_ref: return "THIS_DYNAMIC_REF";
     case OpCode::release_dynamic_ref: return "RELEASE_DYNAMIC_REF";
+    case OpCode::enter_with: return "ENTER_WITH";
+    case OpCode::leave_with: return "LEAVE_WITH";
     case OpCode::constant: return "CONSTANT";
     case OpCode::undefined: return "UNDEFINED";
     case OpCode::get_local: return "GET_LOCAL";

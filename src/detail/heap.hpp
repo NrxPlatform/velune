@@ -142,6 +142,7 @@ struct GeneratorState final {
     std::vector<HeapUpvalue*> upvalues;
     std::vector<HeapUpvalue*> captured_locals;
     std::vector<DynamicBindingReference> retained_references;
+    std::vector<std::pair<std::size_t, std::size_t>> with_regions;
     struct HeapModuleEnvironment* module_environment{nullptr};
     struct HeapDynamicEnvironment* dynamic_environment{nullptr};
 };

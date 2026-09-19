@@ -1550,7 +1550,9 @@ private:
     }
 
     bool _is_identifier_reference(TokenKind kind) const noexcept {
-        return kind == TokenKind::IDENTIFIER || _is_contextual_identifier_reference(kind);
+        return kind == TokenKind::IDENTIFIER ||
+               (kind == TokenKind::LET && !_grammar_context.strict) ||
+               _is_contextual_identifier_reference(kind);
     }
 
     std::unique_ptr<IdentifierNode> _consume_identifier_reference() {
@@ -1785,7 +1787,39 @@ private:
         _consume(TokenKind::LEFT_PAREN);
         auto object = _parse_expression();
         _consume(TokenKind::RIGHT_PAREN);
-        auto body = _parse_statement();
+        // WithStatement's body is Statement, never Declaration.  The
+        // ExpressionStatement grammar also excludes the `let [` lookahead.
+        // Keep this check at the grammar boundary, rather than compiling an
+        // illegal declaration as a statement under the object environment.
+        if (_matches(_peek().kind, {TokenKind::CONST, TokenKind::CLASS,
+                                    TokenKind::FUNCTION}))
+            _fail("Expected a statement after with (declarations are not permitted)");
+        // In sloppy code, `let` may be an IdentifierReference in an
+        // ExpressionStatement. `let [` is excluded by its lookahead rule,
+        // even when a line terminator occurs before the bracket.
+        bool let_expression_statement = false;
+        if (_peek().kind == TokenKind::LET) {
+            auto checkpoint = _tokenizer.checkpoint();
+            _tokenizer.advance();
+            const auto following = _peek();
+            _tokenizer.restore(checkpoint);
+            if (following.kind == TokenKind::LEFT_BRACKET)
+                _fail("let [ cannot start an expression statement");
+            let_expression_statement = following.line_break_before ||
+                following.kind == TokenKind::SEMICOLON ||
+                following.kind == TokenKind::RIGHT_BRACE ||
+                following.kind == TokenKind::END_OF_FILE;
+            if (!let_expression_statement)
+                _fail("Expected a statement after with (declarations are not permitted)");
+        }
+        auto body = let_expression_statement ? _parse_expression_statement() : _parse_statement();
+        // Annex B labelled functions are not valid as the body of `with`,
+        // including a chain of labels. Reject this even in sloppy mode.
+        const ASTNode* innermost = body.get();
+        while (innermost->type == ASTNodeType::LABELED_STATEMENT)
+            innermost = static_cast<const LabeledStatementNode*>(innermost)->body.get();
+        if (innermost->type == ASTNodeType::FUNCTION_DECLARATION)
+            _fail("A labelled function cannot be the body of with");
         return std::make_unique<WithStatementNode>(token, std::move(object), std::move(body));
     }
 

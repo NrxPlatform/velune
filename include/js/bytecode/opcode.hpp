@@ -103,8 +103,12 @@ enum class OpCode : std::uint8_t {
     resolve_dynamic_ref, // u32 name constant, u32 fallback, u32 retained slot (bit 31 strict; low 31 bits: 0 none, 1..locals, then upvalues)
     get_dynamic_ref,     // u32 retained slot
     put_dynamic_ref,     // u32 retained slot; preserve top-of-stack RHS value
+    typeof_dynamic_ref,  // u32 retained slot; push undefined for unresolvable, else GetValue
+    this_dynamic_ref,    // u32 retained slot; push binding object for a with-object binding, else undefined
     delete_dynamic_ref,  // u32 retained slot; push boolean
     release_dynamic_ref, // u32 retained slot
+    enter_with,          // u32 bytecode offset after matching LEAVE_WITH; consumes object expression
+    leave_with,          // restores enclosing dynamic environment
 };
 
 [[nodiscard]] std::string_view opcode_name(OpCode opcode) noexcept;
