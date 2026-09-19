@@ -448,6 +448,7 @@ private:
         else if (value == "if")       kind = TokenKind::IF;
         else if (value == "else")     kind = TokenKind::ELSE;
         else if (value == "while")    kind = TokenKind::WHILE;
+        else if (value == "with")     kind = TokenKind::WITH;
         else if (value == "do")       kind = TokenKind::DO;
         else if (value == "for")      kind = TokenKind::FOR;
         else if (value == "switch")   kind = TokenKind::SWITCH;

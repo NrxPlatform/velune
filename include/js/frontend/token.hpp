@@ -34,6 +34,7 @@ enum class TokenKind {
     IF,
     ELSE,
     WHILE,
+    WITH,
     DO,
     FOR,
     SWITCH,

@@ -93,6 +93,8 @@ private:
             if (statement.alternate) collect_var_names(*statement.alternate, out);
             return;
         }
+        case ASTNodeType::WITH_STATEMENT:
+            collect_var_names(*static_cast<const WithStatementNode&>(node).body, out); return;
         case ASTNodeType::WHILE_STATEMENT:
             collect_var_names(*static_cast<const WhileStatementNode&>(node).body, out); return;
         case ASTNodeType::DO_WHILE_STATEMENT:
@@ -304,6 +306,12 @@ private:
             if (auto test = validate_expression(*statement.test, strict)) return test;
             if (auto consequent = validate_statement(*statement.consequent, strict)) return consequent;
             return statement.alternate ? validate_statement(*statement.alternate, strict) : std::optional<StaticSemanticError>{};
+        }
+        case ASTNodeType::WITH_STATEMENT: {
+            const auto& statement = static_cast<const WithStatementNode&>(node);
+            if (strict) return error(node, "with statement is forbidden in strict mode");
+            if (auto object = validate_expression(*statement.object, strict)) return object;
+            return validate_statement(*statement.body, strict);
         }
         case ASTNodeType::WHILE_STATEMENT: {
             const auto& statement = static_cast<const WhileStatementNode&>(node);

@@ -71,6 +71,7 @@ enum class ASTNodeType {
     // NEW control-flow
     IF_STATEMENT,
     WHILE_STATEMENT,
+    WITH_STATEMENT,
     DO_WHILE_STATEMENT,
     FOR_STATEMENT,
     FOR_IN_STATEMENT,
@@ -932,6 +933,14 @@ struct IfStatementNode : ASTNode {
           consequent(std::move(consequent_node)),
           alternate(std::move(alternate_node))
     {}
+};
+
+struct WithStatementNode : ASTNode {
+    std::unique_ptr<ASTNode> object;
+    std::unique_ptr<ASTNode> body;
+    WithStatementNode(const Token& token, std::unique_ptr<ASTNode> value, std::unique_ptr<ASTNode> statement)
+        : ASTNode(ASTNodeType::WITH_STATEMENT, token.start, statement->end),
+          object(std::move(value)), body(std::move(statement)) {}
 };
 
 struct WhileStatementNode : ASTNode {
@@ -2232,6 +2241,13 @@ inline void print_ast(
             break;
         }
 
+        case ASTNodeType::WITH_STATEMENT: {
+            auto* statement = static_cast<const WithStatementNode*>(node);
+            std::cout << indent << "WithStatement\n";
+            print_ast(statement->object.get(), depth + 1);
+            print_ast(statement->body.get(), depth + 1);
+            break;
+        }
         case ASTNodeType::WHILE_STATEMENT: {
             auto* statement = static_cast<const WhileStatementNode*>(node);
 

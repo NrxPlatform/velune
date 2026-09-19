@@ -1871,6 +1871,7 @@ Result<void> Compiler::compile_statement(const frontend::ASTNode& node, bool pre
     case frontend::ASTNodeType::THROW_STATEMENT: return compile_throw(static_cast<const frontend::ThrowStatementNode&>(node));
     case frontend::ASTNodeType::TRY_STATEMENT: return compile_try(static_cast<const frontend::TryStatementNode&>(node));
     case frontend::ASTNodeType::IF_STATEMENT: return compile_if(static_cast<const frontend::IfStatementNode&>(node));
+    case frontend::ASTNodeType::WITH_STATEMENT: return error_at(node, "with statement requires dynamic-environment entry and compiler Reference lowering");
     case frontend::ASTNodeType::WHILE_STATEMENT: return compile_while(static_cast<const frontend::WhileStatementNode&>(node));
     case frontend::ASTNodeType::DO_WHILE_STATEMENT: return compile_do_while(static_cast<const frontend::DoWhileStatementNode&>(node));
     case frontend::ASTNodeType::FOR_STATEMENT: return compile_for(static_cast<const frontend::ForStatementNode&>(node));

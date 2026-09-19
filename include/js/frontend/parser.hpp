@@ -242,6 +242,7 @@ private:
             case TokenKind::IF:
             case TokenKind::ELSE:
             case TokenKind::WHILE:
+            case TokenKind::WITH:
             case TokenKind::DO:
             case TokenKind::FOR:
             case TokenKind::SWITCH:
@@ -1779,6 +1780,15 @@ private:
         );
     }
 
+    std::unique_ptr<WithStatementNode> _parse_with_statement() {
+        Token token = _consume(TokenKind::WITH);
+        _consume(TokenKind::LEFT_PAREN);
+        auto object = _parse_expression();
+        _consume(TokenKind::RIGHT_PAREN);
+        auto body = _parse_statement();
+        return std::make_unique<WithStatementNode>(token, std::move(object), std::move(body));
+    }
+
     std::unique_ptr<WhileStatementNode> _parse_while_statement(){
         Token while_token = _consume(TokenKind::WHILE);
         _consume(TokenKind::LEFT_PAREN);
@@ -2032,6 +2042,8 @@ private:
                 return _parse_if_statement();
             case TokenKind::WHILE:
                 return _parse_while_statement();
+            case TokenKind::WITH:
+                return _parse_with_statement();
             case TokenKind::DO:
                 return _parse_do_while_statement();
             case TokenKind::FOR:
