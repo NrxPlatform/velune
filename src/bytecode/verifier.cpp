@@ -123,7 +123,7 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         if ((opcode == OpCode::get_upvalue || opcode == OpCode::set_upvalue) && operand >= chunk.upvalue_count()) return verification_error(instruction_pc, "upvalue index out of bounds");
         if ((opcode == OpCode::get_module || opcode == OpCode::set_module) && operand >= chunk.module_binding_count()) return verification_error(instruction_pc, "module binding index out of bounds");
 
-        if (opcode == OpCode::resolve_dynamic_ref && operand2 > chunk.local_count() + chunk.upvalue_count())
+        if (opcode == OpCode::resolve_dynamic_ref && (operand2 & 0x7fffffffU) > chunk.local_count() + chunk.upvalue_count())
             return verification_error(instruction_pc, "dynamic Reference fallback index out of bounds");
         instructions.emplace(instruction_pc, Instruction{opcode, operand, operand2, pc});
         ++info.instruction_count;

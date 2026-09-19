@@ -678,26 +678,34 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
         switch (opcode) {
         case bytecode::OpCode::resolve_dynamic_ref: {
             const auto name_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
-            const auto fallback_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            const auto encoded_fallback = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            const bool strict = (encoded_fallback & 0x80000000U) != 0U;
+            const auto fallback_index = encoded_fallback & 0x7fffffffU;
             detail::HeapUpvalue* fallback = nullptr;
             if (fallback_index != 0U) {
                 if (fallback_index <= frame.locals.size())
                     fallback = capture_local(frame, fallback_index - 1U);
                 else fallback = frame.upvalues[fallback_index - 1U - frame.locals.size()];
             }
-            const Value name_value = frame.chunk->constants()[name_index];
-            // Publish the slot before resolving: property traps can reenter the VM and GC.
-            const std::size_t slot = frame.retained_references.size();
-            frame.retained_references.emplace_back();
-            auto& current = frames_.back();
-            const auto resolved = resolve_dynamic_binding(*context_,
-                current.execution_context.dynamic_environment,
-                current.execution_context.realm->global_environment(),
-                name_value.as_string(), false, current.retained_references[slot], fallback);
+            // Store the unresolved candidate in the frame before invoking any
+            // observable property operations. Nested calls may relocate frames_.
+            const std::size_t frame_index = frames_.size() - 1U;
+            const std::size_t slot = frames_[frame_index].retained_references.size();
+            frames_[frame_index].retained_references.emplace_back();
+            // Resolve into a local value: a reference to a vector element can
+            // dangle when a property trap reenters this VM and grows its frames.
+            DynamicBindingReference selected;
+            const std::string name(frame.chunk->constants()[name_index].as_string());
+            auto* active = frames_[frame_index].execution_context.dynamic_environment;
+            auto* realm = frames_[frame_index].execution_context.realm;
+            const auto resolved = resolve_dynamic_binding(*context_, active,
+                realm->global_environment(), name, strict, selected, fallback);
             if (!resolved) return resolved.error();
             if (!resolved.completion().is_normal()) {
                 if (auto routed = propagate_completion(resolved.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
             }
+            frames_[frame_index].retained_references[slot] = std::move(selected);
             break;
         }
         case bytecode::OpCode::get_dynamic_ref:
@@ -705,17 +713,26 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
         case bytecode::OpCode::delete_dynamic_ref:
         case bytecode::OpCode::release_dynamic_ref: {
             const auto slot = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
-            if (slot >= frame.retained_references.size() || frame.retained_references[slot].name.empty())
+            const std::size_t frame_index = frames_.size() - 1U;
+            if (slot >= frames_[frame_index].retained_references.size() ||
+                frames_[frame_index].retained_references[slot].name.empty())
                 return Error{ErrorCode::vm_error, "dynamic Reference slot is not live"};
             if (opcode == bytecode::OpCode::release_dynamic_ref) {
-                frame.retained_references[slot] = DynamicBindingReference{};
+                frames_[frame_index].retained_references[slot] = DynamicBindingReference{};
                 break;
             }
+            // Copy before calling into JS: getter/setter/proxy reentry may
+            // relocate the owning frame and its retained-reference vector.
+            const DynamicBindingReference selected = frames_[frame_index].retained_references[slot];
+            if (opcode == bytecode::OpCode::put_dynamic_ref && stack_.empty())
+                return Error{ErrorCode::vm_error, "PUT_DYNAMIC_REF requires a value"};
+            const Value assigned = opcode == bytecode::OpCode::put_dynamic_ref
+                ? stack_.back() : Value::undefined();
             const auto result = opcode == bytecode::OpCode::get_dynamic_ref
-                ? frame.retained_references[slot].get(*context_)
+                ? selected.get(*context_)
                 : opcode == bytecode::OpCode::delete_dynamic_ref
-                    ? frame.retained_references[slot].delete_binding(*context_)
-                    : frame.retained_references[slot].put(*context_, stack_.back());
+                    ? selected.delete_binding(*context_)
+                    : selected.put(*context_, assigned);
             if (!result) return result.error();
             if (!result.completion().is_normal()) {
                 if (auto routed = propagate_completion(result.completion(), instruction_pc, boundary_depth)) return *routed;
