@@ -154,6 +154,7 @@ private:
     bool in_function_{false};
     bool in_generator_{false};
     bool strict_{false};
+    std::uint32_t next_dynamic_reference_slot_{0};
     std::size_t protected_finally_depth_{0};
     std::vector<ControlContext> controls_;
 };

@@ -250,6 +250,11 @@ Result<Compiler::CompiledReference> Compiler::compile_reference(const frontend::
             if (!name) return name.error();
             reference.kind = ReferenceKind::runtime_environment;
             reference.name_constant = *name;
+            // Each syntactic Reference gets its own slot. A loop reuses its
+            // slot only after the emitted RELEASE on the normal path.
+            reference.base_slot = next_dynamic_reference_slot_++;
+            builder_.emit_dynamic_reference(reference.name_constant, 0U,
+                                            reference.strict, reference.base_slot);
             return reference;
         }
         const auto binding = resolve_write(identifier->name, *identifier);
@@ -298,7 +303,7 @@ Result<void> Compiler::emit_get_value(const CompiledReference& reference) {
         emit_get(*reference.binding);
         return {};
     case ReferenceKind::runtime_environment:
-        builder_.emit_name(bytecode::OpCode::get_name, reference.name_constant);
+        builder_.emit_local(bytecode::OpCode::get_dynamic_ref, reference.base_slot);
         return {};
     case ReferenceKind::static_property:
         builder_.emit_local(bytecode::OpCode::get_local, reference.base_slot);
@@ -342,7 +347,8 @@ Result<void> Compiler::emit_put_value(const CompiledReference& reference) {
         return {};
     }
     if (reference.kind == ReferenceKind::runtime_environment) {
-        builder_.emit_name(reference.strict ? bytecode::OpCode::set_name_strict : bytecode::OpCode::set_name, reference.name_constant);
+        builder_.emit_local(bytecode::OpCode::put_dynamic_ref, reference.base_slot);
+        builder_.emit_local(bytecode::OpCode::release_dynamic_ref, reference.base_slot);
         return {};
     }
 
