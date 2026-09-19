@@ -17,11 +17,12 @@ namespace {
 }
 [[nodiscard]] std::size_t operand_count(OpCode opcode) noexcept {
     switch (opcode) {
+    case OpCode::get_dynamic_ref: case OpCode::put_dynamic_ref: case OpCode::delete_dynamic_ref: case OpCode::release_dynamic_ref:
     case OpCode::constant: case OpCode::get_local: case OpCode::set_local: case OpCode::initialize_local: case OpCode::reset_local: case OpCode::clone_local_binding: case OpCode::get_upvalue: case OpCode::get_module: case OpCode::get_name: case OpCode::get_name_or_undefined: case OpCode::set_upvalue: case OpCode::set_module: case OpCode::set_name: case OpCode::set_name_strict:
     case OpCode::closure: case OpCode::define_property: case OpCode::define_getter: case OpCode::get_property: case OpCode::set_property: case OpCode::set_property_strict:
     case OpCode::delete_property: case OpCode::delete_property_strict:
     case OpCode::jump_if_false: case OpCode::jump: case OpCode::call: case OpCode::construct: case OpCode::call_element: case OpCode::end_finally: return 1U;
-    case OpCode::call_method: return 2U;
+    case OpCode::resolve_dynamic_ref: case OpCode::call_method: return 2U;
     case OpCode::call_method_spread: return 1U;
     default: return 0U;
     }
@@ -43,7 +44,7 @@ Result<std::string> Disassembler::disassemble(const BytecodeChunk& chunk) const 
         if (count >= 1U) {
             const auto operand = read_u32(code, pc); pc += sizeof(std::uint32_t);
             out << ' ' << operand;
-            if (opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) out << "  ; " << chunk.constants()[operand].to_debug_string();
+            if (opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict || opcode == OpCode::resolve_dynamic_ref) out << "  ; " << chunk.constants()[operand].to_debug_string();
         }
         if (count >= 2U) { const auto operand2 = read_u32(code, pc); pc += sizeof(std::uint32_t); out << " argc=" << operand2; }
         out << '\n';

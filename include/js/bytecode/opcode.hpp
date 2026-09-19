@@ -100,6 +100,11 @@ enum class OpCode : std::uint8_t {
     end_finally,
     yield_,
     return_,
+    resolve_dynamic_ref, // u32 name constant, u32 fallback (0 none, 1..locals, then upvalues)
+    get_dynamic_ref,     // u32 retained slot
+    put_dynamic_ref,     // u32 retained slot; preserve top-of-stack RHS value
+    delete_dynamic_ref,  // u32 retained slot; push boolean
+    release_dynamic_ref, // u32 retained slot
 };
 
 [[nodiscard]] std::string_view opcode_name(OpCode opcode) noexcept;

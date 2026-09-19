@@ -31,6 +31,10 @@ struct Instruction final {
 
 [[nodiscard]] std::size_t operand_count(OpCode opcode) noexcept {
     switch (opcode) {
+    case OpCode::get_dynamic_ref:
+    case OpCode::put_dynamic_ref:
+    case OpCode::delete_dynamic_ref:
+    case OpCode::release_dynamic_ref:
     case OpCode::constant:
     case OpCode::get_local:
     case OpCode::get_argument:
@@ -65,6 +69,7 @@ struct Instruction final {
     case OpCode::call_with_this:
     case OpCode::end_finally:
         return 1U;
+    case OpCode::resolve_dynamic_ref:
     case OpCode::call_method:
         return 2U;
     case OpCode::call_method_spread:
@@ -98,7 +103,7 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         const std::size_t instruction_pc = pc;
         boundaries.insert(instruction_pc);
         const auto raw = code[pc++];
-        if (raw > static_cast<std::uint8_t>(OpCode::return_)) return verification_error(instruction_pc, "unknown opcode " + std::to_string(raw));
+        if (raw > static_cast<std::uint8_t>(OpCode::release_dynamic_ref)) return verification_error(instruction_pc, "unknown opcode " + std::to_string(raw));
         const auto opcode = static_cast<OpCode>(raw);
         const std::size_t count = operand_count(opcode);
         if (code.size() - pc < count * sizeof(std::uint32_t)) return verification_error(instruction_pc, "truncated " + std::string(opcode_name(opcode)) + " operand");
@@ -107,10 +112,10 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         if (count >= 1U) { operand = read_u32(code, pc); pc += sizeof(std::uint32_t); }
         if (count >= 2U) { operand2 = read_u32(code, pc); pc += sizeof(std::uint32_t); }
 
-        if ((opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) && operand >= chunk.constant_count()) {
+        if ((opcode == OpCode::constant || opcode == OpCode::closure || opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict || opcode == OpCode::resolve_dynamic_ref) && operand >= chunk.constant_count()) {
             return verification_error(instruction_pc, "constant index out of bounds");
         }
-        if ((opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict) && !chunk.constants()[operand].is_string()) {
+        if ((opcode == OpCode::define_property || opcode == OpCode::define_getter || opcode == OpCode::get_property || opcode == OpCode::set_property || opcode == OpCode::set_property_strict || opcode == OpCode::delete_property || opcode == OpCode::delete_property_strict || opcode == OpCode::call_method || opcode == OpCode::call_method_spread || opcode == OpCode::get_name || opcode == OpCode::get_name_or_undefined || opcode == OpCode::set_name || opcode == OpCode::set_name_strict || opcode == OpCode::resolve_dynamic_ref) && !chunk.constants()[operand].is_string()) {
             return verification_error(instruction_pc, "property key constant is not a string value");
         }
         if (opcode == OpCode::closure && (!chunk.constants()[operand].is_function())) return verification_error(instruction_pc, "CLOSURE constant is not a function value");
@@ -118,6 +123,8 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         if ((opcode == OpCode::get_upvalue || opcode == OpCode::set_upvalue) && operand >= chunk.upvalue_count()) return verification_error(instruction_pc, "upvalue index out of bounds");
         if ((opcode == OpCode::get_module || opcode == OpCode::set_module) && operand >= chunk.module_binding_count()) return verification_error(instruction_pc, "module binding index out of bounds");
 
+        if (opcode == OpCode::resolve_dynamic_ref && operand2 > chunk.local_count() + chunk.upvalue_count())
+            return verification_error(instruction_pc, "dynamic Reference fallback index out of bounds");
         instructions.emplace(instruction_pc, Instruction{opcode, operand, operand2, pc});
         ++info.instruction_count;
     }
@@ -209,6 +216,8 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         };
 
         switch (instruction.opcode) {
+        case OpCode::get_dynamic_ref:
+        case OpCode::delete_dynamic_ref:
         case OpCode::constant:
         case OpCode::undefined:
         case OpCode::get_local:
@@ -246,7 +255,10 @@ Result<VerificationInfo> BytecodeVerifier::verify(const BytecodeChunk& chunk) co
         case OpCode::get_element_reference: { const auto ok = require(2U); if (!ok) return ok.error(); /* object,key -> converted-key,value */ break; }
         case OpCode::set_element:
         case OpCode::set_element_strict: { const auto ok = require(3U); if (!ok) return ok.error(); depth -= 2U; break; }
+        case OpCode::resolve_dynamic_ref:
+        case OpCode::release_dynamic_ref:
         case OpCode::reset_local: case OpCode::clone_local_binding: break;
+        case OpCode::put_dynamic_ref: { const auto ok = require(1U); if (!ok) return ok.error(); break; }
         case OpCode::set_local:
         case OpCode::initialize_local:
         case OpCode::set_upvalue:

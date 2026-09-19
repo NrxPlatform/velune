@@ -4,6 +4,11 @@ namespace js::bytecode {
 
 std::string_view opcode_name(OpCode opcode) noexcept {
     switch (opcode) {
+    case OpCode::resolve_dynamic_ref: return "RESOLVE_DYNAMIC_REF";
+    case OpCode::get_dynamic_ref: return "GET_DYNAMIC_REF";
+    case OpCode::put_dynamic_ref: return "PUT_DYNAMIC_REF";
+    case OpCode::delete_dynamic_ref: return "DELETE_DYNAMIC_REF";
+    case OpCode::release_dynamic_ref: return "RELEASE_DYNAMIC_REF";
     case OpCode::constant: return "CONSTANT";
     case OpCode::undefined: return "UNDEFINED";
     case OpCode::get_local: return "GET_LOCAL";

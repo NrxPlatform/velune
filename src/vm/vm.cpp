@@ -676,6 +676,55 @@ ExecutionResult VM::execute_loop(std::size_t boundary_depth, detail::HeapObject*
         const auto opcode = static_cast<bytecode::OpCode>(code[frame.pc++]);
 
         switch (opcode) {
+        case bytecode::OpCode::resolve_dynamic_ref: {
+            const auto name_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            const auto fallback_index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            detail::HeapUpvalue* fallback = nullptr;
+            if (fallback_index != 0U) {
+                if (fallback_index <= frame.locals.size())
+                    fallback = capture_local(frame, fallback_index - 1U);
+                else fallback = frame.upvalues[fallback_index - 1U - frame.locals.size()];
+            }
+            const Value name_value = frame.chunk->constants()[name_index];
+            // Publish the slot before resolving: property traps can reenter the VM and GC.
+            const std::size_t slot = frame.retained_references.size();
+            frame.retained_references.emplace_back();
+            auto& current = frames_.back();
+            const auto resolved = resolve_dynamic_binding(*context_,
+                current.execution_context.dynamic_environment,
+                current.execution_context.realm->global_environment(),
+                name_value.as_string(), false, current.retained_references[slot], fallback);
+            if (!resolved) return resolved.error();
+            if (!resolved.completion().is_normal()) {
+                if (auto routed = propagate_completion(resolved.completion(), instruction_pc, boundary_depth)) return *routed;
+            }
+            break;
+        }
+        case bytecode::OpCode::get_dynamic_ref:
+        case bytecode::OpCode::put_dynamic_ref:
+        case bytecode::OpCode::delete_dynamic_ref:
+        case bytecode::OpCode::release_dynamic_ref: {
+            const auto slot = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
+            if (slot >= frame.retained_references.size() || frame.retained_references[slot].name.empty())
+                return Error{ErrorCode::vm_error, "dynamic Reference slot is not live"};
+            if (opcode == bytecode::OpCode::release_dynamic_ref) {
+                frame.retained_references[slot] = DynamicBindingReference{};
+                break;
+            }
+            const auto result = opcode == bytecode::OpCode::get_dynamic_ref
+                ? frame.retained_references[slot].get(*context_)
+                : opcode == bytecode::OpCode::delete_dynamic_ref
+                    ? frame.retained_references[slot].delete_binding(*context_)
+                    : frame.retained_references[slot].put(*context_, stack_.back());
+            if (!result) return result.error();
+            if (!result.completion().is_normal()) {
+                if (auto routed = propagate_completion(result.completion(), instruction_pc, boundary_depth)) return *routed;
+                break;
+            }
+            if (opcode != bytecode::OpCode::put_dynamic_ref)
+                stack_.push_back(result.completion().value());
+            break;
+        }
         case bytecode::OpCode::constant: {
             const auto index = read_u32(code, frame.pc); frame.pc += sizeof(std::uint32_t);
             const Value value = frame.chunk->constants()[index];
